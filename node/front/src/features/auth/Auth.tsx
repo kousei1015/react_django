@@ -26,7 +26,7 @@ import {
   fetchAsyncCreateProf,
 } from "./authSlice";
 
-const customStyles = {
+const modalStyles = {
   overlay: {
     backgroundColor: "#777777",
   },
@@ -34,8 +34,8 @@ const customStyles = {
     top: "55%",
     left: "50%",
 
-    width: 280,
-    height: 350,
+    width: 320,
+    height: 450,
     padding: "50px",
 
     transform: "translate(-50%, -50%)",
@@ -56,10 +56,10 @@ const Auth: React.FC = () => {
         onRequestClose={async () => {
           await dispatch(resetOpenSignUp());
         }}
-        style={customStyles}
+        style={modalStyles}
       >
         <Formik
-          initialErrors={{ email: "required" }}
+          initialErrors={{ email: "Eメールが必要です" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
             await dispatch(fetchCredStart());
@@ -67,7 +67,7 @@ const Auth: React.FC = () => {
 
             if (fetchAsyncRegister.fulfilled.match(resultReg)) {
               await dispatch(fetchAsyncLogin(values));
-              await dispatch(fetchAsyncCreateProf({ nickName: "anonymous" }));
+              await dispatch(fetchAsyncCreateProf({ nickName: "User" }));
 
               await dispatch(fetchAsyncGetProfs());
               await dispatch(fetchAsyncGetPosts());
@@ -79,8 +79,8 @@ const Auth: React.FC = () => {
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()
-              .email("email format is wrong")
-              .required("email is must"),
+              .email("Eメールの形式が間違ってます")
+              .required("Eメールが必要です"),
             password: Yup.string().required("password is must").min(4),
           })}
         >
@@ -98,7 +98,7 @@ const Auth: React.FC = () => {
                 <div className={styles.auth_signUp}>
                   <h1 className={styles.auth_title}>SNS clone</h1>
                   <br />
-                  <div className={styles.auth_progress}>
+                  <div className={styles.auth_circularProgress}>
                     {isLoadingAuth && <CircularProgress />}
                   </div>
                   <br />
@@ -147,7 +147,7 @@ const Auth: React.FC = () => {
                       await dispatch(resetOpenSignUp());
                     }}
                   >
-                    You already have a account ?
+                    もうアカウントを持っていますか？
                   </span>
                 </div>
               </form>
@@ -161,10 +161,10 @@ const Auth: React.FC = () => {
         onRequestClose={async () => {
           await dispatch(resetOpenSignIn());
         }}
-        style={customStyles}
+        style={modalStyles}
       >
         <Formik
-          initialErrors={{ email: "required" }}
+          initialErrors={{ email: "Eメールは必要です" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
             await dispatch(fetchCredStart());
@@ -248,7 +248,7 @@ const Auth: React.FC = () => {
                       await dispatch(setOpenSignUp());
                     }}
                   >
-                    You don't have a account ?
+                    アカウントを持ってますか？
                   </span>
                 </div>
               </form>

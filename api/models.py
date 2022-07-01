@@ -61,9 +61,8 @@ class Post(models.Model):
         settings.AUTH_USER_MODEL, related_name='userPost',
         on_delete=models.CASCADE
     )
-    access_stars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    congestion_degree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    created_on = models.DateTimeField(auto_now_add=True)
+    accessStars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    congestionDegree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)
 
     def __str__(self):

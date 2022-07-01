@@ -1,20 +1,22 @@
 import React from "react";
-import { BrowserRouter, Switch, Route, } from "react-router-dom";
-import CoreDetail from "./features/core/CoreDetail";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from "./App.module.css";
 import Core from "./features/core/Core";
+import UpdatePost from "./features/core/UpdatePost";
+import PostDetail from "./features/post/PostDetail";
+
 
 function App() {
   return (
-    <div className={styles.app}>
-      <BrowserRouter>
-        
-          <Switch>
-            <Route exact path="/" component={Core} />
-            <Route exact path="/post/:id" component={CoreDetail} />
-          </Switch>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <div className={styles.app}>
+        <Routes>
+          <Route path="/" element={<Core />} />
+          <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/post/:id/update" element={<UpdatePost />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

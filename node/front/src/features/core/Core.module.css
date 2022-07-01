@@ -14,7 +14,9 @@
   cursor: pointer;
 }
 .core_header {
+  margin-top: 12px;
   position: sticky;
+  border-radius: 18px;
   top: 0;
   background-color: white;
   padding: 20px;
@@ -23,12 +25,13 @@
   display: flex;
   z-index: 1;
   justify-content: space-between;
+  align-items: center;
 }
-.core_btnModal {
+.core_buttonModal {
   background-color: transparent;
   color: gray;
   padding-top: 3px;
-  font-size: 32px;
+  font-size: 27px;
   border: none;
   outline: none;
   cursor: pointer;
@@ -46,3 +49,25 @@
   display: flex;
   justify-content: center;
 }
+.core_update {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  margin: 20px 50px;
+  border-radius: 20px;
+}
+.core_update_title {
+  margin-top: 16px;
+}
+
+
+@media screen and (max-width: 480px) {
+  .core_update {
+    width: 100%;
+  }
+  .core_buttonModal {
+    font-size: 18px;
+  }
+}
+

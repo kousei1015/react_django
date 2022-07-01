@@ -1,55 +1,65 @@
-import { number } from "yup";
+
+export type CustomFormData = FormData & {
+  append(name: string, value: string | Blob | number, fileName?: string): void;
+}
 
 export interface File extends Blob {
   readonly lastModified: number;
   readonly name: string;
 }
 /*authSlice.ts*/
-export interface PROPS_AUTHEN {
+export type PROPS_AUTHEN = {
   email: string;
   password: string;
 }
 
-export interface PROPS_PROFILE {
+export type PROPS_PROFILE = {
   id: number;
   nickName: string;
   img: File | null;
 }
 
-export interface PROPS_NICKNAME {
+export type PROPS_NICKNAME = {
   nickName: string;
 }
 
 /*postSlice.ts*/
-export interface PROPS_NEWPOST {
+export type PROPS_NEWPOST = {
+  accessStars: number | null;
+  congestionDegree: number | null;
   placeName: string;
   description: string;
-  access_stars: number;
-  congestion_degree: number;
   img: File | null;
 }
 
-export interface PROPS_COMMENT {
+
+
+export type PROPS_COMMENT = {
   text: string;
-  post: number;
+  post: string;
 }
 /*Post.tsx*/
-export interface PROPS_POST {
-  postId: number;
+export type PROPS_POST = {
+  postId: string;
   loginId: number;
   userPost: number;
   placeName: string;
   description: string;
   imageUrl: string;
-  access_stars: number;
-  congestion_degree: number;
+  accessStars: number;
+  congestionDegree: number;
 }
 
-{/*imgにstring型追加したらエラー消失 */}
-export interface PROPS_GET_DETAIL {
-  img: File | null | string;
-  placeName: string;
-  description: string;
-  access_stars: number;
-  congestion_degree: number;
+
+
+export type EDIT_CONTENTS = {
+  id: string | undefined;
+  EditPost: void;
 }
+
+
+
+
+export type ID = {
+  id: string
+};

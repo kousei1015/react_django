@@ -1,62 +1,179 @@
 /* eslint-disable import/first */
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Avatar } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useHistory } from "react-router-dom";
-import { AppDispatch } from "../../app/store";;
-import { PROPS_GET_DETAIL } from "../types";
+import { fetchAsyncGetProfs, selectProfiles } from "../auth/authSlice";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { AppDispatch } from "../../app/store";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import Rating from "@mui/material/Rating";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { fetchAsyncGetDetail, selectPostDetail } from "../post/postSlice";
+import { Divider } from "@material-ui/core";
+import {
+  selectComments,
+  fetchPostStart,
+  fetchPostEnd,
+  fetchAsyncPostComment,
+  fetchAsyncGetComments,
+} from "./postSlice";
+import styles from "./PostDetail.module.css";
+import {
+  fetchAsyncGetDetail,
+  selectPostDetail,
+  fetchDeletePost,
+} from "../post/postSlice";
+import { Button } from "@material-ui/core";
+import { ID } from "./../types";
+const useStyles = makeStyles((theme) => ({
+  small: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(1),
+  },
+  card: {
+    width: "100%",
+  },
+  rate: {
+    alignItems: "center",
+  },
+}));
 
-
-const PostDetail: React.FC<PROPS_GET_DETAIL> = ({}) => {
+const PostDetail: React.FC = ({}) => {
+  const { id } = useParams<ID>();
+  const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
-  const { id }: any = useParams();
+  const profiles = useSelector(selectProfiles);
+  const comments = useSelector(selectComments);
+  const [text, setText] = useState("");
+  const navigate = useNavigate();
+
+  const commentsOnPost = comments.filter((com) => {
+    return com.post === postDetail.id;
+  });
+
+  const prof = profiles.filter((prof) => {
+    return prof.userProfile === postDetail.userPost;
+  });
+
+  const postComment = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    const packet = { text: text, post: postDetail.id };
+    await dispatch(fetchPostStart());
+    await dispatch(fetchAsyncPostComment(packet));
+    await dispatch(fetchPostEnd());
+    setText("");
+  };
+
+  function pushHome() {
+    navigate("/");
+  }
+
+  
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchAsyncGetDetail(id));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    const fetchLoader = async () => {
+      if (id) {
+        await dispatch(fetchAsyncGetDetail(id));
+        await dispatch(fetchAsyncGetProfs());
+        await dispatch(fetchAsyncGetComments());
+      }
+    };
+    fetchLoader();
+  }, [dispatch]);
+
   return (
-    <div>
-      <Card sx={{ maxWidth: 345 }}>
-        <CardMedia
-          component="img"
-          height="140"
-          image={postDetail.img}
-          alt="green iguana"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {postDetail.placeName}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {postDetail.description}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <p>アクセス度</p>
-            <Rating
-             name="read-only" 
-             value={postDetail.access_stars} 
-             readOnly />
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <p>混雑度</p>
+    <>
+      <div className={styles.wrapper}>
+        <div className={styles.post}>
+          <div className={styles.post_header}>
+            <Avatar className={styles.post_avatar} src={prof[0]?.img} />
+            <h3>{prof[0]?.nickName}</h3>
+          </div>
+
+          <div className="postimg">
+            <img src={postDetail.img} className={styles.detail_img} />
+          </div>
+          <div className={styles.detail_block}>
+            <p className={styles.detail_text}>アクセス度</p>
+            <Rating name="read-only" value={postDetail.accessStars} readOnly />
+
+            <p className={styles.detail_text}>混雑度</p>
             <Rating
               name="read-only"
-              value={postDetail.congestion_degree}
+              value={postDetail.congestionDegree}
               readOnly
             />
-          </Typography>
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+          <div className={styles.detail_place_name}>
+            名所:{postDetail.placeName}
+            <br />
+            説明:{postDetail.description}
+          </div>
+
+          <Button
+            size="small"
+            color="secondary"
+            onClick={() => {
+              dispatch(fetchDeletePost(postDetail.id));
+              pushHome();
+            }}
+          >
+            <DeleteIcon fontSize="small" /> &nbsp; Delete
+          </Button>
+          <Button size="small">
+            <Link to={`/post/${id}/update`}>
+              <EditIcon fontSize="small" /> Edit
+            </Link>
+          </Button>
+
+          <div className={styles.post_comments}>
+            {commentsOnPost.map((comment) => (
+              <div key={comment.id} className={styles.post_comment}>
+                <Avatar
+                  src={
+                    profiles.find(
+                      (prof) => prof.userProfile === comment.userComment
+                    )?.img
+                  }
+                  className={classes.small}
+                />
+
+                <p>
+                  <strong className={styles.post_strong}>
+                    {
+                      profiles.find(
+                        (prof) => prof.userProfile === comment.userComment
+                      )?.nickName
+                    }
+                  </strong>
+                  {comment.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <form className={styles.post_commentBox}>
+          <input
+            className={styles.post_input}
+            type="text"
+            placeholder="add a comment"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button
+            disabled={!text.length}
+            className={styles.post_button}
+            type="submit"
+            onClick={postComment}
+          >
+            Post
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

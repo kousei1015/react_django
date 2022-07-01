@@ -27,8 +27,7 @@ const customStyles = {
 
     width: 280,
     height: 220,
-    padding: "50px",
-
+    padding: "30px",
     transform: "translate(-50%, -50%)",
   },
 };

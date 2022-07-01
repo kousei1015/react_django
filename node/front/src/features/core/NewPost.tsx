@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-import { FaStar } from "react-icons/fa";
-
+import Rating from "@mui/material/Rating";
+import Typography from "@mui/material/Typography";
 import styles from "./Core.module.css";
-import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { File } from "../types";
 
 import {
@@ -19,10 +18,7 @@ import {
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
 
-const colors = {
-  orange: "#FFBA5A",
-  grey: "#a9a9a9",
-};
+
 
 const customStyles = {
   content: {
@@ -39,19 +35,16 @@ const customStyles = {
 
 const NewPost: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+
+
   const openNewPost = useSelector(selectOpenNewPost);
 
   const [image, setImage] = useState<File | null>(null);
   const [placeName, setPlaceName] = useState("");
   const [description, setDescription] = useState("");
-  const [access_stars, setAccess_stars] = useState(0);
-  const [congestion_degree, setCongestion_degree] = useState(0);
-  const [hover, setHover] = useState(undefined);
-  const stars = Array(5).fill(0);
-
-  const handleMouseLeave = () => {
-    setHover(undefined);
-  };
+  const [accessStars, setAccessStars] = React.useState<number | null>(0);
+  const [congestionDegree, setCongestionDegree] = React.useState<number | null>(0);
+  
 
   const handlerEditPicture = () => {
     const fileInput = document.getElementById("imageInput");
@@ -64,16 +57,16 @@ const NewPost: React.FC = () => {
       placeName: placeName,
       description: description,
       img: image,
-      access_stars: access_stars,
-      congestion_degree: congestion_degree,
+      accessStars: accessStars,
+      congestionDegree: congestionDegree,
     };
     await dispatch(fetchPostStart());
     await dispatch(fetchAsyncNewPost(packet));
     await dispatch(fetchPostEnd());
+    
     setPlaceName("");
     setDescription("");
     setImage(null);
-
     dispatch(resetOpenNewPost());
   };
 
@@ -91,13 +84,13 @@ const NewPost: React.FC = () => {
 
           <br />
           <TextField
-            placeholder="Please enter caption"
+            placeholder="名所の名前を記入してください"
             type="text"
             onChange={(e) => setPlaceName(e.target.value)}
           />
 
           <TextField
-            placeholder="please input..."
+            placeholder="名所の概要を記入して下さい"
             multiline={true}
             rows={3}
             rowsMax={4}
@@ -105,49 +98,29 @@ const NewPost: React.FC = () => {
           />
 
           <div>
-            <p>アクセス</p>
-            {stars.map((_, index) => {
-              return (
-                <FaStar
-                  key={index}
-                  size={24}
-                  onClick={() => setAccess_stars(index + 1)}
-                  onMouseLeave={handleMouseLeave}
-                  color={
-                    (hover || access_stars) > index
-                      ? colors.orange
-                      : colors.grey
-                  }
-                  style={{
-                    marginRight: 10,
-                    cursor: "pointer",
-                  }}
-                />
-              );
-            })}
+            <Typography component="legend">アクセス</Typography>
+            <Rating
+              name="simple-controlled"
+              defaultValue={0}
+              value={accessStars}
+              onChange={(event, newValue) => {
+                setAccessStars(newValue);
+              }}
+            />
           </div>
 
           <div>
-            <p>混雑度</p>
-            {stars.map((_, index) => {
-              return (
-                <FaStar
-                  key={index}
-                  size={24}
-                  onClick={() => setCongestion_degree(index + 1)}
-                  onMouseLeave={handleMouseLeave}
-                  color={
-                    (hover || congestion_degree) > index
-                      ? colors.orange
-                      : colors.grey
-                  }
-                  style={{
-                    marginRight: 10,
-                    cursor: "pointer",
-                  }}
-                />
-              );
-            })}
+            <div>
+              <Typography component="legend">混雑度</Typography>
+              <Rating
+                name="simple-controlled"
+                defaultValue={0}
+                value={congestionDegree}
+                onChange={(event, newValue) => {
+                  setCongestionDegree(newValue);
+                }}
+              />
+            </div>
           </div>
 
           <input

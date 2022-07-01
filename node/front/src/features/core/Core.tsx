@@ -4,17 +4,14 @@ import Auth from "../auth/Auth";
 import styles from "./Core.module.css";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-
 import { withStyles } from "@material-ui/core/styles";
 import {
   Button,
   Grid,
   Avatar,
-  Badge,
   CircularProgress,
+  Badge,
 } from "@material-ui/core";
-
-import { MdAddAPhoto } from "react-icons/md";
 
 import {
   editNickname,
@@ -43,35 +40,6 @@ import Post from "../post/Post";
 import EditProfile from "./EditProfile";
 import NewPost from "./NewPost";
 
-const StyledBadge = withStyles((theme) => ({
-  badge: {
-    backgroundColor: "#44b700",
-    color: "#44b700",
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    "&::after": {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      borderRadius: "50%",
-      animation: "$ripple 1.2s infinite ease-in-out",
-      border: "1px solid currentColor",
-      content: '""',
-    },
-  },
-  "@keyframes ripple": {
-    "0%": {
-      transform: "scale(.8)",
-      opacity: 1,
-    },
-    "100%": {
-      transform: "scale(2.4)",
-      opacity: 0,
-    },
-  },
-}))(Badge);
-
 const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const profile = useSelector(selectProfile);
@@ -80,7 +48,7 @@ const Core: React.FC = () => {
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
 
   useEffect(() => {
-    const fetchBootLoader = async () => {
+    const fetchLoader = async () => {
       if (localStorage.localJWT) {
         dispatch(resetOpenSignIn());
         const result = await dispatch(fetchAsyncGetMyProf());
@@ -93,7 +61,7 @@ const Core: React.FC = () => {
         await dispatch(fetchAsyncGetComments());
       }
     };
-    fetchBootLoader();
+    fetchLoader();
   }, [dispatch]);
 
   return (
@@ -106,13 +74,13 @@ const Core: React.FC = () => {
         {profile?.nickName ? (
           <>
             <button
-              className={styles.core_btnModal}
+              className={styles.core_buttonModal}
               onClick={() => {
                 dispatch(setOpenNewPost());
                 dispatch(resetOpenProfile());
               }}
             >
-              <MdAddAPhoto />
+              新規投稿
             </button>
             <div className={styles.core_logout}>
               {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
@@ -128,22 +96,13 @@ const Core: React.FC = () => {
                 Logout
               </Button>
               <button
-                className={styles.core_btnModal}
+                className={styles.core_buttonModal}
                 onClick={() => {
                   dispatch(setOpenProfile());
                   dispatch(resetOpenNewPost());
                 }}
               >
-                <StyledBadge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  variant="dot"
-                >
-                  <Avatar alt="who?" src={profile.img} />{" "}
-                </StyledBadge>
+                <Avatar alt="who?" src={profile.img} />{" "}
               </button>
             </div>
           </>
@@ -185,8 +144,8 @@ const Core: React.FC = () => {
                       loginId={profile.userProfile}
                       userPost={post.userPost}
                       imageUrl={post.img}
-                      access_stars={post.access_stars}
-                      congestion_degree={post.congestion_degree}
+                      accessStars={post.accessStars}
+                      congestionDegree={post.congestionDegree}
                     />
                   </Grid>
                 ))}

@@ -1,8 +1,12 @@
 .post {
-  background-color: white;
   max-width: 100%;
-  border: 1px solid lightgray;
   margin-bottom: 10px;
+  border-radius: 14px;
+}
+.post_child {
+  text-align: center;
+  border-radius: 14px;
+  background-color: #fff;
 }
 .post_header {
   display: flex;
@@ -15,8 +19,12 @@
 }
 .post_image {
   width: 100%;
-  height: 280px;
+  height: 300px;
   object-fit: contain;
+}
+.post_star {
+  display: flex;
+  justify-content: center;
 }
 .post_text {
   font-weight: normal;
