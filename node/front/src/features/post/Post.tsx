@@ -42,7 +42,7 @@ const Post: React.FC<PROPS_POST> = ({
             <Rating name="read-only" value={accessStars} readOnly />
           </div>
           <div className={styles.post_star}>
-            <p>混雑度</p>
+            <p>　混雑度　</p>
             <Rating name="read-only" value={congestionDegree} readOnly />
           </div>
           <Link to={`/post/${postId}`}>
