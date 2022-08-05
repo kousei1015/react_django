@@ -9,7 +9,6 @@ import { AppDispatch } from "../../app/store";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Rating from "@mui/material/Rating";
-import { Divider } from "@material-ui/core";
 import {
   selectComments,
   fetchPostStart,
@@ -17,6 +16,7 @@ import {
   fetchAsyncPostComment,
   fetchAsyncGetComments,
 } from "./postSlice";
+import { selectProfile } from "../auth/authSlice";
 import styles from "./PostDetail.module.css";
 import {
   fetchAsyncGetDetail,
@@ -25,6 +25,7 @@ import {
 } from "../post/postSlice";
 import { Button } from "@material-ui/core";
 import { ID } from "./../types";
+
 const useStyles = makeStyles((theme) => ({
   small: {
     width: theme.spacing(3),
@@ -45,6 +46,7 @@ const PostDetail: React.FC = ({}) => {
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
   const profiles = useSelector(selectProfiles);
+  const profile = useSelector(selectProfile);
   const comments = useSelector(selectComments);
   const [text, setText] = useState("");
   const navigate = useNavigate();
@@ -69,8 +71,6 @@ const PostDetail: React.FC = ({}) => {
   function pushHome() {
     navigate("/");
   }
-
-  
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -112,21 +112,30 @@ const PostDetail: React.FC = ({}) => {
             説明:{postDetail.description}
           </div>
 
-          <Button
-            size="small"
-            color="secondary"
-            onClick={() => {
-              dispatch(fetchDeletePost(postDetail.id));
-              pushHome();
-            }}
-          >
-            <DeleteIcon fontSize="small" /> &nbsp; Delete
-          </Button>
-          <Button size="small">
-            <Link to={`/post/${id}/update`}>
-              <EditIcon fontSize="small" /> Edit
-            </Link>
-          </Button>
+          {postDetail.userPost === profile.id ? (
+            <>
+              <Button
+                size="small"
+                color="secondary"
+                onClick={() => {
+                  dispatch(fetchDeletePost(postDetail.id));
+                  pushHome();
+                }}
+              >
+                <DeleteIcon fontSize="small" /> &nbsp; Delete
+              </Button>
+              <Button
+                disabled={postDetail.userPost !== profile.id}
+                size="small"
+              >
+                <Link to={`/post/${id}/update`}>
+                  <EditIcon fontSize="small" /> Edit
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <></>
+          )}
 
           <div className={styles.post_comments}>
             {commentsOnPost.map((comment) => (

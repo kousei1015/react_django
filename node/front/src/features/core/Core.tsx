@@ -10,7 +10,6 @@ import {
   Grid,
   Avatar,
   CircularProgress,
-  Badge,
 } from "@material-ui/core";
 
 import {

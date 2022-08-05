@@ -1,8 +1,10 @@
 from rest_framework import generics
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from . import serializers
 from .models import Profile, Post, Comment
+from rest_framework.views import APIView
+from . import custompermissions
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = serializers.UserSerializer
@@ -34,9 +36,11 @@ class PostViewSet(viewsets.ModelViewSet):
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostDetailSerializer
+    permission_classes = (permissions.IsAuthenticated, custompermissions.OwnerPermission,)
     
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
+
   
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -46,3 +50,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(userComment=self.request.user)
+
+
+
+    
+
+
+
+       

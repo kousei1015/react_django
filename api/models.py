@@ -63,10 +63,13 @@ class Post(models.Model):
     )
     accessStars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     congestionDegree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)
+    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)   
 
     def __str__(self):
         return self.placeName
+
+
+
 
 class Comment(models.Model):
     text = models.CharField(max_length=100)

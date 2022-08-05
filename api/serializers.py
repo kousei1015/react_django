@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import Profile, Post, Comment
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = get_user_model()
         fields = ('id','email','password')
@@ -20,6 +19,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {'userProfile': {'read_only': True}}
 
 class PostSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Post
         fields = '__all__'
@@ -27,6 +27,7 @@ class PostSerializer(serializers.ModelSerializer):
         extra_kwargs = {'userPost': {'read_only': True}}
 
 class PostDetailSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Post
         fields = '__all__'
@@ -36,3 +37,6 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'text', 'userComment','post')
         extra_kwargs = {'userComment': {'read_only': True}}
+
+
+
