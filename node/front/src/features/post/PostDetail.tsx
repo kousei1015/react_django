@@ -142,7 +142,7 @@ const PostDetail: React.FC = () => {
             </>
           ) : (
             <>
-              <h1>No permissions</h1>
+              
             </>
           )}
 

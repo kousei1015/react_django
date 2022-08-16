@@ -64,7 +64,7 @@ const ModifiedNewPost = () => {
   };
   return (
     <CoreForm>
-      <CoreTitle>Update Page</CoreTitle>
+      <CoreTitle>Create Page</CoreTitle>
       <br />
       <TextField
         placeholder="お気に入りの名前を入力してください"
@@ -110,7 +110,7 @@ const ModifiedNewPost = () => {
         <MdAddAPhoto />
       </IconButton>
       <br />
-      <Button onClick={newPost}>Edit</Button>
+      <Button onClick={newPost}>Post</Button>
     </CoreForm>
   );
 };

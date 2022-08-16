@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from "./App.module.css";
 import Core from "./features/core/Core";
-import ModifiedNewPost from "./features/core/ModifiedNewPost";
+import ModifiedNewPost from "./features/core/NewPost";
 import UpdatePost from "./features/core/UpdatePost";
 import PostDetail from "./features/post/PostDetail";
 
