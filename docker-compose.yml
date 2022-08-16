@@ -25,7 +25,7 @@ services:
       - .dbdate:/var/lib/mysql
       - './mysql/etc/my.cnf:/etc/my.cnf'
     ports: 
-      - 4306:3306
+      - 3306:3306
 
   front:
     build:

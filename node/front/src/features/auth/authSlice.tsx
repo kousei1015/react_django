@@ -3,7 +3,7 @@ import { RootState } from "../../app/store";
 import axios from "axios";
 import { PROPS_AUTHEN, PROPS_PROFILE, PROPS_NICKNAME } from "../types";
 
-const apiUrl = "http://localhost:8000/"
+const apiUrl = "http://localhost:8000/";
 
 export const fetchAsyncLogin = createAsyncThunk(
   "auth/post",
@@ -80,6 +80,15 @@ export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
   return res.data;
 });
 
+export const fetchAsyncGetPostProf = createAsyncThunk("postProfile/get", async () => {
+  const res = await axios.get(`${apiUrl}api/profile/`, {
+    headers: {
+      Authorization: `JWT ${localStorage.localJWT}`,
+    },
+  });
+  return res.data
+})
+
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -103,6 +112,13 @@ export const authSlice = createSlice({
         img: "",
       },
     ],
+    postProfile: {
+      id: 0,
+      nickName: "",
+      userProfile: 0,
+      created_on: "",
+      img: "",
+    },
   },
   reducers: {
     fetchCredStart(state) {
@@ -152,6 +168,9 @@ export const authSlice = createSlice({
         prof.id === action.payload.id ? action.payload : prof
       );
     });
+    builder.addCase(fetchAsyncGetPostProf.fulfilled, (state, action) => {
+      state.postProfile = action.payload;
+    });
   },
 });
 
@@ -174,5 +193,6 @@ export const selectOpenSignUp = (state: RootState) => state.auth.openSignUp;
 export const selectOpenProfile = (state: RootState) => state.auth.openProfile;
 export const selectProfile = (state: RootState) => state.auth.myprofile;
 export const selectProfiles = (state: RootState) => state.auth.profiles;
+export const selectPostProfile = (state: RootState) => state.auth.postProfile;
 
 export default authSlice.reducer;

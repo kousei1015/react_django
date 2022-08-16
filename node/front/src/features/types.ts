@@ -1,9 +1,14 @@
-
 export type CustomFormData = FormData & {
   append(name: string, value: string | Blob | number, fileName?: string): void;
 }
 
-export interface File extends Blob {
+
+/*export interface File extends Blob {
+  readonly lastModified: number;
+  readonly name: string;
+}*/
+
+export type File = Blob & {
   readonly lastModified: number;
   readonly name: string;
 }
@@ -50,16 +55,22 @@ export type PROPS_POST = {
   congestionDegree: number;
 }
 
-
-
 export type EDIT_CONTENTS = {
   id: string | undefined;
   EditPost: void;
 }
 
+export type DETAIL_CONTENT = {
+  id: string | undefined;
+  placeName: string;
+  description: string;
+  accessStars: number;
+  congestionDegree: number;
+  img: File | null;
+}
 
 
 
 export type ID = {
-  id: string
+  id: string;
 };

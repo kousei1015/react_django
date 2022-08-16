@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
-import styles from "./Core.module.css";
-
+import { CoreForm, CoreTitle } from "./CoreStyles";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-
 import { File } from "../types";
-
 import {
   editNickname,
   selectProfile,
@@ -16,18 +13,21 @@ import {
   fetchCredEnd,
   fetchAsyncUpdateProf,
 } from "../auth/authSlice";
-
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
 
-const customStyles = {
+const modalStyles = {
+  overlay: {
+    backgroundColor: "#777777",
+  },
   content: {
     top: "55%",
     left: "50%",
 
-    width: 280,
-    height: 220,
-    padding: "30px",
+    width: 320,
+    height: 450,
+    padding: "50px",
+
     transform: "translate(-50%, -50%)",
   },
 };
@@ -60,11 +60,10 @@ const EditProfile: React.FC = () => {
         onRequestClose={async () => {
           await dispatch(resetOpenProfile());
         }}
-        style={customStyles}
+        style={modalStyles}
       >
-        <form className={styles.core_signUp}>
-          <h1 className={styles.core_title}>SNS clone</h1>
-
+        <CoreForm>
+          <CoreTitle>Map Collection</CoreTitle>
           <br />
           <TextField
             placeholder="nickname"
@@ -93,7 +92,7 @@ const EditProfile: React.FC = () => {
           >
             Update
           </Button>
-        </form>
+        </CoreForm>
       </Modal>
     </>
   );

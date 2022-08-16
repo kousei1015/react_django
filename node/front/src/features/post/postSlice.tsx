@@ -1,16 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import axios from "axios";
 import {
   PROPS_NEWPOST,
   PROPS_COMMENT,
-  EDIT_CONTENTS,
   CustomFormData,
+  DETAIL_CONTENT,
+  
 } from "../types";
-import * as api from "../post/api";
+
+
+
 
 
 export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
-  const res = await api.fetchAsyncGetPosts();
+  const res = await axios.get(`${process.env.REACT_APP_API_URL}api/post/`, {
+    headers: {
+      Authorization: `JWT ${localStorage.localJWT}`,
+    },
+  });
   return res.data;
 });
 
@@ -18,20 +26,31 @@ export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
 export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
-    const res = await api.fetchAsyncGetDetail(id);
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}api/post/${id}`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
     return res.data;
   }
 );
 
 
-
-export const fetchDeletePost = createAsyncThunk(
+export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
-    const res = await api.fetchDeletePost(id);
-    return res.data;
+    await axios.delete(`${process.env.REACT_APP_API_URL}api/post/${id}`, {
+      headers: {
+        Authorization: `JWT ${localStorage.localJWT}`,
+      },
+    });
+    return id;
   }
 );
+
 
 export const fetchAsyncNewPost = createAsyncThunk(
   "post/post",
@@ -43,15 +62,43 @@ export const fetchAsyncNewPost = createAsyncThunk(
     uploadData.append("congestionDegree", newPost.congestionDegree as number);
     newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
 
-    const res = await api.fetchAsyncNewPost(uploadData);
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}api/post/`,
+      uploadData,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
     return res.data;
   }
 );
 
-export const fetchEditPost = createAsyncThunk(
-  "post/put",
-  async ({ id, EditPost }: EDIT_CONTENTS) => {
-    const res = await api.fetchEditPost(id, EditPost);
+
+export const fetchAsyncEditPost = createAsyncThunk(
+  "post/patch",
+  async (postDetail: DETAIL_CONTENT) => {
+    const postUploadData = new FormData() as CustomFormData;
+    postUploadData.append("placeName", postDetail.placeName as string);
+    postUploadData.append("description", postDetail.description as string);
+    postUploadData.append("accessStars", postDetail.accessStars as number);
+    postUploadData.append(
+      "congestionDegree",
+      postDetail.congestionDegree as number
+    );
+    postDetail.img &&
+      postUploadData.append("img", postDetail.img, postDetail.img.name);
+    const res = await axios.patch(
+      `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
+      postUploadData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
     return res.data;
   }
 );
@@ -59,16 +106,32 @@ export const fetchEditPost = createAsyncThunk(
 export const fetchAsyncGetComments = createAsyncThunk(
   "comment/get",
   async () => {
-    const res = await api.fetchAsyncGetComments();
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}api/comment/`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
     return res.data;
   }
 );
 
+
 export const fetchAsyncPostComment = createAsyncThunk(
   "comment/post",
   async (comment: PROPS_COMMENT) => {
-    const res = await api.fetchAsyncPostComment(comment);
-    return res.data;
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}api/comment/`,
+      comment,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
+    return res.data
   }
 );
 
@@ -90,10 +153,9 @@ export const postSlice = createSlice({
     ],
     comments: [
       {
-        id: "0",
+        id: 0,
         text: "",
         userComment: 0,
-        //post 0だった
         post: "0",
       },
     ],
@@ -101,7 +163,14 @@ export const postSlice = createSlice({
       id: "0",
       placeName: "",
       description: "",
-      userPost: 0,
+      userPost: {
+        id: 0,
+        profile: {
+          userProfile: 0,
+          nickName: "",
+          img: "",
+        },
+      },
       accessStars: 0,
       congestionDegree: 0,
       img: "",
@@ -140,20 +209,20 @@ export const postSlice = createSlice({
     {
       /*ここでDeletefunc  */
     }
-    builder.addCase(fetchDeletePost.fulfilled, (state, action) => {
+    builder.addCase(fetchAsyncDelete.fulfilled, (state, action) => {
       return {
         ...state,
         posts: state.posts.filter(
-          (postDetail) => postDetail.id !== action.payload
+          (p) => p.id !== action.payload
         ),
       };
     });
 
-    builder.addCase(fetchEditPost.fulfilled, (state, action) => {
+    builder.addCase(fetchAsyncEditPost.fulfilled, (state, action) => {
       return {
         ...state,
-        posts: state.posts.map((postDetail) =>
-          postDetail.id === action.payload.id ? action.payload : postDetail
+        posts: state.posts.map((p) =>
+          p.id === action.payload.id ? action.payload : p
         ),
       };
     });

@@ -2,13 +2,16 @@ from rest_framework import generics
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from . import serializers
-from .models import Profile, Post, Comment
+from .models import Profile, Post, Comment, User
 from rest_framework.views import APIView
 from . import custompermissions
 
-class CreateUserView(generics.CreateAPIView):
+class CreateUserView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
     permission_classes = (AllowAny,)
+
+    
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -17,6 +20,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(userProfile=self.request.user)
+
 
 class MyProfileListView(generics.ListAPIView):
     queryset = Profile.objects.all()
@@ -31,6 +35,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
+
 
 
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
