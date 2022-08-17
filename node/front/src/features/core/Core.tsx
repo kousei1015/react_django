@@ -6,8 +6,8 @@ import {
   CoreTitle,
   CoreButton,
   CoreLogout,
-  CorePosts,
-  StyledPaginateContainer,
+  CoreContainer,
+  CoreStyledPagination,
 } from "./CoreStyles";
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -38,9 +38,9 @@ import {
 import Post from "../post/Post";
 import EditProfile from "./EditProfile";
 
-const Core = () => {
+const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const profile = useSelector(selectProfile);
+  const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
   const isLoadingPost = useSelector(selectIsLoadingPost);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
@@ -73,13 +73,12 @@ const Core = () => {
   }, [dispatch]);
 
   return (
-    <div>
+    <>
       <Auth />
       <EditProfile />
-
       <CoreHeader>
         <CoreTitle>Map Collection</CoreTitle>
-        {profile?.nickName ? (
+        {myProfile?.nickName ? (
           <>
             <CoreButton
               onClick={() => {
@@ -91,7 +90,7 @@ const Core = () => {
             </CoreButton>
             <CoreLogout>
               {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
-              <Button
+              <CoreButton
                 onClick={() => {
                   localStorage.removeItem("localJWT");
                   dispatch(editNickname(""));
@@ -101,14 +100,14 @@ const Core = () => {
                 }}
               >
                 Logout
-              </Button>
+              </CoreButton>
               <CoreButton
                 onClick={() => {
                   dispatch(setOpenProfile());
                   dispatch(resetOpenNewPost());
                 }}
               >
-                <Avatar alt="who?" src={profile.img} />{" "}
+                <Avatar alt="who?" src={myProfile.img} />{" "}
               </CoreButton>
             </CoreLogout>
           </>
@@ -134,9 +133,9 @@ const Core = () => {
         )}
       </CoreHeader>
 
-      {profile?.nickName && (
+      {myProfile?.nickName && (
         <>
-          <CorePosts>
+          <CoreContainer>
             <Grid container spacing={4}>
               {posts
                 .slice(pagesVisited, pagesVisited + postsPerPage)
@@ -146,7 +145,7 @@ const Core = () => {
                       postId={post.id}
                       placeName={post.placeName}
                       description={post.description}
-                      loginId={profile.userProfile}
+                      loginId={myProfile.userProfile}
                       userPost={post.userPost}
                       imageUrl={post.img}
                       accessStars={post.accessStars}
@@ -155,7 +154,7 @@ const Core = () => {
                   </Grid>
                 ))}
             </Grid>
-            <StyledPaginateContainer>
+            <CoreStyledPagination>
               <ReactPaginate
                 previousLabel={"Previous"}
                 nextLabel={"Next"}
@@ -167,11 +166,11 @@ const Core = () => {
                 disabledClassName={"paginationDisabled"}
                 activeClassName={"paginationActive"}
               />
-            </StyledPaginateContainer>
-          </CorePosts>
+            </CoreStyledPagination>
+          </CoreContainer>
         </>
       )}
-    </div>
+    </>
   );
 };
 

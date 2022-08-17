@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-family: "Playball", cursive;
   font-weight: normal;
   text-align: center;
 `;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Wrapper, Content, Header, Image, Star, UserName } from "./PostStyles";
+import { Wrapper, Content, Header, PlaceName, Image, Star, UserName } from "./PostStyles";
 import { Avatar, Button } from "@material-ui/core";
 import Rating from "@mui/material/Rating";
 import { useSelector } from "react-redux";
@@ -34,7 +34,7 @@ const Post: React.FC<PROPS_POST> = ({
           </Header>
           <Image src={imageUrl} alt="" />
 
-          <p>名所:{placeName}</p>
+          <PlaceName>名所:{placeName}</PlaceName>
           <Star>
             <p>アクセス度</p>
             <Rating name="read-only" value={accessStars} readOnly />

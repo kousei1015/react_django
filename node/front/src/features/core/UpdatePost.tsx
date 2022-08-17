@@ -9,25 +9,22 @@ import { useNavigate } from "react-router";
 import { AppDispatch } from "../../app/store";
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
-import {
-  selectPostDetail,
-  fetchAsyncEditPost,
-} from "../post/postSlice";
+import { selectPostDetail, fetchAsyncEditPost, fetchAsyncGetDetail } from "../post/postSlice";
 import { ID } from "./../types";
-import { CoreForm, CoreTitle } from "./CoreStyles";
+import { PostForm, PostFormWrapper, PostTitle } from "./NewUpdatePostStyles";
+import { Form, FormWrapper } from "../../styles/Form";
+import { Title } from "../../styles/Text";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     update_textField: {
-      width: "50%",
-      "@media (max-width:480px)": {
-        width: "100%",
-      },
+      height: "50px",
+      padding: "10px"
     },
   })
 );
 
-const UpdatePost = () => {
+const UpdatePost: React.FC = () => {
   const classes = useStyles();
   const { id } = useParams<ID>();
   const postDetail = useSelector(selectPostDetail);
@@ -40,30 +37,13 @@ const UpdatePost = () => {
   );
   const [userPost] = useState(postDetail.userPost);
 
-  /*useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_URL}api/post/${id}`, {
-        headers: {
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setPlaceName(res.data.placeName);
-        setDescription(res.data.description);
-        setImage(res.data.image);
-        setAccessStars(res.data.accessStars);
-        setCongestionDegree(res.data.congestionDegree);
-      });
-      
-  }, []);*/
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
 
   const fetchData = async () => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
+      `${process.env.REACT_APP_API_URL}api/post/${id}`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -95,13 +75,11 @@ const UpdatePost = () => {
       id: id,
       placeName: placeName,
       description: description,
-      image: image,
+      img: image,
       accessStars: accessStars,
       congestionDegree: congestionDegree,
       userPost: userPost,
     };
-
-    /*dispatch(fetchEditPost({ id, EditPost }));*/
     dispatch(fetchAsyncEditPost(postUploadData));
     setPlaceName("");
     setDescription("");
@@ -109,58 +87,61 @@ const UpdatePost = () => {
     pushHome();
   };
 
-
   return (
-    <CoreForm>
-      <CoreTitle>Update Page</CoreTitle>
+    <PostFormWrapper>
+      <PostForm>
+        <PostTitle>Update Page</PostTitle>
 
-      <br />
-      <TextField
-        multiline={true}
-        defaultValue={postDetail.placeName}
-        onChange={(e) => setPlaceName(e.target.value)}
-        className={classes.update_textField}
-      />
+        <br />
+        <TextField
+          multiline={true}
+          fullWidth
+          defaultValue={placeName}
+          onChange={(e) => setPlaceName(e.target.value)}
+          className={classes.update_textField}
+        />
 
-      <TextField
-        multiline={true}
-        defaultValue={postDetail.description}
-        rowsMax={5}
-        onChange={(e) => setDescription(e.target.value)}
-        className={classes.update_textField}
-      />
+        <TextField
+          multiline={true}
+          fullWidth
+          defaultValue={description}
+          rowsMax={5}
+          onChange={(e) => setDescription(e.target.value)}
+          className={classes.update_textField}
+        />
 
-      <Typography component="legend">アクセス</Typography>
-      <Rating
-        name="simple-controlled"
-        value={accessStars}
-        onChange={(e, newValue) => {
-          setAccessStars(newValue);
-        }}
-      />
+        <Typography component="legend">アクセス</Typography>
+        <Rating
+          name="simple-controlled"
+          value={accessStars}
+          onChange={(e, newValue) => {
+            setAccessStars(newValue);
+          }}
+        />
 
-      <Typography component="legend">混雑度</Typography>
-      <Rating
-        name="simple-controlled"
-        value={congestionDegree}
-        onChange={(event, newValue) => {
-          setCongestionDegree(newValue);
-        }}
-      />
+        <Typography component="legend">混雑度</Typography>
+        <Rating
+          name="simple-controlled"
+          value={congestionDegree}
+          onChange={(event, newValue) => {
+            setCongestionDegree(newValue);
+          }}
+        />
 
-      <input
-        type="file"
-        id="imageInput"
-        hidden={true}
-        onChange={(e) => setImage(e.target.files![0])}
-      />
-      <br />
-      <IconButton onClick={handlerEditPicture}>
-        <MdAddAPhoto />
-      </IconButton>
-      <br />
-      <Button onClick={handleSubmit}>Edit</Button>
-    </CoreForm>
+        <input
+          type="file"
+          id="imageInput"
+          hidden={true}
+          onChange={(e) => setImage(e.target.files![0])}
+        />
+        <br />
+        <IconButton onClick={handlerEditPicture}>
+          <MdAddAPhoto />
+        </IconButton>
+        <br />
+        <Button onClick={handleSubmit}>Edit</Button>
+      </PostForm>
+    </PostFormWrapper>
   );
 };
 

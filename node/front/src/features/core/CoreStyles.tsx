@@ -16,21 +16,29 @@ export const CoreHeader = styled.div`
 `;
 
 export const CoreTitle = styled.h1`
-  font-family: "Playball", cursive;
   font-weight: normal;
   text-align: center;
+  font-size: 34px;
+  padding: 10px;
+  margin: 0;
+  @media screen and (max-width: 520px) {
+    font-size: 14px;
+  }
 `;
 
 export const CoreButton = styled.button`
   background-color: transparent;
-  color: gray;
+  color: #C0C0C0;
   padding-top: 3px;
   font-size: 28px;
   border: none;
   outline: none;
   cursor: pointer;
-  @media screen and (max-width: 480px) {
-    font-size: 18px;
+  @media screen and (min-width: 350px) and (max-width: 520px) {
+    font-size: 14px;
+  }
+  @media screen and (max-width: 350px) {
+    font-size: 12px;
   }
 `;
 
@@ -39,55 +47,42 @@ export const CoreLogout = styled.div`
   justify-content: flex-end;
 `;
 
-export const CorePosts = styled.div`
-  padding: 20px;
+export const CoreContainer = styled.div`
+padding: 20px;
 `;
 
-
-
-export const CoreUpdateTitle = styled.h1`
-  margin-top: 16px;
-`;
-
-export const CoreForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #fff;
-  margin: 20px 50px;
-  border-radius: 20px;
-`;
-
-export const StyledPaginateContainer = styled.div`
+export const CoreStyledPagination = styled.div`
   margin: 20px auto 0px;
   .paginationBttns {
-  height: 40px;
-  list-style: none;
-  display: flex;
-  justify-content: center;
-}
+    height: 40px;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+  }
 
-.paginationBttns a {
-  padding: 10px;
-  margin: 8px;
-  border-radius: 5px;
-  border: 1px solid #2b2eff;
-  color: #2b2eff;
-  cursor: pointer;
-}
+  .paginationBttns a {
+    padding: 10px;
+    margin: 8px;
+    border-radius: 5px;
+    border: 1px solid #2b2eff;
+    color: #2b2eff;
+    cursor: pointer;
+  }
 
-.paginationBttns a:hover {
-  color: white;
-  background-color: #2b2eff;
-}
+  .paginationBttns a:hover {
+    color: white;
+    background-color: #2b2eff;
+  }
 
-.paginationActive a {
-  color: white;
-  background-color: #2b2eff;
-}
+  .paginationActive a {
+    color: white;
+    background-color: #2b2eff;
+  }
 
-.paginationDisabled a {
-  opacity: 0;
-  cursor: default;
-}
+  .paginationDisabled a {
+    opacity: 0;
+    cursor: default;
+  }
 `;
+
+

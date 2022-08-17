@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
-import { CoreForm, CoreTitle } from "./CoreStyles";
+import { EditTitle, EditForm } from "./EditProfileStyles";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
 import { File } from "../types";
@@ -23,11 +23,9 @@ const modalStyles = {
   content: {
     top: "55%",
     left: "50%",
-
     width: 320,
-    height: 450,
-    padding: "50px",
-
+    height: 370,
+    padding: "0px",
     transform: "translate(-50%, -50%)",
   },
 };
@@ -62,8 +60,8 @@ const EditProfile: React.FC = () => {
         }}
         style={modalStyles}
       >
-        <CoreForm>
-          <CoreTitle>Map Collection</CoreTitle>
+        <EditForm>
+          <EditTitle>Map Collection</EditTitle>
           <br />
           <TextField
             placeholder="nickname"
@@ -92,7 +90,7 @@ const EditProfile: React.FC = () => {
           >
             Update
           </Button>
-        </CoreForm>
+        </EditForm>
       </Modal>
     </>
   );

@@ -43,11 +43,12 @@ export const StarWrapper = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 20px;
+  font-size: 16px;
+  margin: 8px;
 `;
 
 export const Place = styled.div`
-  padding: 36px 48px;
+  padding: 16px 50px;
 `;
 
 export const Comments = styled.div`
