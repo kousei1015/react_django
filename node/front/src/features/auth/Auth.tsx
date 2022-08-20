@@ -36,7 +36,7 @@ const modalStyles = {
 
     width: 320,
     height: 450,
-    padding: "50px",
+    padding: "30px",
 
     transform: "translate(-50%, -50%)",
   },
