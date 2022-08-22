@@ -37,7 +37,7 @@ import {
   fetchAsyncGetDetail,
   selectPostDetail,
   fetchAsyncDelete,
-} from "../post/postSlice";
+} from "./postSlice";
 import { Button } from "@material-ui/core";
 import { ID } from "../types";
 import { fetchAsyncGetMyProf } from "../auth/authSlice";

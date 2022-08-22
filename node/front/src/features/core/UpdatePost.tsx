@@ -10,7 +10,7 @@ import { AppDispatch } from "../../app/store";
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
 import { selectPostDetail, fetchAsyncEditPost, fetchAsyncGetDetail } from "../post/postSlice";
-import { ID } from "./../types";
+import { ID } from "../types";
 import { PostForm, PostFormWrapper, PostTitle } from "./NewUpdatePostStyles";
 import { Form, FormWrapper } from "../../styles/Form";
 import { Title } from "../../styles/Text";
