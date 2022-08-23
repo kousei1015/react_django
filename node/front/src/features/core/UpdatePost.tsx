@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
@@ -8,28 +9,22 @@ import { useNavigate } from "react-router";
 import { AppDispatch } from "../../app/store";
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
-import {
-  fetchAsyncGetDetail,
-  selectPostDetail,
-  fetchEditPost,
-} from "../post/postSlice";
+import { selectPostDetail, fetchAsyncEditPost, fetchAsyncGetDetail } from "../post/postSlice";
 import { ID } from "./../types";
-import API from "../post/api";
-import styles from "./Core.module.css";
+import { PostForm, PostFormWrapper, PostTitle } from "./NewUpdatePostStyles";
+import { Form, FormWrapper } from "../../styles/Form";
+import { Title } from "../../styles/Text";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     update_textField: {
-      width: "50%",
-      "@media (max-width:480px)": {
-        width: "100%",
-      }
+      height: "50px",
+      padding: "10px"
     },
-
   })
 );
 
-const UpdatePost = () => {
+const UpdatePost: React.FC = () => {
   const classes = useStyles();
   const { id } = useParams<ID>();
   const postDetail = useSelector(selectPostDetail);
@@ -43,16 +38,25 @@ const UpdatePost = () => {
   const [userPost] = useState(postDetail.userPost);
 
   useEffect(() => {
-    API.get(`post/${id}`).then((res) => {
-      console.log(res.data);
+    fetchData();
+  }, [id]);
 
-      setPlaceName(res.data.placeName);
-      setDescription(res.data.description);
-      setImage(res.data.image);
-      setAccessStars(res.data.accessStars);
-      setCongestionDegree(res.data.congestionDegree);
-    });
-  });
+  const fetchData = async () => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}api/post/${id}`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
+    console.log(res.data);
+    setPlaceName(res.data.placeName);
+    setDescription(res.data.description);
+    setImage(res.data.image);
+    setAccessStars(res.data.accessStars);
+    setCongestionDegree(res.data.congestionDegree);
+  };
 
   const navigate = useNavigate();
   function pushHome() {
@@ -67,65 +71,57 @@ const UpdatePost = () => {
 
   const handleSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    const EditPost: any = {
+    const postUploadData: any = {
+      id: id,
       placeName: placeName,
       description: description,
-      image: image,
+      img: image,
       accessStars: accessStars,
       congestionDegree: congestionDegree,
       userPost: userPost,
     };
-
-    dispatch(fetchEditPost({ id, EditPost }));
+    dispatch(fetchAsyncEditPost(postUploadData));
     setPlaceName("");
     setDescription("");
     setImage(null);
     pushHome();
   };
 
-  useEffect(() => {
-    const fetchLoader = async () => {
-      await dispatch(fetchAsyncGetDetail(id as string));
-    };
-    fetchLoader();
-  }, []);
-
   return (
-    <form className={styles.core_update}>
-      
-      <h1 className={styles.core_update_title}>Update Page</h1>
+    <PostFormWrapper>
+      <PostForm>
+        <PostTitle>Update Page</PostTitle>
 
-      <br />
+        <br />
         <TextField
           multiline={true}
-          defaultValue={postDetail.placeName}
+          fullWidth
+          defaultValue={placeName}
           onChange={(e) => setPlaceName(e.target.value)}
           className={classes.update_textField}
         />
 
         <TextField
           multiline={true}
-          defaultValue={postDetail.description}
+          fullWidth
+          defaultValue={description}
           rowsMax={5}
           onChange={(e) => setDescription(e.target.value)}
           className={classes.update_textField}
         />
 
-        
-          <Typography component="legend">アクセス</Typography>
-          <Rating
-            name="simple-controlled"
-            value={accessStars}
-            defaultValue={postDetail.accessStars}
-            onChange={(e, newValue) => {
-              setAccessStars(newValue);
-            }}
-          />
-        
+        <Typography component="legend">アクセス</Typography>
+        <Rating
+          name="simple-controlled"
+          value={accessStars}
+          onChange={(e, newValue) => {
+            setAccessStars(newValue);
+          }}
+        />
+
         <Typography component="legend">混雑度</Typography>
         <Rating
           name="simple-controlled"
-          defaultValue={postDetail.congestionDegree}
           value={congestionDegree}
           onChange={(event, newValue) => {
             setCongestionDegree(newValue);
@@ -144,8 +140,8 @@ const UpdatePost = () => {
         </IconButton>
         <br />
         <Button onClick={handleSubmit}>Edit</Button>
-      
-    </form>
+      </PostForm>
+    </PostFormWrapper>
   );
 };
 

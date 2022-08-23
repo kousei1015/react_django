@@ -1,9 +1,8 @@
-/* eslint-disable import/first */
 import React, { useState, useEffect } from "react";
 import { Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAsyncGetProfs, selectProfiles } from "../auth/authSlice";
+import { selectProfiles } from "../auth/authSlice";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/store";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -17,14 +16,31 @@ import {
   fetchAsyncGetComments,
 } from "./postSlice";
 import { selectProfile } from "../auth/authSlice";
-import styles from "./PostDetail.module.css";
+import {
+  Wrapper,
+  Content,
+  Header,
+  UserName,
+  ImageWrapper,
+  Image,
+  StarWrapper,
+  Text,
+  Place,
+  Comments,
+  Comment,
+  CommentNickName,
+  CommentBox,
+  Input,
+  CustomButton,
+} from "./PostDetailStyles";
 import {
   fetchAsyncGetDetail,
   selectPostDetail,
-  fetchDeletePost,
+  fetchAsyncDelete,
 } from "../post/postSlice";
 import { Button } from "@material-ui/core";
-import { ID } from "./../types";
+import { ID } from "../types";
+import { fetchAsyncGetMyProf } from "../auth/authSlice";
 
 const useStyles = makeStyles((theme) => ({
   small: {
@@ -40,23 +56,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PostDetail: React.FC = ({}) => {
+const PostDetail: React.FC = () => {
   const { id } = useParams<ID>();
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
   const profiles = useSelector(selectProfiles);
-  const profile = useSelector(selectProfile);
+  const myProfile = useSelector(selectProfile);
   const comments = useSelector(selectComments);
   const [text, setText] = useState("");
   const navigate = useNavigate();
 
   const commentsOnPost = comments.filter((com) => {
     return com.post === postDetail.id;
-  });
-
-  const prof = profiles.filter((prof) => {
-    return prof.userProfile === postDetail.userPost;
   });
 
   const postComment = async (e: React.MouseEvent<HTMLElement>) => {
@@ -74,72 +86,69 @@ const PostDetail: React.FC = ({}) => {
 
   useEffect(() => {
     const fetchLoader = async () => {
-      if (id) {
-        await dispatch(fetchAsyncGetDetail(id));
-        await dispatch(fetchAsyncGetProfs());
-        await dispatch(fetchAsyncGetComments());
-      }
+      await dispatch(fetchAsyncGetDetail(id as string));
+      await dispatch(fetchAsyncGetComments());
+      await dispatch(fetchAsyncGetMyProf());
     };
     fetchLoader();
   }, [dispatch]);
 
   return (
     <>
-      <div className={styles.wrapper}>
-        <div className={styles.post}>
-          <div className={styles.post_header}>
-            <Avatar className={styles.post_avatar} src={prof[0]?.img} />
-            <h3>{prof[0]?.nickName}</h3>
-          </div>
+      <Wrapper>
+        <Content>
+          <Header>
+            <Avatar src={postDetail.userPost.profile.img} />
+            <UserName>{postDetail.userPost.profile.nickName}</UserName>
+          </Header>
 
-          <div className="postimg">
-            <img src={postDetail.img} className={styles.detail_img} />
-          </div>
-          <div className={styles.detail_block}>
-            <p className={styles.detail_text}>アクセス度</p>
+          <ImageWrapper>
+            <Image src={postDetail.img} />
+          </ImageWrapper>
+          <StarWrapper>
+            <Text>アクセス度</Text>
             <Rating name="read-only" value={postDetail.accessStars} readOnly />
 
-            <p className={styles.detail_text}>混雑度</p>
+            <Text>混雑度</Text>
             <Rating
               name="read-only"
               value={postDetail.congestionDegree}
               readOnly
             />
-          </div>
-          <div className={styles.detail_place_name}>
+          </StarWrapper>
+          <Place>
             名所:{postDetail.placeName}
             <br />
             説明:{postDetail.description}
-          </div>
+          </Place>
 
-          {postDetail.userPost === profile.id ? (
+          {postDetail.userPost.id === myProfile.userProfile ? (
             <>
               <Button
                 size="small"
                 color="secondary"
                 onClick={() => {
-                  dispatch(fetchDeletePost(postDetail.id));
+                  dispatch(fetchAsyncDelete(postDetail.id));
                   pushHome();
                 }}
               >
                 <DeleteIcon fontSize="small" /> &nbsp; Delete
               </Button>
-              <Button
-                disabled={postDetail.userPost !== profile.id}
-                size="small"
-              >
+              <Button size="small">
                 <Link to={`/post/${id}/update`}>
                   <EditIcon fontSize="small" /> Edit
                 </Link>
               </Button>
             </>
           ) : (
-            <></>
+            <>
+              
+            </>
           )}
 
-          <div className={styles.post_comments}>
+          <Comments>
             {commentsOnPost.map((comment) => (
-              <div key={comment.id} className={styles.post_comment}>
+              <Comment key={comment.id}>
                 <Avatar
                   src={
                     profiles.find(
@@ -150,38 +159,36 @@ const PostDetail: React.FC = ({}) => {
                 />
 
                 <p>
-                  <strong className={styles.post_strong}>
+                  <CommentNickName>
                     {
                       profiles.find(
                         (prof) => prof.userProfile === comment.userComment
                       )?.nickName
                     }
-                  </strong>
+                  </CommentNickName>
                   {comment.text}
                 </p>
-              </div>
+              </Comment>
             ))}
-          </div>
-        </div>
+          </Comments>
+        </Content>
 
-        <form className={styles.post_commentBox}>
-          <input
-            className={styles.post_input}
+        <CommentBox>
+          <Input
             type="text"
             placeholder="add a comment"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <button
+          <CustomButton
             disabled={!text.length}
-            className={styles.post_button}
             type="submit"
             onClick={postComment}
           >
             Post
-          </button>
-        </form>
-      </div>
+          </CustomButton>
+        </CommentBox>
+      </Wrapper>
     </>
   );
 };

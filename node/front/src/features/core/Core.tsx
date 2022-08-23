@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Auth from "../auth/Auth";
-
-import styles from "./Core.module.css";
+import ReactPaginate from "react-paginate";
+import {
+  CoreHeader,
+  CoreTitle,
+  CoreButton,
+  CoreLogout,
+  CoreContainer,
+  CoreStyledPagination,
+} from "./CoreStyles";
+import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-import { withStyles } from "@material-ui/core/styles";
-import {
-  Button,
-  Grid,
-  Avatar,
-  CircularProgress,
-} from "@material-ui/core";
+import { Button, Grid, Avatar, CircularProgress } from "@material-ui/core";
 
 import {
   editNickname,
@@ -29,22 +31,30 @@ import {
 import {
   selectPosts,
   selectIsLoadingPost,
-  setOpenNewPost,
   resetOpenNewPost,
   fetchAsyncGetPosts,
-  fetchAsyncGetComments,
 } from "../post/postSlice";
 
 import Post from "../post/Post";
 import EditProfile from "./EditProfile";
-import NewPost from "./NewPost";
 
 const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const profile = useSelector(selectProfile);
+  const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
   const isLoadingPost = useSelector(selectIsLoadingPost);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
+  const [pageNumber, setPageNumber] = useState(0);
+  const postsPerPage = 12;
+  const pagesVisited = pageNumber * postsPerPage;
+  const pageCount = Math.ceil(posts.length / postsPerPage);
+  const changePage = ({ selected }: { selected: number }) => {
+    setPageNumber(selected);
+  };
+  const navigate = useNavigate();
+  function pushHome() {
+    navigate("/post/create");
+  }
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -57,33 +67,30 @@ const Core: React.FC = () => {
         }
         await dispatch(fetchAsyncGetPosts());
         await dispatch(fetchAsyncGetProfs());
-        await dispatch(fetchAsyncGetComments());
       }
     };
     fetchLoader();
   }, [dispatch]);
 
   return (
-    <div>
+    <>
       <Auth />
       <EditProfile />
-      <NewPost />
-      <div className={styles.core_header}>
-        <h1 className={styles.core_title}>SNS clone</h1>
-        {profile?.nickName ? (
+      <CoreHeader>
+        <CoreTitle>Map Collection</CoreTitle>
+        {myProfile?.nickName ? (
           <>
-            <button
-              className={styles.core_buttonModal}
+            <CoreButton
               onClick={() => {
-                dispatch(setOpenNewPost());
                 dispatch(resetOpenProfile());
+                pushHome();
               }}
             >
               新規投稿
-            </button>
-            <div className={styles.core_logout}>
+            </CoreButton>
+            <CoreLogout>
               {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
-              <Button
+              <CoreButton
                 onClick={() => {
                   localStorage.removeItem("localJWT");
                   dispatch(editNickname(""));
@@ -93,17 +100,16 @@ const Core: React.FC = () => {
                 }}
               >
                 Logout
-              </Button>
-              <button
-                className={styles.core_buttonModal}
+              </CoreButton>
+              <CoreButton
                 onClick={() => {
                   dispatch(setOpenProfile());
                   dispatch(resetOpenNewPost());
                 }}
               >
-                <Avatar alt="who?" src={profile.img} />{" "}
-              </button>
-            </div>
+                <Avatar alt="who?" src={myProfile.img} />{" "}
+              </CoreButton>
+            </CoreLogout>
           </>
         ) : (
           <div>
@@ -125,22 +131,21 @@ const Core: React.FC = () => {
             </Button>
           </div>
         )}
-      </div>
+      </CoreHeader>
 
-      {profile?.nickName && (
+      {myProfile?.nickName && (
         <>
-          <div className={styles.core_posts}>
+          <CoreContainer>
             <Grid container spacing={4}>
               {posts
-                .slice(0)
-                .reverse()
+                .slice(pagesVisited, pagesVisited + postsPerPage)
                 .map((post) => (
                   <Grid key={post.id} item xs={12} md={4}>
                     <Post
                       postId={post.id}
                       placeName={post.placeName}
                       description={post.description}
-                      loginId={profile.userProfile}
+                      loginId={myProfile.userProfile}
                       userPost={post.userPost}
                       imageUrl={post.img}
                       accessStars={post.accessStars}
@@ -149,10 +154,23 @@ const Core: React.FC = () => {
                   </Grid>
                 ))}
             </Grid>
-          </div>
+            <CoreStyledPagination>
+              <ReactPaginate
+                previousLabel={"Previous"}
+                nextLabel={"Next"}
+                pageCount={pageCount}
+                onPageChange={changePage}
+                containerClassName={"paginationBttns"}
+                previousLinkClassName={"previousBttn"}
+                nextLinkClassName={"nextBttn"}
+                disabledClassName={"paginationDisabled"}
+                activeClassName={"paginationActive"}
+              />
+            </CoreStyledPagination>
+          </CoreContainer>
         </>
       )}
-    </div>
+    </>
   );
 };
 

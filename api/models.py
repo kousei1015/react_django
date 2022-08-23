@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 def upload_avatar_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -43,9 +45,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 class Profile(models.Model):
-    nickName = models.CharField(max_length=20)
+    nickName = models.CharField(max_length=20, default='User')
     userProfile = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name='userProfile',
+        settings.AUTH_USER_MODEL, related_name='profile',
         on_delete=models.CASCADE
     )
     created_on = models.DateTimeField(auto_now_add=True)
@@ -53,6 +55,15 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.nickName
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(userProfile=instance)
+
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
 
 class Post(models.Model):
     placeName = models.CharField(max_length=100, blank=False)
@@ -67,7 +78,8 @@ class Post(models.Model):
 
     def __str__(self):
         return self.placeName
-
+    class Meta:
+        ordering =  ['-id']
 
 
 
@@ -81,3 +93,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+

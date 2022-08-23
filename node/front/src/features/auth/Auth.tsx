@@ -1,7 +1,7 @@
 import React from "react";
 import { AppDispatch } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
-import styles from "./Auth.module.css";
+import { Wrapper, Title, Circular, Error, Text } from "./AuthStyles";
 import Modal from "react-modal";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -95,12 +95,12 @@ const Auth: React.FC = () => {
           }) => (
             <div>
               <form onSubmit={handleSubmit}>
-                <div className={styles.auth_signUp}>
-                  <h1 className={styles.auth_title}>SNS clone</h1>
+                <Wrapper>
+                  <Title>Map Collection</Title>
                   <br />
-                  <div className={styles.auth_circularProgress}>
+                  <Circular>
                     {isLoadingAuth && <CircularProgress />}
-                  </div>
+                  </Circular>
                   <br />
 
                   <TextField
@@ -113,7 +113,7 @@ const Auth: React.FC = () => {
                   />
                   <br />
                   {touched.email && errors.email ? (
-                    <div className={styles.auth_error}>{errors.email}</div>
+                    <Error>{errors.email}</Error>
                   ) : null}
 
                   <TextField
@@ -125,7 +125,7 @@ const Auth: React.FC = () => {
                     value={values.password}
                   />
                   {touched.password && errors.password ? (
-                    <div className={styles.auth_error}>{errors.password}</div>
+                    <Error>{errors.password}</Error>
                   ) : null}
                   <br />
                   <br />
@@ -140,16 +140,15 @@ const Auth: React.FC = () => {
                   </Button>
                   <br />
                   <br />
-                  <span
-                    className={styles.auth_text}
+                  <Text
                     onClick={async () => {
                       await dispatch(setOpenSignIn());
                       await dispatch(resetOpenSignUp());
                     }}
                   >
-                    もうアカウントを持っていますか？
-                  </span>
-                </div>
+                    ログインはこちら
+                  </Text>
+                </Wrapper>
               </form>
             </div>
           )}
@@ -164,7 +163,7 @@ const Auth: React.FC = () => {
         style={modalStyles}
       >
         <Formik
-          initialErrors={{ email: "Eメールは必要です" }}
+          initialErrors={{ email: "Eメールを入力して下さい" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
             await dispatch(fetchCredStart());
@@ -196,12 +195,12 @@ const Auth: React.FC = () => {
           }) => (
             <div>
               <form onSubmit={handleSubmit}>
-                <div className={styles.auth_signUp}>
-                  <h1 className={styles.auth_title}>SNS clone</h1>
+                <Wrapper>
+                  <Title>Map Collection</Title>
                   <br />
-                  <div className={styles.auth_progress}>
+                  <Circular>
                     {isLoadingAuth && <CircularProgress />}
-                  </div>
+                  </Circular>
                   <br />
 
                   <TextField
@@ -214,7 +213,7 @@ const Auth: React.FC = () => {
                   />
 
                   {touched.email && errors.email ? (
-                    <div className={styles.auth_error}>{errors.email}</div>
+                    <Error>{errors.email}</Error>
                   ) : null}
                   <br />
 
@@ -227,7 +226,7 @@ const Auth: React.FC = () => {
                     value={values.password}
                   />
                   {touched.password && errors.password ? (
-                    <div className={styles.auth_error}>{errors.password}</div>
+                    <Error>{errors.password}</Error>
                   ) : null}
                   <br />
                   <br />
@@ -241,16 +240,15 @@ const Auth: React.FC = () => {
                   </Button>
                   <br />
                   <br />
-                  <span
-                    className={styles.auth_text}
+                  <Text
                     onClick={async () => {
                       await dispatch(resetOpenSignIn());
                       await dispatch(setOpenSignUp());
                     }}
                   >
-                    アカウントを持ってますか？
-                  </span>
-                </div>
+                    新規登録はこちら
+                  </Text>
+                </Wrapper>
               </form>
             </div>
           )}

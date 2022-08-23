@@ -1,12 +1,10 @@
 import React from "react";
-import styles from "./Post.module.css";
-import { Avatar } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { Wrapper, Content, Header, PlaceName, Image, Star, UserName } from "./PostStyles";
+import { Avatar, Button } from "@material-ui/core";
 import Rating from "@mui/material/Rating";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { selectProfiles } from "../auth/authSlice";
-import Button from "@material-ui/core/Button";
 import { PROPS_POST } from "../types";
 
 
@@ -28,30 +26,30 @@ const Post: React.FC<PROPS_POST> = ({
 
   if (placeName) {
     return (
-      <div className={styles.post}>
-        <div className={styles.post_child}>
-          <div className={styles.post_header}>
-            <Avatar className={styles.post_avatar} src={prof[0]?.img} />
-            <h3>{prof[0]?.nickName}</h3>
-          </div>
-          <img className={styles.post_image} src={imageUrl} alt="" />
+      <Wrapper>
+        <Content>
+          <Header>
+            <Avatar src={prof[0]?.img} />
+            <UserName>{prof[0]?.nickName}</UserName>
+          </Header>
+          <Image src={imageUrl} alt="" />
 
-          <p>名所:{placeName}</p>
-          <div className={styles.post_star}>
+          <PlaceName>名所:{placeName}</PlaceName>
+          <Star>
             <p>アクセス度</p>
             <Rating name="read-only" value={accessStars} readOnly />
-          </div>
-          <div className={styles.post_star}>
+          </Star>
+          <Star>
             <p>　混雑度　</p>
             <Rating name="read-only" value={congestionDegree} readOnly />
-          </div>
+          </Star>
           <Link to={`/post/${postId}`}>
             <Button variant="contained" color="primary">
               詳細
             </Button>
           </Link>
-        </div>
-      </div>
+        </Content>
+      </Wrapper>
     );
   }
   return null;
