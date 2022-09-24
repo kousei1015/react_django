@@ -3,8 +3,8 @@ import { GlobalStyles } from "./Global";
 import { AppStyles } from "./AppStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Core from "./features/core/Core";
-import NewPost from "./features/core/NewPost";
-import UpdatePost from "./features/core/UpdatePost";
+import NewPost from "./features/post/NewPost";
+import UpdatePost from "./features/post/UpdatePost";
 import PostDetail from "./features/post/PostDetail";
 
 function App() {

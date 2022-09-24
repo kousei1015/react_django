@@ -89,7 +89,7 @@ export const fetchAsyncEditPost = createAsyncThunk(
     );
     postDetail.img &&
       postUploadData.append("img", postDetail.img, postDetail.img.name);
-    const res = await axios.patch(
+    const res = await axios.put(
       `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
       postUploadData,
       {

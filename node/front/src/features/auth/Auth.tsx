@@ -35,15 +35,15 @@ const modalStyles = {
     left: "50%",
 
     width: 320,
-    height: 450,
-    padding: "30px",
+    height: 485,
+    padding: "25px",
 
     transform: "translate(-50%, -50%)",
   },
 };
 
 const Auth: React.FC = () => {
-  Modal.setAppElement("#root");
+  if (process.env.NODE_ENV !== "test") Modal.setAppElement("#root");
   const openSignIn = useSelector(selectOpenSignIn);
   const openSignUp = useSelector(selectOpenSignUp);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
@@ -98,15 +98,15 @@ const Auth: React.FC = () => {
                 <Wrapper>
                   <Title>Map Collection</Title>
                   <br />
-                  <Circular>
-                    {isLoadingAuth && <CircularProgress />}
-                  </Circular>
+                  <Circular>{isLoadingAuth && <CircularProgress />}</Circular>
                   <br />
 
                   <TextField
-                    placeholder="email"
-                    type="input"
+                    placeholder="Emailを入力してください"
+                    id="email"
+                    label="email"
                     name="email"
+                    type="input"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.email}
@@ -117,9 +117,11 @@ const Auth: React.FC = () => {
                   ) : null}
 
                   <TextField
-                    placeholder="password"
-                    type="password"
+                    placeholder="パスワードを入力してください"
+                    id="password"
+                    label="password"
                     name="password"
+                    type="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.password}
@@ -135,10 +137,10 @@ const Auth: React.FC = () => {
                     color="primary"
                     disabled={!isValid}
                     type="submit"
+                    data-testid="submit-button"
                   >
                     Register
                   </Button>
-                  <br />
                   <br />
                   <Text
                     onClick={async () => {
@@ -198,15 +200,15 @@ const Auth: React.FC = () => {
                 <Wrapper>
                   <Title>Map Collection</Title>
                   <br />
-                  <Circular>
-                    {isLoadingAuth && <CircularProgress />}
-                  </Circular>
+                  <Circular>{isLoadingAuth && <CircularProgress />}</Circular>
                   <br />
 
                   <TextField
-                    placeholder="email"
-                    type="input"
+                    placeholder="Emailを入力してください"
+                    id="email"
+                    label="email"
                     name="email"
+                    type="input"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.email}
@@ -218,9 +220,11 @@ const Auth: React.FC = () => {
                   <br />
 
                   <TextField
-                    placeholder="password"
-                    type="password"
+                    placeholder="パスワードを入力してください"
+                    id="password"
+                    label="password"
                     name="password"
+                    type="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.password}
@@ -235,6 +239,7 @@ const Auth: React.FC = () => {
                     color="primary"
                     disabled={!isValid}
                     type="submit"
+                    data-testid="submit-button"
                   >
                     Login
                   </Button>

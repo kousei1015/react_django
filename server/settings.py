@@ -22,11 +22,11 @@ from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-env = environ.Env(DEBUG=(bool, False),) # set default values and casting
-environ.Env.read_env('.env') # reading .env file
+env = environ.Env() # set default values and casting
+env.read_env(os.path.join(BASE_DIR, '.env')) # reading .env file
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = True
+DEBUG = False
 
 
 # Quick-start development settings - unsuitable for production
@@ -65,9 +65,7 @@ MIDDLEWARE = [
 ]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    "http://localhost:80",
     "http://localhost",
-    "localhost"
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -101,7 +99,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
 }
 
 
@@ -110,12 +108,12 @@ SIMPLE_JWT = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'main',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '3306',
+        'ENGINE': env.get_value('DB_ENGINE'),
+        'NAME': env.get_value('DB_NAME'),
+        'USER': env.get_value('DB_USER'),
+        'PASSWORD': env.get_value('DB_PASSWORD'),
+        'HOST': env.get_value('DB_HOST'),
+        'PORT': env.get_value('DB_PORT'),
         'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
@@ -159,5 +157,11 @@ AUTH_USER_MODEL = 'api.User'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+if DEBUG:
+  STATICFILES_DIRS = os.path.join[os.path.join(BASE_DIR, 'static')]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

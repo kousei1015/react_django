@@ -3,16 +3,20 @@ import { RootState } from "../../app/store";
 import axios from "axios";
 import { PROPS_AUTHEN, PROPS_PROFILE, PROPS_NICKNAME } from "../types";
 
-const apiUrl = "http://localhost:8000/";
 
 export const fetchAsyncLogin = createAsyncThunk(
   "auth/post",
   async (authen: PROPS_AUTHEN) => {
-    const res = await axios.post(`${apiUrl}authen/jwt/create`, authen, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}authen/jwt/create`,
+      //`${apiUrl}authen/jwt/create`,      
+      authen,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return res.data;
   }
 );
@@ -20,11 +24,16 @@ export const fetchAsyncLogin = createAsyncThunk(
 export const fetchAsyncRegister = createAsyncThunk(
   "auth/register",
   async (auth: PROPS_AUTHEN) => {
-    const res = await axios.post(`${apiUrl}api/register/`, auth, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}api/register/`,
+      //`${apiUrl}api/register/`,
+      auth,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return res.data;
   }
 );
@@ -32,12 +41,17 @@ export const fetchAsyncRegister = createAsyncThunk(
 export const fetchAsyncCreateProf = createAsyncThunk(
   "profile/post",
   async (nickName: PROPS_NICKNAME) => {
-    const res = await axios.post(`${apiUrl}api/profile/`, nickName, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.localJWT}`,
-      },
-    });
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}api/profile/`,
+      //`${apiUrl}api/profile/`,
+      nickName,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
     return res.data;
   }
 );
@@ -49,7 +63,8 @@ export const fetchAsyncUpdateProf = createAsyncThunk(
     uploadData.append("nickName", profile.nickName);
     profile.img && uploadData.append("img", profile.img, profile.img.name);
     const res = await axios.put(
-      `${apiUrl}api/profile/${profile.id}/`,
+      `${process.env.REACT_APP_API_URL}api/profile/${profile.id}/`,
+      //`${apiUrl}api/profile/${profile.id}/`,
       uploadData,
       {
         headers: {
@@ -63,16 +78,23 @@ export const fetchAsyncUpdateProf = createAsyncThunk(
 );
 
 export const fetchAsyncGetMyProf = createAsyncThunk("profile/get", async () => {
-  const res = await axios.get(`${apiUrl}api/myprofile/`, {
-    headers: {
-      Authorization: `JWT ${localStorage.localJWT}`,
-    },
-  });
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}api/myprofile/`,
+    //`${apiUrl}api/myprofile/`,
+    {
+      headers: {
+        Authorization: `JWT ${localStorage.localJWT}`,
+      },
+    }
+  );
   return res.data[0];
 });
 
 export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
-  const res = await axios.get(`${apiUrl}api/profile/`, {
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}api/profile/`,
+    //`${apiUrl}api/profile/`,
+    {
     headers: {
       Authorization: `JWT ${localStorage.localJWT}`,
     },
@@ -80,14 +102,21 @@ export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
   return res.data;
 });
 
-export const fetchAsyncGetPostProf = createAsyncThunk("postProfile/get", async () => {
-  const res = await axios.get(`${apiUrl}api/profile/`, {
-    headers: {
-      Authorization: `JWT ${localStorage.localJWT}`,
-    },
-  });
-  return res.data
-})
+export const fetchAsyncGetPostProf = createAsyncThunk(
+  "postProfile/get",
+  async () => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}api/profile/`,
+      //`${apiUrl}api/profile/`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
+    return res.data;
+  }
+);
 
 export const authSlice = createSlice({
   name: "auth",
@@ -112,13 +141,6 @@ export const authSlice = createSlice({
         img: "",
       },
     ],
-    postProfile: {
-      id: 0,
-      nickName: "",
-      userProfile: 0,
-      created_on: "",
-      img: "",
-    },
   },
   reducers: {
     fetchCredStart(state) {
@@ -168,9 +190,7 @@ export const authSlice = createSlice({
         prof.id === action.payload.id ? action.payload : prof
       );
     });
-    builder.addCase(fetchAsyncGetPostProf.fulfilled, (state, action) => {
-      state.postProfile = action.payload;
-    });
+    
   },
 });
 
@@ -193,6 +213,6 @@ export const selectOpenSignUp = (state: RootState) => state.auth.openSignUp;
 export const selectOpenProfile = (state: RootState) => state.auth.openProfile;
 export const selectProfile = (state: RootState) => state.auth.myprofile;
 export const selectProfiles = (state: RootState) => state.auth.profiles;
-export const selectPostProfile = (state: RootState) => state.auth.postProfile;
+
 
 export default authSlice.reducer;

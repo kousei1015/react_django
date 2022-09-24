@@ -83,6 +83,24 @@ class Post(models.Model):
 
 
 
+class Post(models.Model):
+    placeName = models.CharField(max_length=30, blank=False)
+    description = models.TextField(max_length=200, blank=False)
+    userPost = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='userPost',
+        on_delete=models.CASCADE
+    )
+    accessStars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    congestionDegree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)   
+
+    def __str__(self):
+        return self.placeName
+    class Meta:
+        ordering =  ['-id']
+
+
+
 class Comment(models.Model):
     text = models.CharField(max_length=100)
     userComment = models.ForeignKey(

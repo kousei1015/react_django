@@ -5,14 +5,13 @@ export const CoreHeader = styled.div`
   position: sticky;
   border-radius: 18px;
   top: 0;
-  background-color: white;
   padding: 20px;
-  border-bottom: 1px solid lightgray;
   object-fit: contain;
   display: flex;
   z-index: 1;
   justify-content: space-between;
   align-items: center;
+  background-color: #F4FCD9;
 `;
 
 export const CoreTitle = styled.h1`
@@ -28,11 +27,11 @@ export const CoreTitle = styled.h1`
 
 export const CoreButton = styled.button`
   background-color: transparent;
-  color: #C0C0C0;
   padding-top: 3px;
   font-size: 28px;
   border: none;
   outline: none;
+  color: #346751;
   cursor: pointer;
   @media screen and (min-width: 350px) and (max-width: 520px) {
     font-size: 14px;
@@ -52,7 +51,7 @@ padding: 20px;
 `;
 
 export const CoreStyledPagination = styled.div`
-  margin: 20px auto 0px;
+  margin: 30px auto 0px;
   .paginationBttns {
     height: 40px;
     list-style: none;
@@ -64,19 +63,19 @@ export const CoreStyledPagination = styled.div`
     padding: 10px;
     margin: 8px;
     border-radius: 5px;
-    border: 1px solid #2b2eff;
-    color: #2b2eff;
+    border: 1px solid #346751;
+    color: #346751;
     cursor: pointer;
   }
 
   .paginationBttns a:hover {
-    color: white;
-    background-color: #2b2eff;
+    color: #F4FCD9;
+    background-color: #346751;
   }
 
   .paginationActive a {
-    color: white;
-    background-color: #2b2eff;
+    color: #F4FCD9;
+    background-color: #346751;
   }
 
   .paginationDisabled a {

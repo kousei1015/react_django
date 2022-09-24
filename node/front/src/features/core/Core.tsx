@@ -78,9 +78,11 @@ const Core: React.FC = () => {
       <EditProfile />
       <CoreHeader>
         <CoreTitle>Map Collection</CoreTitle>
-        {myProfile?.nickName ? (
+        {myProfile.nickName ? (
           <>
+            <span style={{"display": "none"}}>{myProfile.nickName}</span>
             <CoreButton
+              data-testid="btn-logout"
               onClick={() => {
                 dispatch(resetOpenProfile());
                 pushHome();
@@ -102,6 +104,7 @@ const Core: React.FC = () => {
                 Logout
               </CoreButton>
               <CoreButton
+                data-testid="edit-modal"
                 onClick={() => {
                   dispatch(setOpenProfile());
                   dispatch(resetOpenNewPost());

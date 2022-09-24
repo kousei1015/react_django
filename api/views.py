@@ -29,7 +29,7 @@ class MyProfileListView(generics.ListAPIView):
         return self.queryset.filter(userProfile=self.request.user)
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostViewSet(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostSerializer
 
@@ -43,16 +43,12 @@ class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.PostDetailSerializer
     permission_classes = (permissions.IsAuthenticated, custompermissions.OwnerPermission,)
     
-    def perform_create(self, serializer):
-        serializer.save(userPost=self.request.user)
-
   
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     
-
     def perform_create(self, serializer):
         serializer.save(userComment=self.request.user)
 

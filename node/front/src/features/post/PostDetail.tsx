@@ -3,7 +3,7 @@ import { Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { selectProfiles } from "../auth/authSlice";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/store";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -15,7 +15,11 @@ import {
   fetchAsyncPostComment,
   fetchAsyncGetComments,
 } from "./postSlice";
-import { selectProfile } from "../auth/authSlice";
+import {
+  selectProfile,
+  fetchAsyncGetMyProf,
+  fetchAsyncGetProfs,
+} from "../auth/authSlice";
 import {
   Wrapper,
   Content,
@@ -32,15 +36,15 @@ import {
   CommentBox,
   Input,
   CustomButton,
+  ButtonFlex
 } from "./PostDetailStyles";
 import {
   fetchAsyncGetDetail,
   selectPostDetail,
   fetchAsyncDelete,
 } from "./postSlice";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { ID } from "../types";
-import { fetchAsyncGetMyProf } from "../auth/authSlice";
 
 const useStyles = makeStyles((theme) => ({
   small: {
@@ -65,6 +69,7 @@ const PostDetail: React.FC = () => {
   const myProfile = useSelector(selectProfile);
   const comments = useSelector(selectComments);
   const [text, setText] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const commentsOnPost = comments.filter((com) => {
@@ -87,14 +92,22 @@ const PostDetail: React.FC = () => {
   useEffect(() => {
     const fetchLoader = async () => {
       await dispatch(fetchAsyncGetDetail(id as string));
-      await dispatch(fetchAsyncGetComments());
+      //await dispatch(fetchAsyncGetDetail("1"));
       await dispatch(fetchAsyncGetMyProf());
+      await dispatch(fetchAsyncGetComments());
+      await dispatch(fetchAsyncGetProfs());
     };
     fetchLoader();
   }, [dispatch]);
 
+  function pushEditPage() {
+    navigate(`update`);
+  }
   return (
     <>
+      {/* for test to confirm render myprofile and postDetail data */}
+      <span style={{ display: "none" }}>{myProfile.nickName}</span>
+      <span style={{ display: "none" }}>{postDetail.placeName}</span>
       <Wrapper>
         <Content>
           <Header>
@@ -105,45 +118,47 @@ const PostDetail: React.FC = () => {
           <ImageWrapper>
             <Image src={postDetail.img} />
           </ImageWrapper>
+          <Place data-testid="place-name">名所:{postDetail.placeName}</Place>
+          <Place data-testid="description">説明:{postDetail.description}</Place>
           <StarWrapper>
-            <Text>アクセス度</Text>
+            <Text data-testid="access">アクセス度</Text>
             <Rating name="read-only" value={postDetail.accessStars} readOnly />
-
-            <Text>混雑度</Text>
+            <br />
+            <Text data-testid="congestion">混雑度</Text>
             <Rating
               name="read-only"
               value={postDetail.congestionDegree}
               readOnly
             />
           </StarWrapper>
-          <Place>
-            名所:{postDetail.placeName}
-            <br />
-            説明:{postDetail.description}
-          </Place>
+
+          <Typography component="h6" color="error">
+            {message}
+          </Typography>
 
           {postDetail.userPost.id === myProfile.userProfile ? (
-            <>
+            <ButtonFlex>
               <Button
                 size="small"
                 color="secondary"
-                onClick={() => {
-                  dispatch(fetchAsyncDelete(postDetail.id));
-                  pushHome();
+                onClick={async () => {
+                  const result = await dispatch(
+                    fetchAsyncDelete(postDetail.id)
+                  );
+                  if (fetchAsyncDelete.fulfilled.match(result)) {
+                    pushHome();
+                    setMessage("削除成功");
+                  }
                 }}
               >
                 <DeleteIcon fontSize="small" /> &nbsp; Delete
               </Button>
-              <Button size="small">
-                <Link to={`/post/${id}/update`}>
-                  <EditIcon fontSize="small" /> Edit
-                </Link>
+              <Button data-testid="edit" size="small" onClick={pushEditPage}>
+                <EditIcon fontSize="small" /> Edit
               </Button>
-            </>
+            </ButtonFlex>
           ) : (
-            <>
-              
-            </>
+            <></>
           )}
 
           <Comments>
@@ -181,6 +196,7 @@ const PostDetail: React.FC = () => {
             onChange={(e) => setText(e.target.value)}
           />
           <CustomButton
+            data-testid="post"
             disabled={!text.length}
             type="submit"
             onClick={postComment}
