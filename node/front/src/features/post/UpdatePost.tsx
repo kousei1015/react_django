@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
@@ -7,9 +6,9 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/store";
-import { Button, TextField, IconButton, colors } from "@material-ui/core";
+import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
-import { fetchAsyncGetMyProf } from "../auth/authSlice";
+
 import {
   selectPostDetail,
   fetchAsyncEditPost,
@@ -57,10 +56,10 @@ const UpdatePost: React.FC = () => {
   useEffect(() => {
     const fetchLoader = async () => {
       await dispatch(fetchAsyncGetDetail(id as string));
-      //await dispatch(fetchAsyncGetDetail("1"));
     };
     fetchLoader();
-  }, [dispatch])
+  }, [])
+
 
 
   const handlerEditPicture = () => {
@@ -70,7 +69,7 @@ const UpdatePost: React.FC = () => {
 
   const editPost = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    const postUploadData: any = {
+    const postUploadData = {
       id: id,
       placeName: placeName,
       description: description,

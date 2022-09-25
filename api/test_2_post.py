@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from .models import User, Post
-from .serializers import PostSerializer
+from .serializers import PostSerializer, PostDetailSerializer
 from django.urls import reverse
 
 POST_URL = "/api/post/"
@@ -23,7 +23,7 @@ def create_post(userPost, **params):
 
 
 def detail_post_url(post_id):
-    return reverse('api:post-detail', args=[post_id])
+    return reverse('api:post_detail', args=[post_id])
 
 
 
@@ -44,14 +44,6 @@ class AuthorizedPostApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_get_single_post_detail(self):
-        post = create_post(userPost=self.user)
-        url = detail_post_url(post.id)
-        res = self.client.get(url)
-        serializer = PostSerializer(post)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-
     def test_create_new_post(self):
         data = {
           'placeName': 'sample',
@@ -66,6 +58,14 @@ class AuthorizedPostApiTests(TestCase):
         self.assertEqual(data['description'], post.description)
         self.assertEqual(data['accessStars'], post.accessStars)
         self.assertEqual(data['congestionDegree'], post.congestionDegree)
+
+    def test_get_single_post_detail(self):
+        post = create_post(userPost=self.user)
+        url = detail_post_url(post.id)
+        res = self.client.get(url)
+        serializer = PostDetailSerializer(post)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
 
     def test_create_post_with_empty_field(self):
         data = {

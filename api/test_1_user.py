@@ -23,10 +23,6 @@ class  UnauthorizedUserApiTests(TestCase):
             user.check_password(data['password'])
         )
 
-    def test_too_short_password_registration(self):
-        data = {"email": "dummy@gmail.com", "password": "a"}
-        res = self.client.post(REGISTER_USER_URL, data)
-        self.assertEqual(res.status_code,  status.HTTP_400_BAD_REQUEST)
 
     def test_by_same_credentials(self):
         data = {"email": "dummy@gmail.com", "password": "dummypassword"}

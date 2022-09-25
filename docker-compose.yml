@@ -30,12 +30,12 @@ services:
 
   front:
     build:
-      context: ./node/front
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile_react
+    restart: always
     volumes:
       - ./node:/usr/src/app:cached
+    command: sh -c "cd front && yarn start"
     ports:
-      - 3000:3000
-    depends_on:
-      - backend
+      - "3000:3000"
     
