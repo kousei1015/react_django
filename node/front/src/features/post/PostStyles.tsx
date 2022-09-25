@@ -7,7 +7,6 @@ export const Wrapper = styled.div`
 
 export const Content = styled.div`
   text-align: center;
-  border-radius: 14px;
   background-color: #F4FCD9;
 `;
 

@@ -63,24 +63,23 @@ export const CoreStyledPagination = styled.div`
     padding: 10px;
     margin: 8px;
     border-radius: 5px;
-    border: 1px solid #346751;
-    color: #346751;
+    border: 1px solid #ee442a;
+    color: #ee442a;
     cursor: pointer;
   }
 
   .paginationBttns a:hover {
     color: #F4FCD9;
-    background-color: #346751;
+    background-color: #ee442a;
   }
 
   .paginationActive a {
     color: #F4FCD9;
-    background-color: #346751;
+    background-color: #ee442a;
   }
 
   .paginationDisabled a {
-    opacity: 0;
-    cursor: default;
+    display: none;
   }
 `;
 

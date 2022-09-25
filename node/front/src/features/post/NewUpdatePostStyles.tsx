@@ -7,7 +7,6 @@ export const PostForm = styled.form`
   transform: translateY(-50%);
   text-align: center;
   background: #fff;
-  border-radius: 12px;
 `;
 
 export const PostFormWrapper = styled.div`
