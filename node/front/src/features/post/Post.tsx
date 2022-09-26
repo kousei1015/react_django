@@ -1,15 +1,22 @@
 import React from "react";
-import { Wrapper, Content, Header, PlaceName, Image, Star, UserName } from "./PostStyles";
+import {
+  Wrapper,
+  Content,
+  Header,
+  PlaceName,
+  Image,
+  Star,
+  UserName,
+  DetailButton
+} from "./PostStyles";
 import { Avatar, Button } from "@material-ui/core";
 import Rating from "@mui/material/Rating";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { selectProfiles } from "../auth/authSlice";
 import { PROPS_POST } from "../types";
 
-
 /* eslint-disable import/first */
-
 
 const Post: React.FC<PROPS_POST> = ({
   postId,
@@ -24,6 +31,10 @@ const Post: React.FC<PROPS_POST> = ({
     return prof.userProfile === userPost;
   });
 
+  const navigate = useNavigate();
+  function pushDetailPage() {
+    navigate(`/post/${postId}`);
+  }
   if (placeName) {
     return (
       <Wrapper>
@@ -36,18 +47,17 @@ const Post: React.FC<PROPS_POST> = ({
 
           <PlaceName>名所:{placeName}</PlaceName>
           <Star>
-            <p>アクセス度</p>
+            <PlaceName>アクセス度</PlaceName>
             <Rating name="read-only" value={accessStars} readOnly />
           </Star>
           <Star>
-            <p>　混雑度　</p>
+            <PlaceName>　混雑度　</PlaceName>
             <Rating name="read-only" value={congestionDegree} readOnly />
           </Star>
-          <Link to={`/post/${postId}`}>
-            <Button variant="contained" color="primary">
-              詳細
-            </Button>
-          </Link>
+
+          <DetailButton onClick={pushDetailPage} data-testid={`detail-${postId}`}>
+            詳細
+          </DetailButton>
         </Content>
       </Wrapper>
     );

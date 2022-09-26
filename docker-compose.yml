@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: gunicorn server.wsgi --bind 0.0.0.0:8000
     ports:
       - 8000:8000
     volumes:
@@ -15,12 +16,12 @@ services:
   db:
     image: mysql:5.7.22
     restart: always
-    environment: 
-      MYSQL_DATABASE: main
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
-   
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes: 
       - .dbdate:/var/lib/mysql
       - './mysql/etc/my.cnf:/etc/my.cnf'
@@ -37,3 +38,4 @@ services:
     command: sh -c "cd front && yarn start"
     ports:
       - "3000:3000"
+    

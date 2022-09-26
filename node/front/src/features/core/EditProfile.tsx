@@ -13,7 +13,7 @@ import {
   fetchCredEnd,
   fetchAsyncUpdateProf,
 } from "../auth/authSlice";
-import { Button, TextField, IconButton } from "@material-ui/core";
+import { Button, TextField, IconButton, Typography } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
 
 const modalStyles = {
@@ -69,7 +69,7 @@ const EditProfile: React.FC = () => {
             value={profile?.nickName}
             onChange={(e) => dispatch(editNickname(e.target.value))}
           />
-
+          <br />
           <input
             type="file"
             id="imageInput"
@@ -80,6 +80,7 @@ const EditProfile: React.FC = () => {
           <IconButton onClick={handlerEditPicture}>
             <MdAddAPhoto />
           </IconButton>
+          <br />
           <br />
           <Button
             disabled={!profile?.nickName}

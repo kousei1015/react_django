@@ -1,23 +1,21 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  max-width: 1280px;
   margin: 0 auto;
+  max-width: 1280px;
 `;
 
 export const Content = styled.div`
-  max-width: 90%;
-  margin: 0 auto;
-  border: 1px solid lightgray;
-  margin-bottom: 10px;
-  background-color: white;
-  margin-top: 22px;
+  background-color: #F4FCD9;
   border-radius: 20px;
+  border: 1px solid lightgray;
+  max-width: 90%;
+  margin: 22px auto 10px;
 `;
 
 export const Header = styled.div`
-  display: flex;
   align-items: center;
+  display: flex;
   padding: 15px;
 `;
 
@@ -30,16 +28,16 @@ export const ImageWrapper = styled.div`
 `;
 
 export const Image = styled.img`
-  width: 75%;
-  height: auto;
   display: block;
+  height: auto;
   margin: 0 auto;
+  width: 70%;
 `;
 
 export const StarWrapper = styled.div`
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
 `;
 
 export const Text = styled.p`
@@ -48,7 +46,8 @@ export const Text = styled.p`
 `;
 
 export const Place = styled.div`
-  padding: 16px 50px;
+  margin: 30px 50px;
+  text-align: center;
 `;
 
 export const Comments = styled.div`
@@ -56,8 +55,8 @@ export const Comments = styled.div`
 `;
 
 export const Comment = styled.div`
-  display: flex;
   align-items: center;
+  display: flex;
   margin-bottom: 5px;
   word-break: break-all;
 `;
@@ -68,21 +67,25 @@ export const CommentNickName = styled.strong`
 
 export const CommentBox = styled.form`
   display: flex;
-  margin-top: 10px;
+  margin: 15px 0;
 `;
 
 export const Input = styled.input`
-  flex: 1;
-  padding: 10px;
   border: none;
   border-top: 1px solid lightgray;
+  flex: 1;
+  padding: 10px;
 `;
 export const CustomButton = styled.button`
   flex: 0;
   border: none;
   color: #4682b4;
-  background-color: #fff;
+  background-color: #F4FCD9;
   border-left: 1px black;
   cursor: pointer;
 `;
 
+export const ButtonFlex = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;

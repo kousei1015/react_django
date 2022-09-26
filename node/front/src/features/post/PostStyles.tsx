@@ -7,8 +7,7 @@ export const Wrapper = styled.div`
 
 export const Content = styled.div`
   text-align: center;
-  border-radius: 14px;
-  background-color: #fff;
+  background-color: #F4FCD9;
 `;
 
 export const Header = styled.div`
@@ -18,10 +17,11 @@ export const Header = styled.div`
 `;
 
 export const UserName = styled.h3`
+  font-weight: 500;
   margin-left: 10px;
 `;
 export const PlaceName = styled.p`
-  margin: 14px 0;
+  margin: 10px 0;
 `;
 
 export const Image = styled.img`
@@ -42,3 +42,17 @@ export const Star = styled.div`
   align-items: center;
 `;
 
+export const DetailButton = styled.button`
+  background-color: #28B5B5;
+  border: 1px solid #28B5B5;
+  border-radius: 16px;
+  color: #F4FCD9;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: 0.3s all ease-in-out;
+  margin-bottom: 10px;
+  &:hover {
+    background-color: #346751;
+    border: 1px solid #346751;
+  }
+`;
