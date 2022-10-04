@@ -2,13 +2,13 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     command: gunicorn server.wsgi --bind 0.0.0.0:8000
     ports:
       - 8000:8000
     volumes:
-      - .:/app
+      - ./backend:/app
     depends_on: 
       - db
    
@@ -16,26 +16,25 @@ services:
   db:
     image: mysql:5.7.22
     restart: always
-    env_file: .env
+    env_file: ./.env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes: 
-      - .dbdate:/var/lib/mysql
-      - './mysql/etc/my.cnf:/etc/my.cnf'
+      - ./backend/.dbdate:/var/lib/mysql
+      - './backend/mysql/etc/my.cnf:/etc/my.cnf'
     ports: 
       - 3306:3306
 
   front:
     build:
-      context: .
-      dockerfile: Dockerfile_react
-    restart: always
+      context: ./node/front
+      dockerfile: Dockerfile
     volumes:
-      - ./node:/usr/src/app:cached
-    command: sh -c "cd front && yarn start"
+      - ./node/front/nginx:/etc/nginx/conf.d
     ports:
-      - "3000:3000"
-    
+      - 80:80
+    depends_on:
+      - backend
