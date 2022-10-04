@@ -15,9 +15,8 @@ services:
 
   db:
     image: mysql:5.7.22
-    env_file:
-    - ./backend/.env
     restart: always
+    env_file: ./.env
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
@@ -25,13 +24,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes: 
       - ./backend/.dbdate:/var/lib/mysql
-      - ./backend/./mysql/etc/my.cnf:/etc/my.cnf
-    ports:
+      - './mysql/etc/my.cnf:/etc/my.cnf'
+    ports: 
       - 3306:3306
 
   front:
     build:
-      context: .node/front
+      context: ./node/front
       dockerfile: Dockerfile
     volumes:
       - ./node/front/nginx:/etc/nginx/conf.d
@@ -39,4 +38,3 @@ services:
       - 80:80
     depends_on:
       - backend
-    

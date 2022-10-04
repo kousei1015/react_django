@@ -1,5 +1,5 @@
 import React from "react";
-import { GlobalStyles } from "./Global";
+import { GlobalStyles } from "./GlobalStyles";
 import { AppStyles } from "./AppStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Core from "./features/core/Core";
@@ -10,9 +10,9 @@ import PostDetail from "./features/post/PostDetail";
 function App() {
   return (
     <>
+      <GlobalStyles />
+      <AppStyles />
       <BrowserRouter>
-        <GlobalStyles />
-        <AppStyles />
         <Routes>
           <Route path="/" element={<Core />} />
           <Route path="/post/create" element={<NewPost />} />
