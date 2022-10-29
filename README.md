@@ -22,6 +22,7 @@ simplejwt djoserというライブラリを使ったjwt認証機能
 
 コメント機能
 
+公開後もアップデートを行い、機能を追加する予定です
 
 #URL
 後で貼ります
@@ -38,7 +39,7 @@ Django 3.0.7
 
 django-rest-framework 3.10
 
-MySQL 5.7.22
+MySQL 5.7.38
 
 Nginx
 
@@ -58,4 +59,6 @@ Docker/Docker-compose
 
 # AWS
 
-後で貼ります
+概要だけ説明すると、バックエンドはECS(Fargate)で、フロントエンドの方はS3とCloudFrontで、データベースはRDSを使って構成しました
+
+図は後で貼ります
