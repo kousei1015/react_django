@@ -66,6 +66,8 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://localhost",
+    "https://mapcollection.tk",
+    "http://mapcollection.tk"
 ]
 
 ROOT_URLCONF = 'server.urls'
