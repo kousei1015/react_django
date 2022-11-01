@@ -55,10 +55,10 @@ Docker/Docker-compose
 
 # ER図
 
-![](er-picture.drawio.svg)
+![](er-piture.svg)
 
 # AWS
 
 概要だけ説明すると、バックエンドはECS(Fargate)で、フロントエンドの方はS3とCloudFrontで、データベースはRDSを使って構成しました
 
-図は後で貼ります
+![](aws-infra.svg)
