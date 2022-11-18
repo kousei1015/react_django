@@ -14,7 +14,7 @@ import {
 
 
 export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
-  const res = await axios.get(`${process.env.REACT_APP_API_URL}api/post/`, {
+  const res = await axios.get(`${process.env.REACT_APP_API_DEV_URL}api/post/`, {
     headers: {
       Authorization: `JWT ${localStorage.localJWT}`,
     },
@@ -27,7 +27,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/${id}`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/${id}`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -42,7 +42,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
 export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
-    await axios.delete(`${process.env.REACT_APP_API_URL}api/post/${id}`, {
+    await axios.delete(`${process.env.REACT_APP_API_DEV_URL}api/post/${id}`, {
       headers: {
         Authorization: `JWT ${localStorage.localJWT}`,
       },
@@ -63,7 +63,7 @@ export const fetchAsyncNewPost = createAsyncThunk(
     newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
 
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/post/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/`,
       uploadData,
       {
         headers: {
@@ -90,7 +90,7 @@ export const fetchAsyncEditPost = createAsyncThunk(
     postDetail.img &&
       postUploadData.append("img", postDetail.img, postDetail.img.name);
     const res = await axios.put(
-      `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/${postDetail.id}`,
       postUploadData,
       {
         headers: {
@@ -107,7 +107,7 @@ export const fetchAsyncGetComments = createAsyncThunk(
   "comment/get",
   async () => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/comment/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -123,7 +123,7 @@ export const fetchAsyncPostComment = createAsyncThunk(
   "comment/post",
   async (comment: PROPS_COMMENT) => {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/comment/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
       comment,
       {
         headers: {

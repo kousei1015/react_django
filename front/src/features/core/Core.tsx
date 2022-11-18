@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Auth from "../auth/Auth";
+import Post from "../post/Post";
+import EditProfile from "./EditProfile";
 import ReactPaginate from "react-paginate";
 import {
   CoreHeader,
   CoreTitle,
   CoreButton,
+  CoreSelectMenu,
   CoreLogout,
   CoreContainer,
   CoreStyledPagination,
@@ -35,15 +38,14 @@ import {
   fetchAsyncGetPosts,
 } from "../post/postSlice";
 
-import Post from "../post/Post";
-import EditProfile from "./EditProfile";
-
 const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
   const isLoadingPost = useSelector(selectIsLoadingPost);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
+  const [orderType, setOrderType] = useState("");
+
   const [pageNumber, setPageNumber] = useState(0);
   const postsPerPage = 12;
   const pagesVisited = pageNumber * postsPerPage;
@@ -55,6 +57,11 @@ const Core: React.FC = () => {
   function pushHome() {
     navigate("/post/create");
   }
+  
+  //アクセスがよい順にソート
+  const accessAsc = [...posts].sort( (a, b) => a.accessStars < b.accessStars ? 1: -1 )
+  //混雑が少ない場所順にソート
+  const congestionAsc = [...posts].sort( (a, b) => a.congestionDegree < b.congestionDegree ? 1: -1 )
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -70,7 +77,7 @@ const Core: React.FC = () => {
       }
     };
     fetchLoader();
-  }, [dispatch]);
+  }, [dispatch, orderType]);
 
   return (
     <>
@@ -80,7 +87,7 @@ const Core: React.FC = () => {
         <CoreTitle>Map Collection</CoreTitle>
         {myProfile.nickName ? (
           <>
-            <span style={{"display": "none"}}>{myProfile.nickName}</span>
+            <span style={{ display: "none" }}>{myProfile.nickName}</span>
             <CoreButton
               data-testid="btn-logout"
               onClick={() => {
@@ -90,6 +97,16 @@ const Core: React.FC = () => {
             >
               新規投稿
             </CoreButton>
+            <CoreSelectMenu
+              onChange={(e) => {
+                const selectedOrderType:string = e.target.value;
+                setOrderType(selectedOrderType);
+              }}
+            >
+              <option value="" selected>新規投稿順</option>
+              <option value="access">アクセスがよい順</option>
+              <option value="congestion">混雑が少ない順</option>
+            </CoreSelectMenu>
             <CoreLogout>
               {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
               <CoreButton
@@ -139,24 +156,67 @@ const Core: React.FC = () => {
       {myProfile?.nickName && (
         <>
           <CoreContainer>
-            <Grid container spacing={4}>
-              {posts
-                .slice(pagesVisited, pagesVisited + postsPerPage)
-                .map((post) => (
-                  <Grid key={post.id} item xs={12} md={4}>
-                    <Post
-                      postId={post.id}
-                      placeName={post.placeName}
-                      description={post.description}
-                      loginId={myProfile.userProfile}
-                      userPost={post.userPost}
-                      imageUrl={post.img}
-                      accessStars={post.accessStars}
-                      congestionDegree={post.congestionDegree}
-                    />
-                  </Grid>
-                ))}
-            </Grid>
+          {orderType === "" && (
+              <Grid container spacing={4}>
+                {posts
+                  .slice(pagesVisited, pagesVisited + postsPerPage)
+                  .map((post) => (
+                    <Grid key={post.id} item xs={12} md={4}>
+                      <Post
+                        postId={post.id}
+                        placeName={post.placeName}
+                        description={post.description}
+                        loginId={myProfile.userProfile}
+                        userPost={post.userPost}
+                        imageUrl={post.img}
+                        accessStars={post.accessStars}
+                        congestionDegree={post.congestionDegree}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            )}
+            {orderType === "access" && (
+              <Grid container spacing={4}>
+                {accessAsc
+                  .slice(pagesVisited, pagesVisited + postsPerPage)
+                  .map((post) => (
+                    <Grid key={post.id} item xs={12} md={4}>
+                      <Post
+                        postId={post.id}
+                        placeName={post.placeName}
+                        description={post.description}
+                        loginId={myProfile.userProfile}
+                        userPost={post.userPost}
+                        imageUrl={post.img}
+                        accessStars={post.accessStars}
+                        congestionDegree={post.congestionDegree}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            )}
+            {orderType === "congestion" && (
+              <Grid container spacing={4}>
+                {congestionAsc
+                  .slice(pagesVisited, pagesVisited + postsPerPage)
+                  .map((post) => (
+                    <Grid key={post.id} item xs={12} md={4}>
+                      <Post
+                        postId={post.id}
+                        placeName={post.placeName}
+                        description={post.description}
+                        loginId={myProfile.userProfile}
+                        userPost={post.userPost}
+                        imageUrl={post.img}
+                        accessStars={post.accessStars}
+                        congestionDegree={post.congestionDegree}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            )}
+
             <CoreStyledPagination>
               <ReactPaginate
                 previousLabel={"Previous"}

@@ -38,6 +38,7 @@ const Post: React.FC<PROPS_POST> = ({
   if (placeName) {
     return (
       <Wrapper>
+        
         <Content>
           <Header>
             <Avatar src={prof[0]?.img} />

@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Content = styled.div`
-  background-color: #F4FCD9;
+  background-color: #fff;
   border-radius: 20px;
   border: 1px solid lightgray;
   max-width: 90%;
@@ -21,6 +21,7 @@ export const Header = styled.div`
 
 export const UserName = styled.div`
   margin-left: 10px;
+  font-size: 1.5rem;
 `;
 
 export const ImageWrapper = styled.div`
@@ -41,13 +42,18 @@ export const StarWrapper = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 16px;
   margin: 8px;
+  font-size: 1.2rem;
 `;
 
 export const Place = styled.div`
   margin: 30px 50px;
   text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 1.2px;
+  @media (max-width: 520px) {
+   font-size : 1.35rem;
+  }
 `;
 
 export const Comments = styled.div`
