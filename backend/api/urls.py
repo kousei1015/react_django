@@ -7,6 +7,7 @@ app_name = 'api'
 router = DefaultRouter()
 router.register('profile',views.ProfileViewSet)
 router.register('comment', views.CommentViewSet)
+router.register('tags', views.TagViewSet)
 
 urlpatterns = [
     path('register/', views.CreateUserView.as_view(), name='register'),

@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from . import serializers
-from .models import Profile, Post, Comment, User
+from .models import Profile, Post, Comment, User, Tag
 from rest_framework.views import APIView
 from . import custompermissions
 
@@ -52,7 +52,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(userComment=self.request.user)
 
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(userTag=self.request.user)
+
+    
 
     
 

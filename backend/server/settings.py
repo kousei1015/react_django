@@ -26,7 +26,7 @@ env = environ.Env() # set default values and casting
 env.read_env(os.path.join(BASE_DIR, '.env')) # reading .env file
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = False
+DEBUG = True
 
 
 # Quick-start development settings - unsuitable for production
@@ -159,10 +159,11 @@ AUTH_USER_MODEL = 'api.User'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-if DEBUG:
-  STATICFILES_DIRS = os.path.join[os.path.join(BASE_DIR, 'static')]
-else:
-   STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#if DEBUG:
+#  STATICFILES_DIRS = os.path.join[os.path.join(BASE_DIR, 'static')]
+#else:
+#   STATIC_ROOT = os.path.join(BASE_DIR, 'static')

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from .models import User, Post
+from .models import User, Post, Tag
 from .serializers import PostSerializer, PostDetailSerializer
 from django.urls import reverse
 
@@ -50,8 +50,9 @@ class AuthorizedPostApiTests(TestCase):
           'description': 'sample',
           'accessStars': 3,
           'congestionDegree': 3,
+          'tags': [{'name': 'tag'}, {'name': 'tag2'}]
         }
-        res = self.client.post(POST_URL, data)
+        res = self.client.post(POST_URL, data, format='json')
         post = Post.objects.get(id=res.data['id'])
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(data['placeName'], post.placeName)
@@ -73,8 +74,9 @@ class AuthorizedPostApiTests(TestCase):
             'description': '',
             'accessStars': 3,
             'congestionDegree': 3,
+            'tags': [{'name': 'tag'}]
         }
-        res = self.client.post(POST_URL, data)
+        res = self.client.post(POST_URL, data, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_post_with_over_number(self):
@@ -83,23 +85,31 @@ class AuthorizedPostApiTests(TestCase):
             'description': 'sample',
             'accessStars': 10,
             'congestionDegree': 10,
+            'tags': [{'name': 'tag'}]
         }
-        res = self.client.post(POST_URL, data)
+        res = self.client.post(POST_URL, data, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_put(self):
-      post = create_post(userPost=self.user)
-      data = {
+        post = create_post(userPost=self.user)
+        data = {
             'placeName': 'sample',
             'description': 'sample',
             'accessStars': 5,
             'congestionDegree': 5,
-      }
-      url = detail_post_url(post.id)
-      self.assertEqual(post.placeName, 'test')
-      self.client.put(url, data)
-      post.refresh_from_db()
-      self.assertEqual(post.placeName, data['placeName'])
+        }
+        url = detail_post_url(post.id)
+        self.assertEqual(post.placeName, 'test')
+        self.client.put(url, data, format='json')
+        post.refresh_from_db()
+        self.assertEqual(post.placeName, data['placeName'])
+
+    def test_post_tag_update(self):
+        post = create_post(userPost=self.user)
+        payload = {'tags': [{'name': 'tag'}]}
+
+        url = detail_post_url(post.id)
+        res = self.client.patch(url, payload, format='json')
 
     def test_delete_post(self):
         post = create_post(userPost=self.user)

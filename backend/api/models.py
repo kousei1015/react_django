@@ -65,23 +65,6 @@ class Profile(models.Model):
     def save_user_profile(sender, instance, **kwargs):
         instance.profile.save()
 
-class Post(models.Model):
-    placeName = models.CharField(max_length=100, blank=False)
-    description = models.TextField(max_length=500, blank=False)
-    userPost = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='userPost',
-        on_delete=models.CASCADE
-    )
-    accessStars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    congestionDegree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)   
-
-    def __str__(self):
-        return self.placeName
-    class Meta:
-        ordering =  ['-id']
-
-
 
 class Post(models.Model):
     placeName = models.CharField(max_length=30, blank=False)
@@ -92,7 +75,8 @@ class Post(models.Model):
     )
     accessStars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     congestionDegree = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)   
+    img = models.ImageField(blank=True, null=True, upload_to=upload_post_path)
+    tags = models.ManyToManyField('Tag', blank=True)
 
     def __str__(self):
         return self.placeName
@@ -112,3 +96,10 @@ class Comment(models.Model):
     def __str__(self):
         return self.text
 
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    userTag = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
