@@ -7,7 +7,9 @@ import {
   Image,
   Star,
   UserName,
-  DetailButton
+  DetailButton,
+  TagUl,
+  TagList,
 } from "./PostStyles";
 import { Avatar, Button } from "@material-ui/core";
 import Rating from "@mui/material/Rating";
@@ -25,6 +27,7 @@ const Post: React.FC<PROPS_POST> = ({
   accessStars,
   congestionDegree,
   imageUrl,
+  tags,
 }) => {
   const profiles = useSelector(selectProfiles);
   const prof = profiles.filter((prof) => {
@@ -38,7 +41,6 @@ const Post: React.FC<PROPS_POST> = ({
   if (placeName) {
     return (
       <Wrapper>
-        
         <Content>
           <Header>
             <Avatar src={prof[0]?.img} />
@@ -46,7 +48,7 @@ const Post: React.FC<PROPS_POST> = ({
           </Header>
           <Image src={imageUrl} alt="" />
 
-          <PlaceName>名所:{placeName}</PlaceName>
+          <PlaceName>{placeName}</PlaceName>
           <Star>
             <PlaceName>アクセス度</PlaceName>
             <Rating name="read-only" value={accessStars} readOnly />
@@ -56,7 +58,20 @@ const Post: React.FC<PROPS_POST> = ({
             <Rating name="read-only" value={congestionDegree} readOnly />
           </Star>
 
-          <DetailButton onClick={pushDetailPage} data-testid={`detail-${postId}`}>
+          <TagUl>
+            {tags.map((tag) => (
+              <TagList
+                key={tag.id}
+              >
+                <span>{tag.name}</span>
+              </TagList>
+            ))}
+          </TagUl>
+
+          <DetailButton
+            onClick={pushDetailPage}
+            data-testid={`detail-${postId}`}
+          >
             詳細
           </DetailButton>
         </Content>

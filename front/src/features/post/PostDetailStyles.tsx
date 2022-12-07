@@ -95,3 +95,17 @@ export const ButtonFlex = styled.div`
   display: flex;
   justify-content: space-around;
 `;
+
+export const TagUl = styled.ul`
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0 2rem;
+`;
+
+export const TagList = styled.li`
+  background-color: #2196f3;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 16px;
+`;

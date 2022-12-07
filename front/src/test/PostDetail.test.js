@@ -29,6 +29,7 @@ const handlers = [
         accessStars: 5,
         congestionDegree: 4,
         img: null,
+        tags: [{name: "tag"}],
         userPost: {
           id: 2,
           profile: {
@@ -140,6 +141,7 @@ describe("UpdatePost Component Test", () => {
     expect(screen.getByTestId("congestion")).toBeTruthy();
     expect(screen.getByTestId("place-name")).toBeTruthy();
     expect(screen.getByTestId("description")).toBeTruthy();
+    expect(screen.getByTestId("tag-name")).toBeTruthy();
     expect(screen.getByText("Edit")).toBeTruthy();
     expect(screen.getByText("Delete")).toBeTruthy();
   });

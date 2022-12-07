@@ -5,14 +5,16 @@ import { AppDispatch } from "../../app/store";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
 import { File } from "../types";
-import {
-  fetchPostStart,
-  fetchPostEnd,
-  fetchAsyncNewPost,
-} from "./postSlice";
+import { fetchPostStart, fetchPostEnd, fetchAsyncNewPost } from "./postSlice";
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
-import { PostForm, PostFormWrapper, PostTitle } from "./NewUpdatePostStyles";
+import {
+  PostForm,
+  PostFormWrapper,
+  PostTitle,
+  TagUl,
+  TagList,
+} from "./NewUpdatePostStyles";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,11 +22,11 @@ const useStyles = makeStyles((theme: Theme) =>
     textField: {
       height: "50px",
       padding: "15px",
-      marginBottom: "35px"
+      marginBottom: "35px",
     },
     typo: {
       marginTop: "25px",
-      color: "#346751"
+      color: "#346751",
     },
   })
 );
@@ -32,14 +34,40 @@ const useStyles = makeStyles((theme: Theme) =>
 const NewPost: React.FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
+
   const [image, setImage] = useState<File | null>(null);
   const [placeName, setPlaceName] = useState("");
   const [description, setDescription] = useState("");
   const [accessStars, setAccessStars] = useState<number | null>(0);
-  const [congestionDegree, setCongestionDegree] = useState<number | null>(
-    0
-  );
+  const [congestionDegree, setCongestionDegree] = useState<number | null>(0);
+
+  // for tags
+  const [tags, setTags] = useState([{ name: "" }]);
+  const [tagInput, setTagInput] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setTagInput(e.target.value);
+  };
+
+  const addTag = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    if (tagInput === "") {
+      return;
+    }
+    const newTag = {
+      name: tagInput,
+    };
+    setTags((prev) => [...prev, newTag]);
+  };
+
+  const removeTag = (index: number) => {
+    setTags(tags.filter((el, i) => i !== index));
+  };
+
+  //useState for error message
   const [message, setMessage] = React.useState("");
+
   const handlerEditPicture = () => {
     const fileInput = document.getElementById("imageInput");
     fileInput?.click();
@@ -56,6 +84,8 @@ const NewPost: React.FC = () => {
       img: image,
       accessStars: accessStars,
       congestionDegree: congestionDegree,
+      //tags: tags[0].name as string,
+      tags: tags,
     };
     await dispatch(fetchPostStart());
     const result = await dispatch(fetchAsyncNewPost(packet));
@@ -67,7 +97,9 @@ const NewPost: React.FC = () => {
       setImage(null);
       pushHome();
     } else if (fetchAsyncNewPost.rejected.match(result)) {
-      setMessage("エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください");
+      setMessage(
+        "エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください"
+      );
     }
   };
 
@@ -171,7 +203,31 @@ const NewPost: React.FC = () => {
           <MdAddAPhoto />
         </IconButton>
         <br />
-        <Button data-testid="btn-post" onClick={newPost} >
+
+        <input
+          type="text"
+          value={tagInput}
+          onChange={(e) => handleChange(e)}
+          className="inputText"
+        />
+        <button onClick={addTag}>追加</button>
+        <br />
+
+        <TagUl>
+          {tags?.map((tag, index) =>
+            tag.name ? (
+              <TagList key={index}>
+                <span>{tag.name}</span>
+                <span onClick={() => removeTag(index)}>&times;</span>
+              </TagList>
+            ) : (
+              <></>
+            )
+          )}
+        </TagUl>
+        <br />
+
+        <Button data-testid="btn-post" onClick={newPost}>
           Post
         </Button>
       </PostForm>

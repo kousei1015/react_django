@@ -46,6 +46,7 @@ const Core: React.FC = () => {
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const [orderType, setOrderType] = useState("");
 
+  //react-paginate(ライブラリ)のためのstateと関数
   const [pageNumber, setPageNumber] = useState(0);
   const postsPerPage = 12;
   const pagesVisited = pageNumber * postsPerPage;
@@ -57,11 +58,16 @@ const Core: React.FC = () => {
   function pushHome() {
     navigate("/post/create");
   }
+
   
   //アクセスがよい順にソート
-  const accessAsc = [...posts].sort( (a, b) => a.accessStars < b.accessStars ? 1: -1 )
+  const accessAsc = [...posts].sort((a, b) =>
+    a.accessStars < b.accessStars ? 1 : -1
+  );
   //混雑が少ない場所順にソート
-  const congestionAsc = [...posts].sort( (a, b) => a.congestionDegree < b.congestionDegree ? 1: -1 )
+  const congestionAsc = [...posts].sort((a, b) =>
+    a.congestionDegree < b.congestionDegree ? 1 : -1
+  );
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -84,7 +90,7 @@ const Core: React.FC = () => {
       <Auth />
       <EditProfile />
       <CoreHeader>
-        <CoreTitle>Map Collection</CoreTitle>
+        
         {myProfile.nickName ? (
           <>
             <span style={{ display: "none" }}>{myProfile.nickName}</span>
@@ -99,11 +105,13 @@ const Core: React.FC = () => {
             </CoreButton>
             <CoreSelectMenu
               onChange={(e) => {
-                const selectedOrderType:string = e.target.value;
+                const selectedOrderType: string = e.target.value;
                 setOrderType(selectedOrderType);
               }}
             >
-              <option value="" selected>新規投稿順</option>
+              <option value="" selected>
+                新規投稿順
+              </option>
               <option value="access">アクセスがよい順</option>
               <option value="congestion">混雑が少ない順</option>
             </CoreSelectMenu>
@@ -155,8 +163,9 @@ const Core: React.FC = () => {
 
       {myProfile?.nickName && (
         <>
+          <CoreTitle>Map Collection</CoreTitle>
           <CoreContainer>
-          {orderType === "" && (
+            {orderType === "" && (
               <Grid container spacing={4}>
                 {posts
                   .slice(pagesVisited, pagesVisited + postsPerPage)
@@ -171,6 +180,7 @@ const Core: React.FC = () => {
                         imageUrl={post.img}
                         accessStars={post.accessStars}
                         congestionDegree={post.congestionDegree}
+                        tags={post.tags}
                       />
                     </Grid>
                   ))}
@@ -191,6 +201,7 @@ const Core: React.FC = () => {
                         imageUrl={post.img}
                         accessStars={post.accessStars}
                         congestionDegree={post.congestionDegree}
+                        tags={post.tags}
                       />
                     </Grid>
                   ))}
@@ -211,6 +222,7 @@ const Core: React.FC = () => {
                         imageUrl={post.img}
                         accessStars={post.accessStars}
                         congestionDegree={post.congestionDegree}
+                        tags={post.tags}
                       />
                     </Grid>
                   ))}

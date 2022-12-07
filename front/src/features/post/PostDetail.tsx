@@ -36,7 +36,9 @@ import {
   CommentBox,
   Input,
   CustomButton,
-  ButtonFlex
+  ButtonFlex,
+  TagUl,
+  TagList,
 } from "./PostDetailStyles";
 import {
   fetchAsyncGetDetail,
@@ -92,7 +94,6 @@ const PostDetail: React.FC = () => {
   useEffect(() => {
     const fetchLoader = async () => {
       await dispatch(fetchAsyncGetDetail(id as string));
-      //await dispatch(fetchAsyncGetDetail("1"));
       await dispatch(fetchAsyncGetMyProf());
       await dispatch(fetchAsyncGetComments());
       await dispatch(fetchAsyncGetProfs());
@@ -108,6 +109,7 @@ const PostDetail: React.FC = () => {
       {/* for test to confirm render myprofile and postDetail data */}
       <span style={{ display: "none" }}>{myProfile.nickName}</span>
       <span style={{ display: "none" }}>{postDetail.placeName}</span>
+
       <Wrapper>
         <Content>
           <Header>
@@ -131,6 +133,14 @@ const PostDetail: React.FC = () => {
               readOnly
             />
           </StarWrapper>
+
+          <TagUl>
+            {postDetail.tags.map((tag, index) => (
+              <TagList key={index}>
+                <span data-testid="tag-name">{tag.name}</span>
+              </TagList>
+            ))}
+          </TagUl>
 
           <Typography component="h6" color="error">
             {message}

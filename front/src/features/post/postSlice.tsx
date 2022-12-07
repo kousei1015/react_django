@@ -6,12 +6,7 @@ import {
   PROPS_COMMENT,
   CustomFormData,
   DETAIL_CONTENT,
-  
 } from "../types";
-
-
-
-
 
 export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
   const res = await axios.get(`${process.env.REACT_APP_API_DEV_URL}api/post/`, {
@@ -21,7 +16,6 @@ export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
   });
   return res.data;
 });
-
 
 export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
@@ -38,7 +32,6 @@ export const fetchAsyncGetDetail = createAsyncThunk(
   }
 );
 
-
 export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
@@ -51,7 +44,6 @@ export const fetchAsyncDelete = createAsyncThunk(
   }
 );
 
-
 export const fetchAsyncNewPost = createAsyncThunk(
   "post/post",
   async (newPost: PROPS_NEWPOST) => {
@@ -60,6 +52,11 @@ export const fetchAsyncNewPost = createAsyncThunk(
     uploadData.append("description", newPost.description as string);
     uploadData.append("accessStars", newPost.accessStars as number);
     uploadData.append("congestionDegree", newPost.congestionDegree as number);
+    if (newPost.tags[0].name) {
+      for (var i = 0; i < newPost.tags.length; i++) {
+        uploadData.append(`tags[${i}]name`, newPost.tags[i].name as string);
+      }
+    }
     newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
 
     const res = await axios.post(
@@ -67,6 +64,7 @@ export const fetchAsyncNewPost = createAsyncThunk(
       uploadData,
       {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `JWT ${localStorage.localJWT}`,
         },
       }
@@ -74,7 +72,6 @@ export const fetchAsyncNewPost = createAsyncThunk(
     return res.data;
   }
 );
-
 
 export const fetchAsyncEditPost = createAsyncThunk(
   "post/patch",
@@ -87,8 +84,12 @@ export const fetchAsyncEditPost = createAsyncThunk(
       "congestionDegree",
       postDetail.congestionDegree as number
     );
+    for (var i = 0; i < postDetail.tags.length; i++) {
+      postUploadData.append(`tags[${i}]name`, postDetail.tags[i].name);
+    }
     postDetail.img &&
       postUploadData.append("img", postDetail.img, postDetail.img.name);
+
     const res = await axios.put(
       `${process.env.REACT_APP_API_DEV_URL}api/post/${postDetail.id}`,
       postUploadData,
@@ -118,7 +119,6 @@ export const fetchAsyncGetComments = createAsyncThunk(
   }
 );
 
-
 export const fetchAsyncPostComment = createAsyncThunk(
   "comment/post",
   async (comment: PROPS_COMMENT) => {
@@ -131,7 +131,7 @@ export const fetchAsyncPostComment = createAsyncThunk(
         },
       }
     );
-    return res.data
+    return res.data;
   }
 );
 
@@ -145,17 +145,23 @@ export const postSlice = createSlice({
         id: "0",
         placeName: "",
         description: "",
-        userPost: 0,
+        userPost: "0",
         accessStars: 0,
         congestionDegree: 0,
         img: "",
+        tags: [
+          {
+            id: "0",
+            name: "",
+          },
+        ],
       },
     ],
     comments: [
       {
-        id: 0,
+        id: "0",
         text: "",
-        userComment: 0,
+        userComment: "0",
         post: "0",
       },
     ],
@@ -163,16 +169,21 @@ export const postSlice = createSlice({
       id: "0",
       placeName: "",
       description: "",
+      accessStars: 0,
+      congestionDegree: 0,
+      tags: [
+        {
+          name: "",
+        },
+      ],
       userPost: {
-        id: 0,
+        id: "0",
         profile: {
-          userProfile: 0,
+          userProfile: "0",
           nickName: "",
           img: "",
         },
       },
-      accessStars: 0,
-      congestionDegree: 0,
       img: "",
     },
   },
@@ -191,33 +202,31 @@ export const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    //投稿一覧取
     builder.addCase(fetchAsyncGetPosts.fulfilled, (state, action) => {
       return {
         ...state,
         posts: action.payload,
       };
     });
-    {
-      /*ここでDetailPage  */
-    }
+
+    //詳細ページ
     builder.addCase(fetchAsyncGetDetail.fulfilled, (state, action) => {
       return {
         ...state,
         postDetail: action.payload,
       };
     });
-    {
-      /*ここでDeletefunc  */
-    }
+
+    //削除機能
     builder.addCase(fetchAsyncDelete.fulfilled, (state, action) => {
       return {
         ...state,
-        posts: state.posts.filter(
-          (p) => p.id !== action.payload
-        ),
+        posts: state.posts.filter((p) => p.id !== action.payload),
       };
     });
 
+    //編集機能
     builder.addCase(fetchAsyncEditPost.fulfilled, (state, action) => {
       return {
         ...state,
@@ -227,18 +236,23 @@ export const postSlice = createSlice({
       };
     });
 
+    //投稿機能
     builder.addCase(fetchAsyncNewPost.fulfilled, (state, action) => {
       return {
         ...state,
         posts: [...state.posts, action.payload],
       };
     });
+
+    //コメント取得
     builder.addCase(fetchAsyncGetComments.fulfilled, (state, action) => {
       return {
         ...state,
         comments: action.payload,
       };
     });
+
+    //コメント投稿機能
     builder.addCase(fetchAsyncPostComment.fulfilled, (state, action) => {
       return {
         ...state,

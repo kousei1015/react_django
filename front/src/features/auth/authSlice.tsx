@@ -126,17 +126,17 @@ export const authSlice = createSlice({
     openProfile: false,
     isLoadingAuth: false,
     myprofile: {
-      id: 0,
+      id: "0",
       nickName: "",
-      userProfile: 0,
+      userProfile: "0",
       created_on: "",
       img: "",
     },
     profiles: [
       {
-        id: 0,
+        id: "0",
         nickName: "",
-        userProfile: 0,
+        userProfile: "0",
         created_on: "",
         img: "",
       },

@@ -28,14 +28,12 @@ export const CoreHeader = styled.div`
 `;
 
 export const CoreTitle = styled.h1`
-  font-weight: normal;
+  font-weight: bold;
   text-align: center;
   font-size: 34px;
   padding: 10px;
   margin: 0;
-  @media screen and (max-width: 520px) {
-    display: none;
-  }
+  color: #4b4a4a
 `;
 
 export const CoreButton = styled.button`
@@ -43,9 +41,10 @@ export const CoreButton = styled.button`
   background-color: transparent;
   padding-top: 3px;
   font-size: 28px;
+  font-family: 'M PLUS Rounded 1c';
   border: none;
   outline: none;
-  color: #346751;
+  color: #4b4a4a;
   cursor: pointer;
   @media screen and (min-width: 350px) and (max-width: 520px) {
     font-size: 20px;

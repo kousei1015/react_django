@@ -17,18 +17,24 @@ import {
   fetchAsyncGetDetail,
 } from "./postSlice";
 import { ID } from "../types";
-import { PostForm, PostFormWrapper, PostTitle } from "./NewUpdatePostStyles";
+import {
+  PostForm,
+  PostFormWrapper,
+  PostTitle,
+  TagUl,
+  TagList,
+} from "./NewUpdatePostStyles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     textField: {
       height: "50px",
       padding: "15px",
-      marginBottom: "35px"
+      marginBottom: "35px",
     },
     typo: {
       marginTop: "25px",
-      color: "#346751"
+      color: "#346751",
     },
   })
 );
@@ -46,8 +52,15 @@ const UpdatePost: React.FC = () => {
     postDetail.congestionDegree
   );
   const [userPost] = useState(postDetail.userPost);
-  const [message, setMessage] = useState("");
+  const [tags, setTags] = useState(postDetail.tags);
+  const [tagInput, setTagInput] = useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setTagInput(e.target.value);
+  };
   
+  const [message, setMessage] = useState("");
+
   const navigate = useNavigate();
   function pushHome() {
     navigate("/");
@@ -58,14 +71,27 @@ const UpdatePost: React.FC = () => {
       await dispatch(fetchAsyncGetDetail(id as string));
     };
     fetchLoader();
-  }, [])
-
-
+  }, []);
 
   const handlerEditPicture = () => {
     const fileInput = document.getElementById("imageInput");
     fileInput?.click();
   };
+
+  const addTag = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    if (tagInput === "") {
+      return;
+    }
+    const newTag = {
+      name: tagInput,
+    };
+    setTags((prev) => [...prev, newTag]);
+  };
+
+  const removeTag = (index: number) => {
+    setTags(tags.filter((el, i) => i !== index))
+  }
 
   const editPost = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -76,19 +102,22 @@ const UpdatePost: React.FC = () => {
       img: image,
       accessStars: accessStars,
       congestionDegree: congestionDegree,
+      tags: tags,
       userPost: userPost,
     };
     await dispatch(fetchPostStart());
     const result = await dispatch(fetchAsyncEditPost(postUploadData));
     await dispatch(fetchPostEnd());
     if (fetchAsyncEditPost.fulfilled.match(result)) {
-      setMessage("編集成功")
+      setMessage("編集成功");
       setPlaceName("");
       setDescription("");
       setImage(null);
       pushHome();
     } else if (fetchAsyncEditPost.rejected.match(result)) {
-      setMessage("エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください");
+      setMessage(
+        "エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください"
+      );
     }
   };
 
@@ -101,7 +130,6 @@ const UpdatePost: React.FC = () => {
           {message}
         </Typography>
 
-        
         <br />
         <TextField
           fullWidth
@@ -148,10 +176,7 @@ const UpdatePost: React.FC = () => {
             setCongestionDegree(newValue as number);
           }}
         />
-        <Typography
-          component="h6"
-          className={classes.typo}
-        >
+        <Typography component="h6" className={classes.typo}>
           名所の画像※任意
         </Typography>
         <input
@@ -164,6 +189,26 @@ const UpdatePost: React.FC = () => {
         <IconButton onClick={handlerEditPicture}>
           <MdAddAPhoto />
         </IconButton>
+        <br />
+
+        <input
+          type="text"
+          value={tagInput}
+          onChange={(e) => handleChange(e)}
+          className="inputText"
+        />
+        <button onClick={addTag}>追加</button>
+        <br />
+
+        <TagUl>
+          {tags.map((tag, index) => (
+            <TagList key={index}>
+              <span>{tag.name}</span>
+              <span onClick={() => removeTag(index)}>&times;</span>
+            </TagList>
+          ))}
+        </TagUl>
+
         <br />
         <Button data-testid="btn-update" onClick={editPost}>
           Edit

@@ -72,6 +72,7 @@ const handlers = [
           accessStars: 3,
           congestionDegree: 3,
           img: "http://localhost:8000/media/posts/2test.jpg",
+          tags: [{name: "test"}]
         },
         {
           id: 2,
@@ -81,6 +82,7 @@ const handlers = [
           accessStars: 4,
           congestionDegree: 4,
           img: "http://localhost:8000/media/posts/1%E5%A4%A7%E5%9C%8B%E9%AD%82%E7%A5%9E%E7%A4%BE.jpg",
+          tags: [{name: "test"}]
         },
       ])
     );

@@ -34,6 +34,7 @@ const handlers = [
         accessStars: 5,
         congestionDegree: 4,
         img: null,
+        tags: [{name: "test"}]
       })
     );
   }),

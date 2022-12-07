@@ -27,4 +27,28 @@ export const PostTitle = styled.h1`
   }
 `;
 
+export const TagUl = styled.ul`
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0 2rem;
+`;
 
+export const TagList = styled.li`
+  background-color: #2196f3;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 16px;
+`;
+
+export const TagInput = styled.input`
+  border: 1px solid;
+  border-radius: 0.5rem;
+  padding: 0.3rem
+`;
+
+export const NewTagAddButton = styled.button`
+  border-radius: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    border: none;
+`

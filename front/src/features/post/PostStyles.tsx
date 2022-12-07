@@ -9,6 +9,7 @@ export const Content = styled.div`
   text-align: center;
   background-color: #fff;
   border-radius: 28px;
+  box-shadow: 3px 5px 10px #4b4a4a;
 `;
 
 export const Header = styled.div`
@@ -26,7 +27,7 @@ export const PlaceName = styled.p`
   font-size: 1.2rem;
   margin: 10px 0;
   @media (max-width: 520px) {
-   font-size: 1.35rem;
+    font-size: 1.35rem;
   }
 `;
 
@@ -37,7 +38,7 @@ export const Image = styled.img`
   @media screen and (max-width: 520px) {
     height: 220px;
   }
-  @media screen and (min-width: 520)and (max-width: 960px) {
+  @media screen and (min-width: 520) and (max-width: 960px) {
     height: 350px;
   }
 `;
@@ -48,17 +49,31 @@ export const Star = styled.div`
   align-items: center;
 `;
 
-export const DetailButton = styled.button`
-  background-color: #28B5B5;
-  border: 1px solid #28B5B5;
+export const TagUl = styled.ul`
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0 2rem;
+`;
+
+export const TagList = styled.li`
+  background-color: #2196f3;
+  color: #fff;
+  padding: 3px 12px;
   border-radius: 16px;
-  color: #F4FCD9;
+`;
+
+export const DetailButton = styled.button`
+  background-color: #2196f3;
+  border: 1px solid #2196f3;
+  border-radius: 16px;
+  color: #fff;
   padding: 8px 24px;
   cursor: pointer;
   transition: 0.3s all ease-in-out;
-  margin: 1rem 0 1.5rem;
+  margin: 0 0 1.5rem;
   @media (max-width: 520px) {
-   font-size: 1.15rem;
+    font-size: 1.15rem;
   }
   &:hover {
     background-color: #346751;

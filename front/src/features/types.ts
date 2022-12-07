@@ -1,17 +1,10 @@
-export type CustomFormData = FormData & {
-  append(name: string, value: string | Blob | number, fileName?: string): void;
-}
-
-
-/*export interface File extends Blob {
-  readonly lastModified: number;
-  readonly name: string;
-}*/
-
+/*to upload image file*/
 export type File = Blob & {
   readonly lastModified: number;
   readonly name: string;
 }
+
+
 /*authSlice.ts*/
 export type PROPS_AUTHEN = {
   email: string;
@@ -19,7 +12,7 @@ export type PROPS_AUTHEN = {
 }
 
 export type PROPS_PROFILE = {
-  id: number;
+  id: string;
   nickName: string;
   img: File | null;
 }
@@ -35,24 +28,26 @@ export type PROPS_NEWPOST = {
   placeName: string;
   description: string;
   img: File | null;
+  tags:{name: string}[];
 }
-
-
 
 export type PROPS_COMMENT = {
   text: string;
   post: string;
 }
+
+
 /*Post.tsx*/
 export type PROPS_POST = {
   postId: string;
-  loginId: number;
-  userPost: number;
+  loginId: string;
+  userPost: string;
   placeName: string;
   description: string;
   imageUrl: string;
   accessStars: number;
   congestionDegree: number;
+  tags: {id: string, name: string}[];
 }
 
 export type EDIT_CONTENTS = {
@@ -67,10 +62,15 @@ export type DETAIL_CONTENT = {
   accessStars: number;
   congestionDegree: number;
   img: File | null;
+  tags: {name: string}[];
 }
-
 
 
 export type ID = {
   id: string;
 };
+
+
+export type CustomFormData = FormData & {
+  append(name: string, value: string | Blob | number, fileName?: string): void;
+}
