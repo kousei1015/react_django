@@ -58,6 +58,7 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         tags = validated_data.pop('tags', None)
+        #タグが存在する場合
         if tags is not None:
             instance.tags.clear()
             self._get_or_create_tags(tags, instance)

@@ -26,7 +26,7 @@ env = environ.Env() # set default values and casting
 env.read_env(os.path.join(BASE_DIR, '.env')) # reading .env file
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = True
+DEBUG = False
 
 
 # Quick-start development settings - unsuitable for production
