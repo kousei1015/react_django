@@ -23,6 +23,8 @@ import {
   PostTitle,
   TagUl,
   TagList,
+  TagInput,
+  TagAddButton,
 } from "./NewUpdatePostStyles";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -191,13 +193,13 @@ const UpdatePost: React.FC = () => {
         </IconButton>
         <br />
 
-        <input
+        <TagInput
           type="text"
           value={tagInput}
           onChange={(e) => handleChange(e)}
           className="inputText"
         />
-        <button onClick={addTag}>追加</button>
+        <TagAddButton onClick={addTag}>追加</TagAddButton>
         <br />
 
         <TagUl>

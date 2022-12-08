@@ -14,8 +14,11 @@ import {
   PostTitle,
   TagUl,
   TagList,
+  TagInput,
+  TagAddButton,
 } from "./NewUpdatePostStyles";
 import { useNavigate } from "react-router-dom";
+import { TAG } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +45,7 @@ const NewPost: React.FC = () => {
   const [congestionDegree, setCongestionDegree] = useState<number | null>(0);
 
   // for tags
-  const [tags, setTags] = useState([{ name: "" }]);
+  const [tags, setTags] = useState<TAG[]>([]);
   const [tagInput, setTagInput] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +68,7 @@ const NewPost: React.FC = () => {
     setTags(tags.filter((el, i) => i !== index));
   };
 
+  
   //useState for error message
   const [message, setMessage] = React.useState("");
 
@@ -84,7 +88,6 @@ const NewPost: React.FC = () => {
       img: image,
       accessStars: accessStars,
       congestionDegree: congestionDegree,
-      //tags: tags[0].name as string,
       tags: tags,
     };
     await dispatch(fetchPostStart());
@@ -204,13 +207,13 @@ const NewPost: React.FC = () => {
         </IconButton>
         <br />
 
-        <input
+        <TagInput
           type="text"
           value={tagInput}
           onChange={(e) => handleChange(e)}
           className="inputText"
         />
-        <button onClick={addTag}>追加</button>
+        <TagAddButton onClick={addTag}>追加</TagAddButton>
         <br />
 
         <TagUl>
@@ -226,7 +229,6 @@ const NewPost: React.FC = () => {
           )}
         </TagUl>
         <br />
-
         <Button data-testid="btn-post" onClick={newPost}>
           Post
         </Button>

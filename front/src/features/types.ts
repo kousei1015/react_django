@@ -65,11 +65,13 @@ export type DETAIL_CONTENT = {
   tags: {name: string}[];
 }
 
-
 export type ID = {
   id: string;
-};
+}
 
+export type TAG ={
+  name: string;
+}
 
 export type CustomFormData = FormData & {
   append(name: string, value: string | Blob | number, fileName?: string): void;

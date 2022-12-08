@@ -42,13 +42,16 @@ export const TagList = styled.li`
 `;
 
 export const TagInput = styled.input`
-  border: 1px solid;
+  border: 1px solid #4b4a4a;
   border-radius: 0.5rem;
-  padding: 0.3rem
+  padding: 0.3rem;
 `;
 
-export const NewTagAddButton = styled.button`
+export const TagAddButton = styled.button`
   border-radius: 0.5rem;
-    padding: 0.3rem 0.5rem;
-    border: none;
-`
+  padding: 0.3rem 0.5rem;
+  border: none;
+  margin-left: 0.5rem;
+  background-color: #2196f3;
+  color: #fff;
+`;
