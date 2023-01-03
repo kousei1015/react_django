@@ -41,8 +41,9 @@ class AuthorizedPostApiTests(TestCase):
         res = self.client.get(POST_URL)
         posts = Post.objects.all().order_by('id')
         serializer = PostSerializer(posts, many=True)
+        res_result = res.json().get('results')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res_result, serializer.data)
 
     def test_create_new_post(self):
         data = {

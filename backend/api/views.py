@@ -1,10 +1,14 @@
-from rest_framework import generics
+from rest_framework import generics, pagination
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from . import serializers
 from .models import Profile, Post, Comment, User, Tag
 from rest_framework.views import APIView
 from . import custompermissions
+
+
+class PageNumberPagination(pagination.PageNumberPagination):
+    page_size = 9 
 
 class CreateUserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -32,6 +36,7 @@ class MyProfileListView(generics.ListAPIView):
 class PostViewSet(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostSerializer
+    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
