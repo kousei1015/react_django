@@ -66,40 +66,21 @@ export const CoreLogout = styled.div`
 
 export const CoreContainer = styled.div`
   padding: 20px;
+  margin-bottom: 70px;
 `;
 
-export const CoreStyledPagination = styled.div`
-  margin: 30px auto 0px;
-  @media (max-width: 520px) {
-    margin: 30px auto 70px;
-  }
-  .paginationBttns {
-    height: 40px;
-    list-style: none;
-    display: flex;
-    justify-content: center;
-  }
+export const PaginateNav = styled.nav`
+  display: flex;
+  justify-content: center;
+`;
 
-  .paginationBttns a {
-    padding: 10px;
-    margin: 8px;
-    border-radius: 5px;
-    border: 2px solid #ee442a;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  .paginationBttns a:hover {
-    color: #fff;
-    background-color: #ee442a;
-  }
-
-  .paginationActive a {
-    color: #fff;
-    background-color: #ee442a;
-  }
-
-  .paginationDisabled a {
-    display: none;
-  }
+export const PaginateButton = styled.button`
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  padding: 1rem;
+  margin: 0 5px;
+  background-color: tomato;
+  color: white;
 `;

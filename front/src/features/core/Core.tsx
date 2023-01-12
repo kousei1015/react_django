@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Auth from "../auth/Auth";
 import Post from "../post/Post";
 import EditProfile from "./EditProfile";
-import ReactPaginate from "react-paginate";
 import {
   CoreHeader,
   CoreTitle,
@@ -10,7 +9,8 @@ import {
   CoreSelectMenu,
   CoreLogout,
   CoreContainer,
-  CoreStyledPagination,
+  PaginateNav,
+  PaginateButton,
 } from "./CoreStyles";
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -45,27 +45,19 @@ const Core: React.FC = () => {
   const isLoadingPost = useSelector(selectIsLoadingPost);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const [orderType, setOrderType] = useState("");
+  const [page, setPage] = useState(1);
 
-  //react-paginate(ライブラリ)のためのstateと関数
-  const [pageNumber, setPageNumber] = useState(0);
-  const postsPerPage = 12;
-  const pagesVisited = pageNumber * postsPerPage;
-  const pageCount = Math.ceil(posts.length / postsPerPage);
-  const changePage = ({ selected }: { selected: number }) => {
-    setPageNumber(selected);
-  };
   const navigate = useNavigate();
   function pushHome() {
     navigate("/post/create");
   }
 
-  
   //アクセスがよい順にソート
-  const accessAsc = [...posts].sort((a, b) =>
+  const accessAsc = [...posts.results].sort((a, b) =>
     a.accessStars < b.accessStars ? 1 : -1
   );
   //混雑が少ない場所順にソート
-  const congestionAsc = [...posts].sort((a, b) =>
+  const congestionAsc = [...posts.results].sort((a, b) =>
     a.congestionDegree < b.congestionDegree ? 1 : -1
   );
 
@@ -83,14 +75,22 @@ const Core: React.FC = () => {
       }
     };
     fetchLoader();
-  }, [dispatch, orderType]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAsyncGetPosts(page));
+  }, [page]);
+
+
+  const pagesArray = Array(posts.total_pages)
+    .fill(0)
+    .map((_, index) => index + 1);
 
   return (
     <>
       <Auth />
       <EditProfile />
       <CoreHeader>
-        
         {myProfile.nickName ? (
           <>
             <span style={{ display: "none" }}>{myProfile.nickName}</span>
@@ -165,11 +165,10 @@ const Core: React.FC = () => {
         <>
           <CoreTitle>Map Collection</CoreTitle>
           <CoreContainer>
-            {orderType === "" && (
-              <Grid container spacing={4}>
-                {posts
-                  .slice(pagesVisited, pagesVisited + postsPerPage)
-                  .map((post) => (
+            <div>
+              {orderType === "" && (
+                <Grid container spacing={4}>
+                  {posts.results.map((post) => (
                     <Grid key={post.id} item xs={12} md={4}>
                       <Post
                         postId={post.id}
@@ -184,13 +183,11 @@ const Core: React.FC = () => {
                       />
                     </Grid>
                   ))}
-              </Grid>
-            )}
-            {orderType === "access" && (
-              <Grid container spacing={4}>
-                {accessAsc
-                  .slice(pagesVisited, pagesVisited + postsPerPage)
-                  .map((post) => (
+                </Grid>
+              )}
+              {orderType === "access" && (
+                <Grid container spacing={4}>
+                  {accessAsc.map((post) => (
                     <Grid key={post.id} item xs={12} md={4}>
                       <Post
                         postId={post.id}
@@ -205,13 +202,11 @@ const Core: React.FC = () => {
                       />
                     </Grid>
                   ))}
-              </Grid>
-            )}
-            {orderType === "congestion" && (
-              <Grid container spacing={4}>
-                {congestionAsc
-                  .slice(pagesVisited, pagesVisited + postsPerPage)
-                  .map((post) => (
+                </Grid>
+              )}
+              {orderType === "congestion" && (
+                <Grid container spacing={4}>
+                  {congestionAsc.map((post) => (
                     <Grid key={post.id} item xs={12} md={4}>
                       <Post
                         postId={post.id}
@@ -226,22 +221,33 @@ const Core: React.FC = () => {
                       />
                     </Grid>
                   ))}
-              </Grid>
-            )}
-
-            <CoreStyledPagination>
-              <ReactPaginate
-                previousLabel={"Previous"}
-                nextLabel={"Next"}
-                pageCount={pageCount}
-                onPageChange={changePage}
-                containerClassName={"paginationBttns"}
-                previousLinkClassName={"previousBttn"}
-                nextLinkClassName={"nextBttn"}
-                disabledClassName={"paginationDisabled"}
-                activeClassName={"paginationActive"}
-              />
-            </CoreStyledPagination>
+                </Grid>
+              )}
+            </div>
+            <PaginateNav>
+              {/*ページネーションの際に、どの要素が選ばれたとしても３つの要素を表示させている*/}
+              {page === 1 &&
+                pagesArray.slice(0, 3).map((pg) => (
+                  <PaginateButton key={pg} onClick={() => setPage(pg)}>
+                    {pg}
+                  </PaginateButton>
+                ))}
+              {(page > 1 &&
+                page < pagesArray.length) &&
+                pagesArray
+                  .slice(page - 2, page + 1)
+                  .map((pg) => (
+                    <PaginateButton onClick={() => setPage(pg)}>
+                      {pg}
+                    </PaginateButton>
+                  ))}
+              {page === pagesArray.length &&
+                pagesArray.slice(page - 3, page + 1).map((pg) => (
+                  <PaginateButton key={pg} onClick={() => setPage(pg)}>
+                    {pg}
+                  </PaginateButton>
+                ))}
+            </PaginateNav>
           </CoreContainer>
         </>
       )}

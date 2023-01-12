@@ -19,6 +19,7 @@ import {
 } from "./NewUpdatePostStyles";
 import { useNavigate } from "react-router-dom";
 import { TAG } from "../types";
+import imageCompression from "browser-image-compression";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,6 +40,11 @@ const NewPost: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const [image, setImage] = useState<File | null>(null);
+  const option = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 400,
+  };
+
   const [placeName, setPlaceName] = useState("");
   const [description, setDescription] = useState("");
   const [accessStars, setAccessStars] = useState<number | null>(0);
@@ -68,7 +74,6 @@ const NewPost: React.FC = () => {
     setTags(tags.filter((el, i) => i !== index));
   };
 
-  
   //useState for error message
   const [message, setMessage] = React.useState("");
 
@@ -200,7 +205,21 @@ const NewPost: React.FC = () => {
           type="file"
           id="imageInput"
           hidden={true}
-          onChange={(e) => setImage(e.target.files![0])}
+          onChange={
+            async (e:any) => {
+            if (!e.target.files[0]) {
+              return;
+            }
+            const img = e.target.files[0];
+            try {
+              const comporessFile = await imageCompression(img, option)
+              setImage(comporessFile)
+            }
+            catch(error) {
+              console.log(error)
+            }
+            }
+          }
         />
         <IconButton onClick={handlerEditPicture}>
           <MdAddAPhoto />

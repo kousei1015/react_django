@@ -8,8 +8,8 @@ import {
   DETAIL_CONTENT,
 } from "../types";
 
-export const fetchAsyncGetPosts = createAsyncThunk("post/get", async () => {
-  const res = await axios.get(`${process.env.REACT_APP_API_URL}api/post/`, {
+export const fetchAsyncGetPosts = createAsyncThunk("post/get", async (params: number = 1) => {
+  const res = await axios.get(`${process.env.REACT_APP_API_DEV_URL}api/post/?page=${params}`, {
     headers: {
       Authorization: `JWT ${localStorage.localJWT}`,
     },
@@ -21,7 +21,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/${id}`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/${id}`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -35,7 +35,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
 export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
-    await axios.delete(`${process.env.REACT_APP_API_URL}api/post/${id}`, {
+    await axios.delete(`${process.env.REACT_APP_API_DEV_URL}api/post/${id}`, {
       headers: {
         Authorization: `JWT ${localStorage.localJWT}`,
       },
@@ -55,14 +55,13 @@ export const fetchAsyncNewPost = createAsyncThunk(
     //if (newPost.tags[0].name !== "" ) {
 
     for (var i = 0; i < newPost.tags.length; i++) {
-
       uploadData.append(`tags[${i}]name`, newPost.tags[i].name as string);
     }
 
     newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
 
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/post/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/`,
       uploadData,
       {
         headers: {
@@ -93,7 +92,7 @@ export const fetchAsyncEditPost = createAsyncThunk(
       postUploadData.append("img", postDetail.img, postDetail.img.name);
 
     const res = await axios.put(
-      `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
+      `${process.env.REACT_APP_API_DEV_URL}api/post/${postDetail.id}`,
       postUploadData,
       {
         headers: {
@@ -110,7 +109,7 @@ export const fetchAsyncGetComments = createAsyncThunk(
   "comment/get",
   async () => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/comment/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -125,7 +124,7 @@ export const fetchAsyncPostComment = createAsyncThunk(
   "comment/post",
   async (comment: PROPS_COMMENT) => {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/comment/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
       comment,
       {
         headers: {
@@ -142,8 +141,9 @@ export const postSlice = createSlice({
   initialState: {
     isLoadingPost: false,
     openNewPost: false,
-    posts: [
-      {
+    posts: {
+      total_pages: 0,
+      results: [{
         id: "0",
         placeName: "",
         description: "",
@@ -158,7 +158,8 @@ export const postSlice = createSlice({
           },
         ],
       },
-    ],
+    ]
+  },
     comments: [
       {
         id: "0",
@@ -224,7 +225,7 @@ export const postSlice = createSlice({
     builder.addCase(fetchAsyncDelete.fulfilled, (state, action) => {
       return {
         ...state,
-        posts: state.posts.filter((p) => p.id !== action.payload),
+        results: state.posts.results.filter((p) => p.id !== action.payload),
       };
     });
 
@@ -232,7 +233,7 @@ export const postSlice = createSlice({
     builder.addCase(fetchAsyncEditPost.fulfilled, (state, action) => {
       return {
         ...state,
-        posts: state.posts.map((p) =>
+        results: state.posts.results.map((p) =>
           p.id === action.payload.id ? action.payload : p
         ),
       };
@@ -242,7 +243,7 @@ export const postSlice = createSlice({
     builder.addCase(fetchAsyncNewPost.fulfilled, (state, action) => {
       return {
         ...state,
-        posts: [...state.posts, action.payload],
+        results: [...state.posts.results, action.payload],
       };
     });
 

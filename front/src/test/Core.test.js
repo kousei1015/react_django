@@ -63,7 +63,9 @@ const handlers = [
   rest.get("http://localhost:8000/api/post/", (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json([
+      ctx.json({
+        total_pages: 1,
+        results: [
         {
           id: 1,
           userPost: 2,
@@ -84,7 +86,7 @@ const handlers = [
           img: "http://localhost:8000/media/posts/1%E5%A4%A7%E5%9C%8B%E9%AD%82%E7%A5%9E%E7%A4%BE.jpg",
           tags: [{name: "test"}]
         },
-      ])
+      ]})
     );
   }),
   rest.get("http://localhost:8000/api/profile/", (req, res, ctx) => {
