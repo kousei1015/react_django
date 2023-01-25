@@ -81,10 +81,60 @@ const Core: React.FC = () => {
     dispatch(fetchAsyncGetPosts(page));
   }, [page]);
 
-
   const pagesArray = Array(posts.total_pages)
     .fill(0)
     .map((_, index) => index + 1);
+
+
+  const pagesFunc = () => {
+    const dots = "...";
+    if (pagesArray.length >= 6) {
+      if (page >= 1 && page <= 3) {
+        const firstPageArrays = [
+          1,
+          2,
+          3,
+          4,
+          dots,
+          pagesArray.length,
+        ];
+        return firstPageArrays.map((pg) => (
+          <PaginateButton key={pg} onClick={() => setPage(pg as number)}>
+            {pg}
+          </PaginateButton>
+        ));
+      } else if (page >= pagesArray.length - 1) {
+        const lastPageArrays = [
+          1,
+          dots,
+          pagesArray.length - 2,
+          pagesArray.length - 1,
+          pagesArray.length,
+        ];
+        return lastPageArrays.map((pg) => (
+          <PaginateButton key={pg} onClick={() => setPage(pg as number)}>
+            {pg}
+          </PaginateButton>
+        ));
+      } else {
+        const slicedArrays = pagesArray.slice(page - 2, page + 1);
+        const middlePageArrays = [
+          1,
+          dots,
+          ...slicedArrays,
+          dots,
+          pagesArray.length,
+        ];
+        return middlePageArrays.map((pg) => (
+          <PaginateButton onClick={() => setPage(pg as number)}>{pg}</PaginateButton>
+        ));
+      }
+    }
+    else {
+      return pagesArray.map((pg) => (
+        <PaginateButton onClick={() => setPage(pg)}>{pg}</PaginateButton>
+    ))}
+  };
 
   return (
     <>
@@ -224,30 +274,7 @@ const Core: React.FC = () => {
                 </Grid>
               )}
             </div>
-            <PaginateNav>
-              {/*ページネーションの際に、どの要素が選ばれたとしても３つの要素を表示させている*/}
-              {page === 1 &&
-                pagesArray.slice(0, 3).map((pg) => (
-                  <PaginateButton key={pg} onClick={() => setPage(pg)}>
-                    {pg}
-                  </PaginateButton>
-                ))}
-              {(page > 1 &&
-                page < pagesArray.length) &&
-                pagesArray
-                  .slice(page - 2, page + 1)
-                  .map((pg) => (
-                    <PaginateButton onClick={() => setPage(pg)}>
-                      {pg}
-                    </PaginateButton>
-                  ))}
-              {page === pagesArray.length &&
-                pagesArray.slice(page - 3, page + 1).map((pg) => (
-                  <PaginateButton key={pg} onClick={() => setPage(pg)}>
-                    {pg}
-                  </PaginateButton>
-                ))}
-            </PaginateNav>
+            <PaginateNav>{pagesFunc()}</PaginateNav>
           </CoreContainer>
         </>
       )}
