@@ -42,6 +42,8 @@ class AuthorizedPostApiTests(TestCase):
         posts = Post.objects.all().order_by('id')
         serializer = PostSerializer(posts, many=True)
         res_result = res.json().get('results')
+        ''' "res.data" にはページネーションを追加したことで、"count", "next" といった要素が追加されている。
+        そうなると serializer.data と一致せず、48行目の箇所でエラーが起こるので results の要素のみを取得している '''
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res_result, serializer.data)
 

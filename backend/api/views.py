@@ -1,4 +1,5 @@
-from rest_framework import generics, pagination
+from rest_framework import generics, pagination, response
+from rest_framework.response import Response
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import AllowAny
 from . import serializers
@@ -7,8 +8,20 @@ from rest_framework.views import APIView
 from . import custompermissions
 
 
-class PageNumberPagination(pagination.PageNumberPagination):
-    page_size = 9 
+class CustomPagination(pagination.PageNumberPagination):
+    page_size = 9
+
+    def get_paginated_response(self, data):
+        return response.Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'current_papge': self.page.number,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data,
+        })
+
+
 
 class CreateUserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -36,7 +49,7 @@ class MyProfileListView(generics.ListAPIView):
 class PostViewSet(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
 
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
