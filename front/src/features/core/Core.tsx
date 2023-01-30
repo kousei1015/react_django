@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import usePagination from "./usePagination";
 import Auth from "../auth/Auth";
 import Post from "../post/Post";
 import EditProfile from "./EditProfile";
@@ -60,7 +61,6 @@ const Core: React.FC = () => {
   const congestionAsc = [...posts.results].sort((a, b) =>
     a.congestionDegree < b.congestionDegree ? 1 : -1
   );
-
   useEffect(() => {
     const fetchLoader = async () => {
       if (localStorage.localJWT) {
@@ -85,56 +85,17 @@ const Core: React.FC = () => {
     .fill(0)
     .map((_, index) => index + 1);
 
-
-  const pagesFunc = () => {
-    const dots = "...";
-    if (pagesArray.length >= 6) {
-      if (page >= 1 && page <= 3) {
-        const firstPageArrays = [
-          1,
-          2,
-          3,
-          4,
-          dots,
-          pagesArray.length,
-        ];
-        return firstPageArrays.map((pg) => (
-          <PaginateButton key={pg} onClick={() => setPage(pg as number)}>
-            {pg}
-          </PaginateButton>
-        ));
-      } else if (page >= pagesArray.length - 1) {
-        const lastPageArrays = [
-          1,
-          dots,
-          pagesArray.length - 2,
-          pagesArray.length - 1,
-          pagesArray.length,
-        ];
-        return lastPageArrays.map((pg) => (
-          <PaginateButton key={pg} onClick={() => setPage(pg as number)}>
-            {pg}
-          </PaginateButton>
-        ));
-      } else {
-        const slicedArrays = pagesArray.slice(page - 2, page + 1);
-        const middlePageArrays = [
-          1,
-          dots,
-          ...slicedArrays,
-          dots,
-          pagesArray.length,
-        ];
-        return middlePageArrays.map((pg) => (
-          <PaginateButton onClick={() => setPage(pg as number)}>{pg}</PaginateButton>
-        ));
-      }
+  const handleClick = (pg: string | number) => {
+    if (typeof pg === "number") {
+      return setPage(pg);
     }
-    else {
-      return pagesArray.map((pg) => (
-        <PaginateButton onClick={() => setPage(pg)}>{pg}</PaginateButton>
-    ))}
+    else return;
   };
+
+  const { pagesFunc } = usePagination(pagesArray, page);
+  const result = pagesFunc();
+
+
 
   return (
     <>
@@ -274,7 +235,13 @@ const Core: React.FC = () => {
                 </Grid>
               )}
             </div>
-            <PaginateNav>{pagesFunc()}</PaginateNav>
+            <PaginateNav>
+              {result?.map((pg) => (
+                <PaginateButton onClick={() => handleClick(pg)} key={pg}>
+                  {pg}
+                </PaginateButton>
+              ))}
+            </PaginateNav>
           </CoreContainer>
         </>
       )}
