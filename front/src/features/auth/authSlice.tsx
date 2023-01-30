@@ -8,7 +8,7 @@ export const fetchAsyncLogin = createAsyncThunk(
   "auth/post",
   async (authen: PROPS_AUTHEN) => {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}authen/jwt/create`,
+      `${process.env.REACT_APP_API_DEV_URL}authen/jwt/create`,
       //`${apiUrl}authen/jwt/create`,      
       authen,
       {
@@ -25,7 +25,7 @@ export const fetchAsyncRegister = createAsyncThunk(
   "auth/register",
   async (auth: PROPS_AUTHEN) => {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/register/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/register/`,
       //`${apiUrl}api/register/`,
       auth,
       {
@@ -42,7 +42,7 @@ export const fetchAsyncCreateProf = createAsyncThunk(
   "profile/post",
   async (nickName: PROPS_NICKNAME) => {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}api/profile/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/profile/`,
       //`${apiUrl}api/profile/`,
       nickName,
       {
@@ -63,7 +63,7 @@ export const fetchAsyncUpdateProf = createAsyncThunk(
     uploadData.append("nickName", profile.nickName);
     profile.img && uploadData.append("img", profile.img, profile.img.name);
     const res = await axios.put(
-      `${process.env.REACT_APP_API_URL}api/profile/${profile.id}/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/profile/${profile.id}/`,
       //`${apiUrl}api/profile/${profile.id}/`,
       uploadData,
       {
@@ -79,7 +79,7 @@ export const fetchAsyncUpdateProf = createAsyncThunk(
 
 export const fetchAsyncGetMyProf = createAsyncThunk("profile/get", async () => {
   const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}api/myprofile/`,
+    `${process.env.REACT_APP_API_DEV_URL}api/myprofile/`,
     //`${apiUrl}api/myprofile/`,
     {
       headers: {
@@ -92,7 +92,7 @@ export const fetchAsyncGetMyProf = createAsyncThunk("profile/get", async () => {
 
 export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
   const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}api/profile/`,
+    `${process.env.REACT_APP_API_DEV_URL}api/profile/`,
     //`${apiUrl}api/profile/`,
     {
     headers: {
@@ -106,7 +106,7 @@ export const fetchAsyncGetPostProf = createAsyncThunk(
   "postProfile/get",
   async () => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/profile/`,
+      `${process.env.REACT_APP_API_DEV_URL}api/profile/`,
       //`${apiUrl}api/profile/`,
       {
         headers: {
