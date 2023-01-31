@@ -25,6 +25,7 @@ import {
   TagList,
   TagInput,
   TagAddButton,
+  RemoveTagIcon,
 } from "./NewUpdatePostStyles";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -206,7 +207,7 @@ const UpdatePost: React.FC = () => {
           {tags.map((tag, index) => (
             <TagList key={index}>
               <span>{tag.name}</span>
-              <span onClick={() => removeTag(index)}>&times;</span>
+              <RemoveTagIcon onClick={() => removeTag(index)}>&times;</RemoveTagIcon>
             </TagList>
           ))}
         </TagUl>

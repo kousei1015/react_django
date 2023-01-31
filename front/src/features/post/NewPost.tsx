@@ -14,6 +14,7 @@ import {
   PostTitle,
   TagUl,
   TagList,
+  RemoveTagIcon,
   TagInput,
   TagAddButton,
 } from "./NewUpdatePostStyles";
@@ -240,7 +241,7 @@ const NewPost: React.FC = () => {
             tag.name ? (
               <TagList key={index}>
                 <span>{tag.name}</span>
-                <span onClick={() => removeTag(index)}>&times;</span>
+                <RemoveTagIcon onClick={() => removeTag(index)}>&times;</RemoveTagIcon>
               </TagList>
             ) : (
               <></>

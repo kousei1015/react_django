@@ -47,6 +47,7 @@ const Core: React.FC = () => {
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const [orderType, setOrderType] = useState("");
   const [page, setPage] = useState(1);
+  const [active, setActive] = useState(false);
 
   const navigate = useNavigate();
   function pushHome() {
@@ -237,7 +238,7 @@ const Core: React.FC = () => {
             </div>
             <PaginateNav>
               {result?.map((pg) => (
-                <PaginateButton onClick={() => handleClick(pg)} key={pg}>
+                <PaginateButton onClick={() => handleClick(pg)} key={pg} active={page === Number(pg) ? true: false}>
                   {pg}
                 </PaginateButton>
               ))}

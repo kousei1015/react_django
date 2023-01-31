@@ -41,6 +41,11 @@ export const TagList = styled.li`
   border-radius: 16px;
 `;
 
+export const RemoveTagIcon = styled.span`
+  padding-left: 0.5rem;
+  cursor: pointer;
+`
+
 export const TagInput = styled.input`
   border: 1px solid #4b4a4a;
   border-radius: 0.5rem;

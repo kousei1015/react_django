@@ -74,13 +74,14 @@ export const PaginateNav = styled.nav`
   justify-content: center;
 `;
 
-export const PaginateButton = styled.button`
+export const PaginateButton = styled.button<{active: boolean}>`
   width: 50px;
   height: 50px;
   border: none;
   border-radius: 50%;
   padding: 1rem;
   margin: 0 5px;
-  background-color: tomato;
+  background-color: ${(props) => props.active ? "red": "coral"};
+  scale: ${(props) => props.active ? 1.1: 1.0};
   color: white;
 `;
