@@ -51,6 +51,7 @@ export const Star = styled.div`
 
 export const TagUl = styled.ul`
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   list-style: none;
   padding: 0 2rem;
