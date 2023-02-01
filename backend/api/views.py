@@ -33,7 +33,7 @@ class CreateUserView(generics.ListCreateAPIView):
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
- 
+
 
     def perform_create(self, serializer):
         serializer.save(userProfile=self.request.user)
