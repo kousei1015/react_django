@@ -1,4 +1,31 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+export const animation = keyframes`
+  0% { margin-bottom: 0; }
+  50% { margin-bottom: 10px }
+  100% { margin-bottom: 0 }
+`;
+
+export const LoadingScreen = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const DotWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+`;
+
+export const Dot = styled.span<{delay: string}>`
+  background-color: #4b4a4a;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  margin: 0 7px;
+  animation: ${animation} 1.2s linear infinite;
+  animation-delay: ${props => props.delay};
+`;
 
 export const Wrapper = styled.div`
   margin: 0 auto;
@@ -52,7 +79,7 @@ export const Place = styled.div`
   font-size: 1.2rem;
   letter-spacing: 1.2px;
   @media (max-width: 520px) {
-   font-size : 1.35rem;
+    font-size: 1.35rem;
   }
 `;
 
@@ -86,7 +113,7 @@ export const CustomButton = styled.button`
   flex: 0;
   border: none;
   color: #4682b4;
-  background-color: #F4FCD9;
+  background-color: #f4fcd9;
   border-left: 1px black;
   cursor: pointer;
 `;

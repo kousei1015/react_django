@@ -1,11 +1,11 @@
 import React from "react";
 import { AppDispatch } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
-import { Wrapper, Title, Circular, Error, Text } from "./AuthStyles";
+import { Wrapper, Title, DotWrapper, Dot, Error, Text } from "./AuthStyles";
 import Modal from "react-modal";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { TextField, Button, CircularProgress } from "@material-ui/core";
+import { TextField, Button } from "@material-ui/core";
 
 import { fetchAsyncGetPosts, fetchAsyncGetComments } from "../post/postSlice";
 
@@ -68,11 +68,11 @@ const Auth: React.FC = () => {
             if (fetchAsyncRegister.fulfilled.match(resultReg)) {
               await dispatch(fetchAsyncLogin(values));
               await dispatch(fetchAsyncCreateProf({ nickName: "User" }));
-
-              await dispatch(fetchAsyncGetProfs());
-              await dispatch(fetchAsyncGetPosts());
-              await dispatch(fetchAsyncGetComments());
-              await dispatch(fetchAsyncGetMyProf());
+              
+              const getProfs = dispatch(fetchAsyncGetProfs());
+              const getPosts = dispatch(fetchAsyncGetPosts());
+              const getMyProf = dispatch(fetchAsyncGetMyProf());
+              await Promise.all([getProfs, getPosts, getMyProf]);
             }
             await dispatch(fetchCredEnd());
             await dispatch(resetOpenSignUp());
@@ -98,7 +98,18 @@ const Auth: React.FC = () => {
                 <Wrapper>
                   <Title>Map Collection</Title>
                   <br />
-                  <Circular>{isLoadingAuth && <CircularProgress />}</Circular>
+
+                  {isLoadingAuth && (
+                    <div>
+                      <h1>Loading</h1>
+                      <DotWrapper>
+                        <Dot delay="0s" />
+                        <Dot delay=".3s" />
+                        <Dot delay=".5s" />
+                      </DotWrapper>
+                    </div>
+                  )}
+
                   <br />
 
                   <TextField
@@ -171,10 +182,10 @@ const Auth: React.FC = () => {
             await dispatch(fetchCredStart());
             const result = await dispatch(fetchAsyncLogin(values));
             if (fetchAsyncLogin.fulfilled.match(result)) {
-              await dispatch(fetchAsyncGetProfs());
-              await dispatch(fetchAsyncGetPosts());
-              await dispatch(fetchAsyncGetComments());
-              await dispatch(fetchAsyncGetMyProf());
+              const getProfs = dispatch(fetchAsyncGetProfs());
+              const getPosts = dispatch(fetchAsyncGetPosts());
+              const getMyProf = dispatch(fetchAsyncGetMyProf());
+              await Promise.all([getProfs, getPosts, getMyProf]);
             }
             await dispatch(fetchCredEnd());
             await dispatch(resetOpenSignIn());
@@ -200,7 +211,23 @@ const Auth: React.FC = () => {
                 <Wrapper>
                   <Title>Map Collection</Title>
                   <br />
-                  <Circular>{isLoadingAuth && <CircularProgress />}</Circular>
+                  {isLoadingAuth && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <h1>Loading</h1>
+                      <DotWrapper>
+                        <Dot delay="0s" />
+                        <Dot delay=".3s" />
+                        <Dot delay=".5s" />
+                      </DotWrapper>
+                    </div>
+                  )}
+
                   <br />
 
                   <TextField

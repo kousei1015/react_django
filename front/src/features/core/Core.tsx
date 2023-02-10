@@ -47,8 +47,6 @@ const Core: React.FC = () => {
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const [orderType, setOrderType] = useState("");
   const [page, setPage] = useState(1);
-  const [active, setActive] = useState(false);
-
   const navigate = useNavigate();
   function pushHome() {
     navigate("/post/create");
@@ -71,8 +69,9 @@ const Core: React.FC = () => {
           dispatch(setOpenSignIn());
           return null;
         }
-        await dispatch(fetchAsyncGetPosts());
-        await dispatch(fetchAsyncGetProfs());
+        const getPosts = dispatch(fetchAsyncGetPosts());
+        const getProfs = dispatch(fetchAsyncGetProfs());
+        await Promise.all([result, getPosts, getProfs])
       }
     };
     fetchLoader();

@@ -132,11 +132,15 @@ describe("UpdatePost Component Test", () => {
   it("1: Should render UpdatePostComponent successfully", async () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <PostDetail />
-        </BrowserRouter>
+        <MemoryRouter initialEntries={["/post/1"]}>
+          <Routes>
+            <Route path="/post/:id" element={<PostDetail />} />
+          </Routes>
+        </MemoryRouter>
       </Provider>
     );
+    expect(screen.findByText("Loading")).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId("access")).toBeTruthy());
     expect(screen.getByTestId("access")).toBeTruthy();
     expect(screen.getByTestId("congestion")).toBeTruthy();
     expect(screen.getByTestId("place-name")).toBeTruthy();
@@ -193,12 +197,13 @@ describe("UpdatePost Component Test", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(screen.queryByText("国営昭和記念公園")).toBeNull();
+    expect(screen.findByText("Loading")).toBeTruthy();
+    await waitFor(() => expect(screen.getByText("国営昭和記念公園")).toBeInTheDocument());
     expect(await screen.findByText("国営昭和記念公園")).toBeInTheDocument();
     expect(await screen.findByText("myNickName")).toBeInTheDocument();
     expect(await screen.findByText("first comment")).toBeInTheDocument();
     const commentInputValue = screen.getByPlaceholderText("add a comment");
-    userEvent.type(commentInputValue, "second comment");
+    await userEvent.type(commentInputValue, "second comment");
     await waitFor(() => expect(screen.getByTestId("post")).not.toBeDisabled());
     await userEvent.click(screen.getByText("Post"));
     expect(await screen.findByText("second comment")).toBeInTheDocument();
