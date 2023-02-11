@@ -90,6 +90,7 @@ const UpdatePost: React.FC = () => {
       name: tagInput,
     };
     setTags((prev) => [...prev, newTag]);
+    setTagInput("");
   };
 
   const removeTag = (index: number) => {
