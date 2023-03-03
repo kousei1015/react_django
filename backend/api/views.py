@@ -1,7 +1,7 @@
 from rest_framework import generics, pagination, response
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from . import serializers
 from .models import Profile, Post, Comment, User, Tag
 from rest_framework.views import APIView
@@ -50,6 +50,7 @@ class PostViewSet(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostSerializer
     pagination_class = CustomPagination
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
@@ -59,7 +60,7 @@ class PostViewSet(generics.ListCreateAPIView):
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostDetailSerializer
-    permission_classes = (permissions.IsAuthenticated, custompermissions.OwnerPermission,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, custompermissions.OwnerPermission,)
     
   
 
