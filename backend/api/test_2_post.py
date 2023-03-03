@@ -126,11 +126,16 @@ class UnAuthorizedPostApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_create_post_when_unatuhorized(self):
+    def test_get_posts_when_unatuhorized(self):
         res = self.client.get(POST_URL)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        
-    
-
-      
+# 最初にダミーのユーザーを作り、そのユーザーに新たな投稿をさせる。その後、詳細ページ(http://localhost:8000/api/post/1)に移動、200ステータスコードを返すかテストしている。
+    def test_get_single_post_detail_when_unauthorized(self):
+        dummy_user = User.objects.create_user(email='dummy@gmail.com', password='dummypassword')
+        post = create_post(userPost=dummy_user)
+        url = detail_post_url(post.id)
+        res = self.client.get(url)
+        serializer = PostDetailSerializer(post)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
