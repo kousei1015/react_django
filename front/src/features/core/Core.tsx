@@ -37,6 +37,8 @@ import {
   selectIsLoadingPost,
   resetOpenNewPost,
   fetchAsyncGetPosts,
+  fetchAsyncGetAccessSort,
+  fetchAsyncGetCongestionSort,
 } from "../post/postSlice";
 
 const Core: React.FC = () => {
@@ -52,14 +54,6 @@ const Core: React.FC = () => {
     navigate("/post/create");
   }
 
-  //アクセスがよい順にソート
-  const accessAsc = [...posts.results].sort((a, b) =>
-    a.accessStars < b.accessStars ? 1 : -1
-  );
-  //混雑が少ない場所順にソート
-  const congestionAsc = [...posts.results].sort((a, b) =>
-    a.congestionDegree < b.congestionDegree ? 1 : -1
-  );
   useEffect(() => {
     const fetchLoader = async () => {
       if (localStorage.localJWT) {
@@ -77,8 +71,20 @@ const Core: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchAsyncGetPosts(page));
-  }, [page]);
+    let action;
+    switch (orderType) {
+      case "access":
+        action = fetchAsyncGetAccessSort;
+        break;
+      case "congestion":
+        action = fetchAsyncGetCongestionSort;
+        break;
+      default:
+        action = fetchAsyncGetPosts;
+        break;
+    }
+    dispatch(action(page));
+  }, [dispatch, orderType, page]);
 
   const pagesArray = Array(posts.total_pages)
     .fill(0)
@@ -87,14 +93,11 @@ const Core: React.FC = () => {
   const handleClick = (pg: string | number) => {
     if (typeof pg === "number") {
       return setPage(pg);
-    }
-    else return;
+    } else return;
   };
 
   const { pagesFunc } = usePagination(pagesArray, page);
   const result = pagesFunc();
-
-
 
   return (
     <>
@@ -113,19 +116,6 @@ const Core: React.FC = () => {
             >
               新規投稿
             </CoreButton>
-            <CoreSelectMenu
-              onChange={(e) => {
-                const selectedOrderType: string = e.target.value;
-                setOrderType(selectedOrderType);
-              }}
-              defaultValue=""
-            >
-              <option value="">
-                新規投稿順
-              </option>
-              <option value="access">アクセスがよい順</option>
-              <option value="congestion">混雑が少ない順</option>
-            </CoreSelectMenu>
             <CoreLogout>
               {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
               <CoreButton
@@ -175,69 +165,45 @@ const Core: React.FC = () => {
       {
         <>
           <CoreTitle>Map Collection</CoreTitle>
+          <CoreSelectMenu
+              onChange={(e) => {
+                const selectedOrderType: string = e.target.value;
+                setOrderType(selectedOrderType);
+              }}
+              defaultValue=""
+            >
+              <option value="">新規投稿順</option>
+              <option value="access">アクセスがよい順</option>
+              <option value="congestion">混雑が少ない順</option>
+            </CoreSelectMenu>
+
           <CoreContainer>
             <div>
-              {orderType === "" && (
-                <Grid container spacing={4}>
-                  {posts.results.map((post) => (
-                    <Grid key={post.id} item xs={12} md={4}>
-                      <Post
-                        postId={post.id}
-                        placeName={post.placeName}
-                        description={post.description}
-                        loginId={myProfile.userProfile}
-                        userPost={post.userPost}
-                        imageUrl={post.img}
-                        accessStars={post.accessStars}
-                        congestionDegree={post.congestionDegree}
-                        tags={post.tags}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
-              {orderType === "access" && (
-                <Grid container spacing={4}>
-                  {accessAsc.map((post) => (
-                    <Grid key={post.id} item xs={12} md={4}>
-                      <Post
-                        postId={post.id}
-                        placeName={post.placeName}
-                        description={post.description}
-                        loginId={myProfile.userProfile}
-                        userPost={post.userPost}
-                        imageUrl={post.img}
-                        accessStars={post.accessStars}
-                        congestionDegree={post.congestionDegree}
-                        tags={post.tags}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
-              {orderType === "congestion" && (
-                <Grid container spacing={4}>
-                  {congestionAsc.map((post) => (
-                    <Grid key={post.id} item xs={12} md={4}>
-                      <Post
-                        postId={post.id}
-                        placeName={post.placeName}
-                        description={post.description}
-                        loginId={myProfile.userProfile}
-                        userPost={post.userPost}
-                        imageUrl={post.img}
-                        accessStars={post.accessStars}
-                        congestionDegree={post.congestionDegree}
-                        tags={post.tags}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
+              <Grid container spacing={4}>
+                {posts.results.map((post) => (
+                  <Grid key={post.id} item xs={12} md={4}>
+                    <Post
+                      postId={post.id}
+                      placeName={post.placeName}
+                      description={post.description}
+                      loginId={myProfile.userProfile}
+                      userPost={post.userPost}
+                      imageUrl={post.img}
+                      accessStars={post.accessStars}
+                      congestionDegree={post.congestionDegree}
+                      tags={post.tags}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </div>
             <PaginateNav>
               {result?.map((pg) => (
-                <PaginateButton onClick={() => handleClick(pg)} key={pg} active={page === Number(pg) ? true : false}>
+                <PaginateButton
+                  onClick={() => handleClick(pg)}
+                  key={pg}
+                  active={page === Number(pg) ? true : false}
+                >
                   {pg}
                 </PaginateButton>
               ))}

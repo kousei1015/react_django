@@ -18,6 +18,27 @@ export const fetchAsyncGetPosts = createAsyncThunk(
   }
 );
 
+export const fetchAsyncGetAccessSort = createAsyncThunk(
+  "post/access/sort",
+  async (params: number = 1) => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_DEV_URL}api/post/access/?page=${params}`
+    );
+    return res.data;
+  }
+);
+
+export const fetchAsyncGetCongestionSort = createAsyncThunk(
+  "post/congestion/get",
+  async (params: number = 1) => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_DEV_URL}api/post/congestion/?page=${params}`
+    );
+    return res.data;
+  }
+);
+
+
 export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
@@ -231,6 +252,22 @@ export const postSlice = createSlice({
   extraReducers: (builder) => {
     //投稿一覧取
     builder.addCase(fetchAsyncGetPosts.fulfilled, (state, action) => {
+      return {
+        ...state,
+        posts: action.payload,
+      };
+    });
+
+    //アクセス順にソート
+    builder.addCase(fetchAsyncGetAccessSort.fulfilled, (state, action) => {
+      return {
+        ...state,
+        posts: action.payload,
+      };
+    });
+
+    //混雑度順にソート
+    builder.addCase(fetchAsyncGetCongestionSort.fulfilled, (state, action) => {
       return {
         ...state,
         posts: action.payload,

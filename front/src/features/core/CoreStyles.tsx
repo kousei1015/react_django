@@ -78,6 +78,10 @@ export const CoreButton = styled.button`
 
 export const CoreSelectMenu = styled.select`
   width: 100%;
+  max-width: 600px;
+  display: flex;
+  margin: 0 auto;
+  cursor: pointer;
   padding: 10px;
   border-radius: 20px;
 `;
