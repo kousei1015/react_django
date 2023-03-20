@@ -35,7 +35,7 @@ const modalStyles = {
     left: "50%",
 
     width: 290,
-    height: 475,
+    height: 580,
     padding: "20px",
 
     transform: "translate(-50%, -50%)",
@@ -43,7 +43,8 @@ const modalStyles = {
 };
 
 const Auth: React.FC = () => {
-  if (process.env.NODE_ENV !== "test") Modal.setAppElement("#root");
+  Modal.setAppElement("#root");
+
   const openSignIn = useSelector(selectOpenSignIn);
   const openSignUp = useSelector(selectOpenSignUp);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
@@ -67,7 +68,6 @@ const Auth: React.FC = () => {
 
             if (fetchAsyncRegister.fulfilled.match(resultReg)) {
               await dispatch(fetchAsyncLogin(values));
-              await dispatch(fetchAsyncCreateProf({ nickName: "User" }));
               
               const getProfs = dispatch(fetchAsyncGetProfs());
               const getPosts = dispatch(fetchAsyncGetPosts());
@@ -99,8 +99,28 @@ const Auth: React.FC = () => {
                   <Title>Map Collection</Title>
                   <br />
 
+                  <Text>
+                    ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
+                  </Text>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={async () => {
+                      await dispatch(resetOpenSignIn());
+                      await dispatch(resetOpenSignUp());
+                    }}
+                  >
+                    Skip
+                  </Button>
+
                   {isLoadingAuth && (
-                    <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <h1>Loading</h1>
                       <DotWrapper>
                         <Dot delay="0s" />
@@ -180,6 +200,7 @@ const Auth: React.FC = () => {
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
             await dispatch(fetchCredStart());
+            await dispatch(fetchAsyncLogin(values));
             const result = await dispatch(fetchAsyncLogin(values));
             if (fetchAsyncLogin.fulfilled.match(result)) {
               const getProfs = dispatch(fetchAsyncGetProfs());
@@ -187,6 +208,7 @@ const Auth: React.FC = () => {
               const getMyProf = dispatch(fetchAsyncGetMyProf());
               await Promise.all([getProfs, getPosts, getMyProf]);
             }
+
             await dispatch(fetchCredEnd());
             await dispatch(resetOpenSignIn());
           }}
@@ -211,6 +233,20 @@ const Auth: React.FC = () => {
                 <Wrapper>
                   <Title>Map Collection</Title>
                   <br />
+                  <Text>
+                    ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
+                  </Text>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    data-testid="access_no_login"
+                    onClick={async () => {
+                      await dispatch(resetOpenSignIn());
+                      await dispatch(resetOpenSignUp());
+                    }}
+                  >
+                    Skip
+                  </Button>
                   {isLoadingAuth && (
                     <div
                       style={{

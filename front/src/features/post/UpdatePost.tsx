@@ -47,14 +47,11 @@ const UpdatePost: React.FC = () => {
   const { id } = useParams<ID>();
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
-  const [placeName, setPlaceName] = useState(postDetail.placeName);
-  const [description, setDescription] = useState(postDetail.description);
+  const [placeName, setPlaceName] = useState("");
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [accessStars, setAccessStars] = useState(postDetail.accessStars);
-  const [congestionDegree, setCongestionDegree] = useState(
-    postDetail.congestionDegree
-  );
-  const [userPost] = useState(postDetail.userPost);
+  const [accessStars, setAccessStars] = useState(0);
+  const [congestionDegree, setCongestionDegree] = useState(0);
   const [tags, setTags] = useState(postDetail.tags);
   const [tagInput, setTagInput] = useState("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +72,14 @@ const UpdatePost: React.FC = () => {
     };
     fetchLoader();
   }, []);
+
+  useEffect(() => {
+    setPlaceName(postDetail.placeName);
+    setDescription(postDetail.description);
+    setAccessStars(postDetail.accessStars);
+    setCongestionDegree(postDetail.congestionDegree);
+    setTags(postDetail.tags);
+  }, [postDetail]);
 
   const handlerEditPicture = () => {
     const fileInput = document.getElementById("imageInput");
@@ -107,22 +112,18 @@ const UpdatePost: React.FC = () => {
       accessStars: accessStars,
       congestionDegree: congestionDegree,
       tags: tags,
-      userPost: userPost,
     };
     await dispatch(fetchPostStart());
     const result = await dispatch(fetchAsyncEditPost(postUploadData));
-    await dispatch(fetchPostEnd());
     if (fetchAsyncEditPost.fulfilled.match(result)) {
       setMessage("編集成功");
-      setPlaceName("");
-      setDescription("");
-      setImage(null);
       pushHome();
     } else if (fetchAsyncEditPost.rejected.match(result)) {
       setMessage(
         "エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください"
       );
     }
+    await dispatch(fetchPostEnd());
   };
 
   return (
@@ -137,7 +138,7 @@ const UpdatePost: React.FC = () => {
         <br />
         <TextField
           fullWidth
-          defaultValue={postDetail.placeName}
+          value={placeName}
           multiline={true}
           onChange={(e) => setPlaceName(e.target.value)}
           className={classes.textField}
@@ -148,7 +149,7 @@ const UpdatePost: React.FC = () => {
 
         <TextField
           fullWidth
-          defaultValue={postDetail.description}
+          value={description}
           maxRows={2}
           multiline={true}
           onChange={(e) => setDescription(e.target.value)}
@@ -163,8 +164,8 @@ const UpdatePost: React.FC = () => {
         <Rating
           data-testid="access"
           name="simple-controlled"
-          defaultValue={postDetail.accessStars}
-          onChange={(e, newValue): void => {
+          value={accessStars}
+          onChange={(e, newValue) => {
             setAccessStars(newValue as number);
           }}
         />
@@ -175,8 +176,8 @@ const UpdatePost: React.FC = () => {
         <Rating
           data-testid="congestion"
           name="simple-controlled"
-          defaultValue={postDetail.congestionDegree}
-          onChange={(event, newValue) => {
+          value={congestionDegree}
+          onChange={(e, newValue) => {
             setCongestionDegree(newValue as number);
           }}
         />

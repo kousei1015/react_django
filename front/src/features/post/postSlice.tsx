@@ -8,25 +8,21 @@ import {
   DETAIL_CONTENT,
 } from "../types";
 
-export const fetchAsyncGetPosts = createAsyncThunk("post/get", async (params: number = 1) => {
-  const res = await axios.get(`${process.env.REACT_APP_API_DEV_URL}api/post/?page=${params}`, {
-    headers: {
-      Authorization: `JWT ${localStorage.localJWT}`,
-    },
-  });
-  return res.data;
-});
+export const fetchAsyncGetPosts = createAsyncThunk(
+  "post/get",
+  async (params: number = 1) => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_DEV_URL}api/post/?page=${params}`
+    );
+    return res.data;
+  }
+);
 
 export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_DEV_URL}api/post/${id}`,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
-      }
+      `${process.env.REACT_APP_API_DEV_URL}api/post/${id}`
     );
     return res.data;
   }
@@ -35,73 +31,94 @@ export const fetchAsyncGetDetail = createAsyncThunk(
 export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
-    await axios.delete(`${process.env.REACT_APP_API_DEV_URL}api/post/${id}`, {
-      headers: {
-        Authorization: `JWT ${localStorage.localJWT}`,
-      },
-    });
-    return id;
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_DEV_URL}api/post/${id}`, {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      });
+      return id;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
+      }
+      throw error;
+    }
   }
 );
 
 export const fetchAsyncNewPost = createAsyncThunk(
   "post/post",
   async (newPost: PROPS_NEWPOST) => {
-    const uploadData = new FormData() as CustomFormData;
-    uploadData.append("placeName", newPost.placeName as string);
-    uploadData.append("description", newPost.description as string);
-    uploadData.append("accessStars", newPost.accessStars as number);
-    uploadData.append("congestionDegree", newPost.congestionDegree as number);
-    //if (newPost.tags[0].name !== "" ) {
+    try {
+      const uploadData = new FormData() as CustomFormData;
+      uploadData.append("placeName", newPost.placeName as string);
+      uploadData.append("description", newPost.description as string);
+      uploadData.append("accessStars", newPost.accessStars as number);
+      uploadData.append("congestionDegree", newPost.congestionDegree as number);
+      //if (newPost.tags[0].name !== "" ) {
 
-    for (var i = 0; i < newPost.tags.length; i++) {
-      uploadData.append(`tags[${i}]name`, newPost.tags[i].name as string);
-    }
-
-    newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
-
-    const res = await axios.post(
-      `${process.env.REACT_APP_API_DEV_URL}api/post/`,
-      uploadData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
+      for (var i = 0; i < newPost.tags.length; i++) {
+        uploadData.append(`tags[${i}]name`, newPost.tags[i].name as string);
       }
-    );
-    return res.data;
+
+      newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_DEV_URL}api/post/`,
+        uploadData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `JWT ${localStorage.localJWT}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
+      }
+      throw error;
+    }
   }
 );
 
 export const fetchAsyncEditPost = createAsyncThunk(
   "post/patch",
   async (postDetail: DETAIL_CONTENT) => {
-    const postUploadData = new FormData() as CustomFormData;
-    postUploadData.append("placeName", postDetail.placeName as string);
-    postUploadData.append("description", postDetail.description as string);
-    postUploadData.append("accessStars", postDetail.accessStars as number);
-    postUploadData.append(
-      "congestionDegree",
-      postDetail.congestionDegree as number
-    );
-    for (var i = 0; i < postDetail.tags.length; i++) {
-      postUploadData.append(`tags[${i}]name`, postDetail.tags[i].name);
-    }
-    postDetail.img &&
-      postUploadData.append("img", postDetail.img, postDetail.img.name);
-
-    const res = await axios.put(
-      `${process.env.REACT_APP_API_DEV_URL}api/post/${postDetail.id}`,
-      postUploadData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
+    try {
+      const postUploadData = new FormData() as CustomFormData;
+      postUploadData.append("placeName", postDetail.placeName as string);
+      postUploadData.append("description", postDetail.description as string);
+      postUploadData.append("accessStars", postDetail.accessStars as number);
+      postUploadData.append(
+        "congestionDegree",
+        postDetail.congestionDegree as number
+      );
+      for (var i = 0; i < postDetail.tags.length; i++) {
+        postUploadData.append(`tags[${i}]name`, postDetail.tags[i].name);
       }
-    );
-    return res.data;
+      postDetail.img &&
+        postUploadData.append("img", postDetail.img, postDetail.img.name);
+
+      const res = await axios.put(
+        `${process.env.REACT_APP_API_DEV_URL}api/post/${postDetail.id}`,
+        postUploadData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `JWT ${localStorage.localJWT}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
+      }
+      throw error;
+    }
   }
 );
 
@@ -123,16 +140,23 @@ export const fetchAsyncGetComments = createAsyncThunk(
 export const fetchAsyncPostComment = createAsyncThunk(
   "comment/post",
   async (comment: PROPS_COMMENT) => {
-    const res = await axios.post(
-      `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
-      comment,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_DEV_URL}api/comment/`,
+        comment,
+        {
+          headers: {
+            Authorization: `JWT ${localStorage.localJWT}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
       }
-    );
-    return res.data;
+      throw error;
+    }
   }
 );
 

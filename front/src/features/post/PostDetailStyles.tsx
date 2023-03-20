@@ -24,7 +24,7 @@ export const Dot = styled.span<{delay: string}>`
   height: 8px;
   margin: 0 7px;
   animation: ${animation} 1.2s linear infinite;
-  animation-delay: ${props => props.delay};
+  animation-delay: ${(props) => props.delay};
 `;
 
 export const Wrapper = styled.div`
@@ -135,4 +135,10 @@ export const TagList = styled.li`
   color: #fff;
   padding: 3px 10px;
   border-radius: 16px;
+`;
+
+export const UnAuthorizedMessage = styled.h3`
+  display: flex;
+  justify-content: center;
+  color: black;
 `;

@@ -65,13 +65,12 @@ const Core: React.FC = () => {
       if (localStorage.localJWT) {
         dispatch(resetOpenSignIn());
         const result = await dispatch(fetchAsyncGetMyProf());
-        if (fetchAsyncGetMyProf.rejected.match(result)) {
-          dispatch(setOpenSignIn());
-          return null;
-        }
         const getPosts = dispatch(fetchAsyncGetPosts());
         const getProfs = dispatch(fetchAsyncGetProfs());
-        await Promise.all([result, getPosts, getProfs])
+        await Promise.all([result, getPosts, getProfs]);
+      } else {
+        await dispatch(fetchAsyncGetPosts());
+        await dispatch(fetchAsyncGetProfs());
       }
     };
     fetchLoader();
@@ -102,7 +101,7 @@ const Core: React.FC = () => {
       <Auth />
       <EditProfile />
       <CoreHeader>
-        {myProfile.nickName ? (
+        {localStorage.getItem("localJWT") ? (
           <>
             <span style={{ display: "none" }}>{myProfile.nickName}</span>
             <CoreButton
@@ -119,8 +118,9 @@ const Core: React.FC = () => {
                 const selectedOrderType: string = e.target.value;
                 setOrderType(selectedOrderType);
               }}
+              defaultValue=""
             >
-              <option value="" selected>
+              <option value="">
                 新規投稿順
               </option>
               <option value="access">アクセスがよい順</option>
@@ -172,7 +172,7 @@ const Core: React.FC = () => {
         )}
       </CoreHeader>
 
-      {myProfile?.nickName && (
+      {
         <>
           <CoreTitle>Map Collection</CoreTitle>
           <CoreContainer>
@@ -237,14 +237,14 @@ const Core: React.FC = () => {
             </div>
             <PaginateNav>
               {result?.map((pg) => (
-                <PaginateButton onClick={() => handleClick(pg)} key={pg} active={page === Number(pg) ? true: false}>
+                <PaginateButton onClick={() => handleClick(pg)} key={pg} active={page === Number(pg) ? true : false}>
                   {pg}
                 </PaginateButton>
               ))}
             </PaginateNav>
           </CoreContainer>
         </>
-      )}
+      }
     </>
   );
 };

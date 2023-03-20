@@ -39,6 +39,7 @@ import {
   Comment,
   CommentNickName,
   CommentBox,
+  UnAuthorizedMessage,
   Input,
   CustomButton,
   ButtonFlex,
@@ -125,7 +126,6 @@ const PostDetail: React.FC = () => {
       ) : (
         <>
           {/* for test to confirm render myprofile and postDetail data */}
-          <span style={{ display: "none" }}>{myProfile.nickName}</span>
           <span style={{ display: "none" }}>{postDetail.placeName}</span>
           <Wrapper>
             <Content>
@@ -227,22 +227,28 @@ const PostDetail: React.FC = () => {
               </Comments>
             </Content>
 
-            <CommentBox>
-              <Input
-                type="text"
-                placeholder="add a comment"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <CustomButton
-                data-testid="post"
-                disabled={!text.length}
-                type="submit"
-                onClick={postComment}
-              >
-                Post
-              </CustomButton>
-            </CommentBox>
+            {localStorage.getItem("localJWT") ? (
+              <CommentBox>
+                <Input
+                  type="text"
+                  placeholder="add a comment"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+                <CustomButton
+                  data-testid="post"
+                  disabled={!text.length || !localStorage.getItem("localJWT")}
+                  type="submit"
+                  onClick={postComment}
+                >
+                  Post
+                </CustomButton>
+              </CommentBox>
+            ) : (
+              <UnAuthorizedMessage>
+                コメントをするにはログインして下さい
+              </UnAuthorizedMessage>
+            )}
           </Wrapper>
         </>
       )}

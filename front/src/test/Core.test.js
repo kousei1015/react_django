@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  render,
-  screen,
-  cleanup,
-  waitFor,
-  findByText,
-  findByTestId,
-  findByPlaceholderText,
-} from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { fireEvent } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "react-redux";
@@ -17,7 +8,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import postReducer from "../features/post/postSlice";
 import authReducer from "../features/auth/authSlice";
 import Core from "../features/core/Core";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -25,40 +16,49 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
+const token = { refresh: "dummyToken", access: "dummyToken" };
+
 const handlers = [
+  rest.post("http://localhost:8000/api/register/", (req, res, ctx) => {
+    return res(ctx.status(201));
+  }),
   rest.post("http://localhost:8000/authen/jwt/create/", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({ refresh: "aaa123", access: "abc123" })
-    );
+    localStorage.setItem("localJWT", token.access);
+    return res(ctx.status(200), ctx.json(token));
   }),
   rest.get("http://localhost:8000/api/myprofile/", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          id: 1,
-          nickName: "test user",
-          userPost: 1,
-          created_on: "2022-08-21T23:56:56.934652+09:00",
-          img: null,
-        },
-      ])
-    );
+    const Authorization = req.headers.get("Authorization");
+    if (Authorization == `JWT dummyToken`) {
+      return res(
+        ctx.status(200),
+        ctx.json([
+          {
+            id: 2,
+            nickName: "myNickName",
+            userProfile: 2,
+            img: null,
+          },
+        ])
+      );
+    } else {
+      return res(ctx.status(401));
+    }
   }),
-  rest.put("http://localhost:8000/api/profile/1", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json(
-        {
+  rest.put("http://localhost:8000/api/profile/2", (req, res, ctx) => {
+    const Authorization = req.headers.get("Authorization");
+    if (!Authorization) {
+      return res(ctx.status(401));
+    } else if (Authorization == `JWT dummyToken`) {
+      return res(
+        ctx.status(200),
+        ctx.json({
           id: 1,
           nickName: "test user update",
           userPost: 1,
-          created_on: "2022-08-21T23:56:56.934652+09:00",
           img: null,
-        },
-      )
-    );
+        })
+      );
+    }
   }),
   rest.get("http://localhost:8000/api/post/", (req, res, ctx) => {
     return res(
@@ -66,27 +66,24 @@ const handlers = [
       ctx.json({
         total_pages: 1,
         results: [
-        {
-          id: 1,
-          userPost: 2,
-          placeName: "test",
-          description: "test",
-          accessStars: 3,
-          congestionDegree: 3,
-          img: "http://localhost:8000/media/posts/2test.jpg",
-          tags: [{name: "test"}]
-        },
-        {
-          id: 2,
-          userPost: 1,
-          placeName: "大國魂神社",
-          description: "東京都の指定文化財",
-          accessStars: 4,
-          congestionDegree: 4,
-          img: "http://localhost:8000/media/posts/1%E5%A4%A7%E5%9C%8B%E9%AD%82%E7%A5%9E%E7%A4%BE.jpg",
-          tags: [{name: "test"}]
-        },
-      ]})
+          {
+            id: 1,
+            placeName: "東京タワー",
+            description:
+              "夜にはライトアップされ、ロマンチックな雰囲気を醸し出します。東京の街を感じることができる、必見のスポットです。",
+            userPost: 1,
+            accessStars: 3,
+            congestionDegree: 3,
+            img: "http://localhost:8000/media/posts/2test.jpg",
+            tags: [
+              {
+                id: 1,
+                name: "絶景スポット",
+              },
+            ],
+          },
+        ],
+      })
     );
   }),
   rest.get("http://localhost:8000/api/profile/", (req, res, ctx) => {
@@ -95,38 +92,35 @@ const handlers = [
       ctx.json([
         {
           id: 1,
-          nickName: "User",
-          userPost: 1,
-          created_on: "2022-08-21T23:56:56.934652+09:00",
+          nickName: "other user",
+          userProfile: 1,
           img: null,
         },
         {
           id: 2,
-          nickName: "User",
-          userPost: 2,
-          created_on: "2022-08-21T23:56:56.934652+09:30",
+          nickName: "myNickName",
+          userProfile: "2",
           img: null,
         },
       ])
     );
   }),
-  rest.get("http://localhost:8000/api/comment/", (req, res, ctx) => {
+  rest.post("http://localhost:8000/api/profile/", (req, res, ctx) => {
     return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          id: 1,
-          text: "comment test",
-          userComment: 1,
-          post: 2,
-        },
-        { id: 2, text: "comment test2", userComment: 2, post: 2 },
-      ])
+      ctx.status(201),
+      ctx.json({
+        id: 2,
+        nickName: "myNickName",
+        userPost: 2,
+        img: null,
+      })
     );
   }),
 ];
 
 const server = setupServer(...handlers);
+
+const user = userEvent.setup();
 
 beforeAll(() => {
   server.listen();
@@ -142,6 +136,7 @@ afterAll(() => {
 describe("Core Component Test", () => {
   let store;
   beforeEach(() => {
+    localStorage.clear();
     store = configureStore({
       reducer: {
         auth: authReducer,
@@ -149,78 +144,143 @@ describe("Core Component Test", () => {
       },
     });
   });
-  it("1: Should render all the elements", async () => {
+  it("1: Should regsiter all elements when login successfully", async () => {
+    const root = document.createElement("div");
+    root.setAttribute("id", "root");
+    root.setAttribute("data-testid", "app-element");
+    document.body.appendChild(root);
     render(
       <Provider store={store}>
-        <BrowserRouter>
+        <MemoryRouter>
           <Core />
-        </BrowserRouter>
+        </MemoryRouter>
       </Provider>
     );
-
-    await userEvent.type(screen.getByLabelText(/email/i), "dummy@gmail.com");
-    await userEvent.type(screen.getByLabelText(/password/i), "aaaa");
-
+    expect(
+      screen.getByText(
+        "ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です"
+      )
+    );
+    await user.type(screen.getByLabelText(/email/i), "duymmy@gmail.com");
+    await user.type(screen.getByLabelText(/password/i), "dddd");
     const submitButton = screen.getByTestId("submit-button", {
       name: /submit/i,
     });
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await userEvent.click(
-      screen.getByTestId("submit-button", { name: /submit/i })
+    await user.click(submitButton);
+    await waitFor(() =>
+      expect(localStorage.getItem("localJWT")).toBe("dummyToken")
     );
     await waitFor(() =>
-      expect(screen.getByTestId("btn-logout")).toBeInTheDocument()
+      expect(screen.queryByText("Login")).not.toBeInTheDocument()
     );
+    expect(screen.getByText("Map Collection")).toBeInTheDocument();
+    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.getByText("新規投稿")).toBeInTheDocument();
+    expect(await screen.findByText("東京タワー")).toBeInTheDocument();
+    expect(screen.getByText("myNickName")).toBeInTheDocument();
+    expect(screen.getByText("other user")).toBeInTheDocument();
+    expect(screen.getByText("絶景スポット")).toBeInTheDocument();
+    expect(screen.getByText("詳細")).toBeInTheDocument();
   });
-  it("2: Should render detail page", async () => {
+  it("2: Should regsiter all elements when login successfully", async () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
+        <MemoryRouter>
           <Core />
-        </BrowserRouter>
+        </MemoryRouter>
       </Provider>
     );
-    await userEvent.click(screen.getByText("LogIn"));
-    await userEvent.type(screen.getByLabelText(/email/i), "dummy@gmail.com");
-    await userEvent.type(screen.getByLabelText(/password/i), "aaaa");
-
+    expect(
+      screen.getByText(
+        "ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です"
+      )
+    );
+    await user.click(screen.getByText("新規登録はこちら"));
+    expect(await screen.findByText("Register"));
+    await user.type(screen.getByLabelText(/email/i), "dummy@gmail.com");
+    await user.type(screen.getByLabelText(/password/i), "dddd");
     const submitButton = screen.getByTestId("submit-button", {
       name: /submit/i,
     });
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await userEvent.click(
-      screen.getByTestId("submit-button", { name: /submit/i })
+    await user.click(submitButton);
+    await waitFor(() =>
+      expect(localStorage.getItem("localJWT")).toBe("dummyToken")
     );
-    await waitFor(() => expect(screen.getByText("Logout")).toBeInTheDocument());
-    await userEvent.click(screen.getByTestId(`detail-1`));
-    expect(await mockedNavigator).toBeCalledWith("/post/1");
-    expect(await mockedNavigator).toBeCalledTimes(1);
+    await waitFor(() =>
+      expect(screen.queryByText("Register")).not.toBeInTheDocument()
+    );
+    expect(screen.getByText("Map Collection")).toBeInTheDocument();
+    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.getByText("新規投稿")).toBeInTheDocument();
+    expect(await screen.findByText("東京タワー")).toBeInTheDocument();
+    expect(screen.getByText("myNickName")).toBeInTheDocument();
+    expect(screen.getByText("other user")).toBeInTheDocument();
+    expect(screen.getByText("絶景スポット")).toBeInTheDocument();
+    expect(screen.getByText("詳細")).toBeInTheDocument();
   });
-  it("3: Should put myprofile successfully", async () => {
+  it("3: Should render detail page", async () => {
+    localStorage.setItem("localJWT", token.access);
     render(
       <Provider store={store}>
-        <BrowserRouter>
+        <MemoryRouter>
           <Core />
-        </BrowserRouter>
+        </MemoryRouter>
       </Provider>
     );
-    await userEvent.click(screen.getByText("LogIn"));
-    await userEvent.type(screen.getByLabelText(/email/i), "dummy@gmail.com");
-    await userEvent.type(screen.getByLabelText(/password/i), "aaaa");
-
-    const submitButton = screen.getByTestId("submit-button", {
-      name: /submit/i,
-    });
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await userEvent.click(
-      screen.getByTestId("submit-button", { name: /submit/i })
+    expect(await screen.findByText("東京タワー")).toBeInTheDocument();
+    await user.click(screen.getByTestId(`detail-1`));
+    expect(mockedNavigator).toBeCalledWith("/post/1");
+    expect(mockedNavigator).toBeCalledTimes(1);
+  });
+  it("4: Should put myprofile successfully", async () => {
+    localStorage.setItem("localJWT", token.access);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Core />
+        </MemoryRouter>
+      </Provider>
     );
-    await waitFor(() => expect(screen.getByText("Logout")).toBeInTheDocument());
-    await userEvent.click(screen.getByTestId("edit-modal"));
-    expect(await screen.findByText("Update")).toBeInTheDocument();
+    expect(await screen.findByText("myNickName")).toBeInTheDocument();
+    await user.click(screen.getByTestId("edit-modal"));
     const inputValue = screen.getByPlaceholderText("nickname");
-    userEvent.type(inputValue, "test user update");
-    await userEvent.click(screen.getByText("Update"));
-    expect(await screen.findByText("test user update"))
+    await user.type(inputValue, "test user update");
+    await user.click(screen.getByText("Update"));
+    await user.click(screen.getByTestId("edit-modal"));
+    expect(screen.getByText("test user update")).toBeInTheDocument();
+  });
+  it("5: Should render all the elements when unauthorized user", async () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Core />
+        </MemoryRouter>
+      </Provider>
+    );
+    expect(
+      await screen.findByText(
+        "ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です"
+      )
+    ).toBeInTheDocument();
+    await user.click(screen.getByTestId("access_no_login"));
+    expect(screen.getByText("LogIn")).toBeInTheDocument();
+    expect(screen.getByText("SignUp")).toBeInTheDocument();
+    expect(await screen.findByText("詳細")).toBeInTheDocument();
+  });
+  it("6: Should render detail pagewhen unauthorized user", async () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Core />
+        </MemoryRouter>
+      </Provider>
+    );
+    expect(await screen.findByText("東京タワー")).toBeInTheDocument();
+    expect(screen.getByText("詳細")).toBeInTheDocument();
+    await user.click(screen.getByText("詳細"));
+    expect(mockedNavigator).toBeCalledWith("/post/1");
+    expect(mockedNavigator).toBeCalledTimes(1);
   });
 });

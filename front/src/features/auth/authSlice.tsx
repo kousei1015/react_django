@@ -59,64 +59,58 @@ export const fetchAsyncCreateProf = createAsyncThunk(
 export const fetchAsyncUpdateProf = createAsyncThunk(
   "profile/put",
   async (profile: PROPS_PROFILE) => {
-    const uploadData = new FormData();
-    uploadData.append("nickName", profile.nickName);
-    profile.img && uploadData.append("img", profile.img, profile.img.name);
-    const res = await axios.put(
-      `${process.env.REACT_APP_API_DEV_URL}api/profile/${profile.id}/`,
-      //`${apiUrl}api/profile/${profile.id}/`,
-      uploadData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
+    try {
+      const uploadData = new FormData();
+      uploadData.append("nickName", profile.nickName);
+      profile.img && uploadData.append("img", profile.img, profile.img.name);
+      const res = await axios.put(
+        `${process.env.REACT_APP_API_DEV_URL}api/profile/${profile.id}/`,
+        //`${apiUrl}api/profile/${profile.id}/`,
+        uploadData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `JWT ${localStorage.localJWT}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
       }
-    );
-    return res.data;
+      throw error;
+    }
   }
 );
 
 export const fetchAsyncGetMyProf = createAsyncThunk("profile/get", async () => {
-  const res = await axios.get(
-    `${process.env.REACT_APP_API_DEV_URL}api/myprofile/`,
-    //`${apiUrl}api/myprofile/`,
-    {
-      headers: {
-        Authorization: `JWT ${localStorage.localJWT}`,
-      },
+  try {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_DEV_URL}api/myprofile/`,
+      //`${apiUrl}api/myprofile/`,
+      {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      }
+    );
+    return res.data[0];
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+      localStorage.removeItem("localJWT");
     }
-  );
-  return res.data[0];
+    throw error;
+  }
 });
 
 export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
   const res = await axios.get(
     `${process.env.REACT_APP_API_DEV_URL}api/profile/`,
     //`${apiUrl}api/profile/`,
-    {
-    headers: {
-      Authorization: `JWT ${localStorage.localJWT}`,
-    },
-  });
+    );
   return res.data;
 });
-
-export const fetchAsyncGetPostProf = createAsyncThunk(
-  "postProfile/get",
-  async () => {
-    const res = await axios.get(
-      `${process.env.REACT_APP_API_DEV_URL}api/profile/`,
-      //`${apiUrl}api/profile/`,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
-      }
-    );
-    return res.data;
-  }
-);
 
 export const authSlice = createSlice({
   name: "auth",
