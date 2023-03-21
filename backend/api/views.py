@@ -33,6 +33,7 @@ class CreateUserView(generics.ListCreateAPIView):
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
     def perform_create(self, serializer):
@@ -54,7 +55,6 @@ class PostViewSet(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(userPost=self.request.user)
-
 
 
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
