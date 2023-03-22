@@ -57,6 +57,20 @@ class PostViewSet(generics.ListCreateAPIView):
         serializer.save(userPost=self.request.user)
 
 
+class AccessSortViewSet(generics.ListAPIView):
+    serializer_class = serializers.PostSerializer
+    queryset = Post.objects.all().order_by('-accessStars')
+    pagination_class = CustomPagination
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
+class CongestionSortViewSet(generics.ListAPIView):
+    serializer_class = serializers.PostSerializer
+    queryset = Post.objects.all().order_by('-congestionDegree')
+    pagination_class = CustomPagination
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostDetailSerializer

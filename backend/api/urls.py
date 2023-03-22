@@ -15,4 +15,6 @@ urlpatterns = [
     path('',include(router.urls)),
     path('post/', views.PostViewSet.as_view(), name='post'),
     path('post/<int:pk>', views.PostDetailViewSet.as_view(), name='post_detail'),
+    path('post/access/', views.AccessSortViewSet.as_view()),
+    path('post/congestion/', views.CongestionSortViewSet.as_view()),
 ]
