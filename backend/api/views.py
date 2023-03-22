@@ -74,13 +74,14 @@ class CongestionSortViewSet(generics.ListAPIView):
 class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostDetailSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, custompermissions.OwnerPermission,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, custompermissions.PostOwnerPermission,)
     
   
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, custompermissions.CommentOwnerPermission,)
     
     def perform_create(self, serializer):
         serializer.save(userComment=self.request.user)
