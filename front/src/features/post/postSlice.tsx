@@ -8,11 +8,16 @@ import {
   DETAIL_CONTENT,
 } from "../types";
 
+const apiUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_API_URL
+    : process.env.REACT_APP_API_DEV_URL;
+
 export const fetchAsyncGetPosts = createAsyncThunk(
   "post/get",
   async (params: number = 1) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/?page=${params}`
+      `${apiUrl}api/post/?page=${params}`
     );
     return res.data;
   }
@@ -22,7 +27,7 @@ export const fetchAsyncGetAccessSort = createAsyncThunk(
   "post/access/sort",
   async (params: number = 1) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/access/?page=${params}`
+      `${apiUrl}api/post/access/?page=${params}`
     );
     return res.data;
   }
@@ -32,7 +37,7 @@ export const fetchAsyncGetCongestionSort = createAsyncThunk(
   "post/congestion/get",
   async (params: number = 1) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/congestion/?page=${params}`
+      `${apiUrl}api/post/congestion/?page=${params}`
     );
     return res.data;
   }
@@ -43,7 +48,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
   async (id: string) => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/post/${id}`
+      `${apiUrl}api/post/${id}`
     );
     return res.data;
   }
@@ -53,7 +58,7 @@ export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
   async (id: string) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}api/post/${id}`, {
+      await axios.delete(`${apiUrl}api/post/${id}`, {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
         },
@@ -86,7 +91,7 @@ export const fetchAsyncNewPost = createAsyncThunk(
       newPost.img && uploadData.append("img", newPost.img, newPost.img.name);
 
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}api/post/`,
+        `${apiUrl}api/post/`,
         uploadData,
         {
           headers: {
@@ -124,7 +129,7 @@ export const fetchAsyncEditPost = createAsyncThunk(
         postUploadData.append("img", postDetail.img, postDetail.img.name);
 
       const res = await axios.put(
-        `${process.env.REACT_APP_API_URL}api/post/${postDetail.id}`,
+        `${apiUrl}api/post/${postDetail.id}`,
         postUploadData,
         {
           headers: {
@@ -147,7 +152,7 @@ export const fetchAsyncGetComments = createAsyncThunk(
   "comment/get",
   async () => {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}api/comment/`,
+      `${apiUrl}api/comment/`,
       {
         headers: {
           Authorization: `JWT ${localStorage.localJWT}`,
@@ -163,7 +168,7 @@ export const fetchAsyncPostComment = createAsyncThunk(
   async (comment: PROPS_COMMENT) => {
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}api/comment/`,
+        `${apiUrl}api/comment/`,
         comment,
         {
           headers: {
