@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import usePagination from "./usePagination";
 import Auth from "../auth/Auth";
+import Navbar from "./Navbar";
 import Post from "../post/Post";
 import EditProfile from "./EditProfile";
 import {
-  CoreHeader,
   CoreTitle,
-  CoreButton,
   CoreSelectMenu,
-  CoreLogout,
   CoreContainer,
   PaginateNav,
   PaginateButton,
@@ -16,26 +14,17 @@ import {
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-import { Button, Grid, Avatar, CircularProgress } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 
 import {
-  editNickname,
   selectProfile,
-  selectIsLoadingAuth,
-  setOpenSignIn,
   resetOpenSignIn,
-  setOpenSignUp,
-  resetOpenSignUp,
-  setOpenProfile,
-  resetOpenProfile,
   fetchAsyncGetMyProf,
   fetchAsyncGetProfs,
 } from "../auth/authSlice";
 
 import {
   selectPosts,
-  selectIsLoadingPost,
-  resetOpenNewPost,
   fetchAsyncGetPosts,
   fetchAsyncGetAccessSort,
   fetchAsyncGetCongestionSort,
@@ -45,14 +34,9 @@ const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
-  const isLoadingPost = useSelector(selectIsLoadingPost);
-  const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const [orderType, setOrderType] = useState("");
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  function pushHome() {
-    navigate("/post/create");
-  }
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -103,64 +87,11 @@ const Core: React.FC = () => {
     <>
       <Auth />
       <EditProfile />
-      <CoreHeader>
-        {localStorage.getItem("localJWT") ? (
-          <>
-            <span style={{ display: "none" }}>{myProfile.nickName}</span>
-            <CoreButton
-              data-testid="btn-logout"
-              onClick={() => {
-                dispatch(resetOpenProfile());
-                pushHome();
-              }}
-            >
-              新規投稿
-            </CoreButton>
-            <CoreLogout>
-              {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
-              <CoreButton
-                onClick={() => {
-                  localStorage.removeItem("localJWT");
-                  dispatch(editNickname(""));
-                  dispatch(resetOpenProfile());
-                  dispatch(resetOpenNewPost());
-                  dispatch(setOpenSignIn());
-                }}
-              >
-                Logout
-              </CoreButton>
-              <CoreButton
-                data-testid="edit-modal"
-                onClick={() => {
-                  dispatch(setOpenProfile());
-                  dispatch(resetOpenNewPost());
-                }}
-              >
-                <Avatar alt="who?" src={myProfile.img} />{" "}
-              </CoreButton>
-            </CoreLogout>
-          </>
-        ) : (
-          <div>
-            <Button
-              onClick={() => {
-                dispatch(setOpenSignIn());
-                dispatch(resetOpenSignUp());
-              }}
-            >
-              LogIn
-            </Button>
-            <Button
-              onClick={() => {
-                dispatch(setOpenSignUp());
-                dispatch(resetOpenSignIn());
-              }}
-            >
-              SignUp
-            </Button>
-          </div>
-        )}
-      </CoreHeader>
+      <Navbar
+        id={myProfile.id}
+        nickName={myProfile.nickName}
+        img={myProfile.img}
+      />
 
       {
         <>

@@ -175,7 +175,7 @@ describe("Core Component Test", () => {
       expect(screen.queryByText("Login")).not.toBeInTheDocument()
     );
     expect(screen.getByText("Map Collection")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.getByText("ログアウト")).toBeInTheDocument();
     expect(screen.getByText("新規投稿")).toBeInTheDocument();
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
     expect(screen.getByText("myNickName")).toBeInTheDocument();
@@ -205,14 +205,12 @@ describe("Core Component Test", () => {
     });
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await user.click(submitButton);
+    await waitFor(() => expect(submitButton).not.toBeInTheDocument());
     await waitFor(() =>
       expect(localStorage.getItem("localJWT")).toBe("dummyToken")
     );
-    await waitFor(() =>
-      expect(screen.queryByText("Register")).not.toBeInTheDocument()
-    );
     expect(screen.getByText("Map Collection")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.getByText("ログアウト")).toBeInTheDocument();
     expect(screen.getByText("新規投稿")).toBeInTheDocument();
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
     expect(screen.getByText("myNickName")).toBeInTheDocument();
@@ -265,8 +263,8 @@ describe("Core Component Test", () => {
       )
     ).toBeInTheDocument();
     await user.click(screen.getByTestId("access_no_login"));
-    expect(screen.getByText("LogIn")).toBeInTheDocument();
-    expect(screen.getByText("SignUp")).toBeInTheDocument();
+    expect(screen.getByText("ログイン")).toBeInTheDocument();
+    expect(screen.getByText("新規登録")).toBeInTheDocument();
     expect(await screen.findByText("詳細")).toBeInTheDocument();
   });
   it("6: Should render detail pagewhen unauthorized user", async () => {

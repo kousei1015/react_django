@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import axios from "axios";
-import { PROPS_AUTHEN, PROPS_PROFILE, PROPS_NICKNAME } from "../types";
+import { PROPS_AUTHEN, PROPS_NEWPROFILE, PROPS_NICKNAME } from "../types";
 
 
 export const fetchAsyncLogin = createAsyncThunk(
@@ -58,7 +58,7 @@ export const fetchAsyncCreateProf = createAsyncThunk(
 
 export const fetchAsyncUpdateProf = createAsyncThunk(
   "profile/put",
-  async (profile: PROPS_PROFILE) => {
+  async (profile: PROPS_NEWPROFILE) => {
     try {
       const uploadData = new FormData();
       uploadData.append("nickName", profile.nickName);

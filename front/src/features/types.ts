@@ -11,7 +11,7 @@ export type PROPS_AUTHEN = {
   password: string;
 }
 
-export type PROPS_PROFILE = {
+export type PROPS_NEWPROFILE = {
   id: string;
   nickName: string;
   img: File | null;
@@ -31,11 +31,19 @@ export type PROPS_NEWPOST = {
   tags:{name: string}[];
 }
 
-export type PROPS_COMMENT = {
-  text: string;
-  post: string;
+export type DETAIL_CONTENT = {
+  id: string | undefined;
+  placeName: string;
+  description: string;
+  accessStars: number;
+  congestionDegree: number;
+  img: File | null;
+  tags: {name: string}[];
 }
 
+export type CustomFormData = FormData & {
+  append(name: string, value: string | Blob | number, fileName?: string): void;
+}
 
 /*Post.tsx*/
 export type PROPS_POST = {
@@ -47,22 +55,20 @@ export type PROPS_POST = {
   imageUrl: string;
   accessStars: number;
   congestionDegree: number;
-  tags: {id: string, name: string}[];
+  tags: { id: string; name: string }[];
 }
 
-export type EDIT_CONTENTS = {
-  id: string | undefined;
-  EditPost: void;
+/*Navbar.tsx */
+export type PROPS_PROFILE = {
+  id: string;
+  nickName: string;
+  img: string;
 }
 
-export type DETAIL_CONTENT = {
-  id: string | undefined;
-  placeName: string;
-  description: string;
-  accessStars: number;
-  congestionDegree: number;
-  img: File | null;
-  tags: {name: string}[];
+/*PostDetail.tsx */
+export type PROPS_COMMENT = {
+  text: string;
+  post: string;
 }
 
 export type ID = {
@@ -71,8 +77,4 @@ export type ID = {
 
 export type TAG ={
   name: string;
-}
-
-export type CustomFormData = FormData & {
-  append(name: string, value: string | Blob | number, fileName?: string): void;
 }
