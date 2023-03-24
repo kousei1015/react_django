@@ -153,11 +153,6 @@ export const fetchAsyncGetComments = createAsyncThunk(
   async () => {
     const res = await axios.get(
       `${apiUrl}api/comment/`,
-      {
-        headers: {
-          Authorization: `JWT ${localStorage.localJWT}`,
-        },
-      }
     );
     return res.data;
   }
