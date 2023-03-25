@@ -53,7 +53,6 @@ import {
   fetchAsyncDelete,
 } from "./postSlice";
 import { Button, Typography } from "@material-ui/core";
-import { ID } from "../types";
 
 const useStyles = makeStyles((theme) => ({
   small: {
@@ -70,7 +69,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PostDetail: React.FC = () => {
-  const { id } = useParams<ID>();
+  const { id } = useParams();
+  const idAsNumber = id ? parseInt(id, 10) : NaN;
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
@@ -99,13 +99,17 @@ const PostDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchLoader = async () => {
-      await dispatch(fetchPostStart());
-      const getPostDetail = dispatch(fetchAsyncGetDetail(id as string));
-      const getMyProfs = dispatch(fetchAsyncGetMyProf());
-      const getComments = dispatch(fetchAsyncGetComments());
-      const getProfs = dispatch(fetchAsyncGetProfs());
-      await Promise.all([getPostDetail, getMyProfs, getComments, getProfs]);
-      await dispatch(fetchPostEnd());
+      if (isNaN(idAsNumber)) {
+        throw new Error('idが数値ではありません。');
+      } else {
+        await dispatch(fetchPostStart());
+        const getPostDetail = dispatch(fetchAsyncGetDetail(idAsNumber));
+        const getMyProfs = dispatch(fetchAsyncGetMyProf());
+        const getComments = dispatch(fetchAsyncGetComments());
+        const getProfs = dispatch(fetchAsyncGetProfs());
+        await Promise.all([getPostDetail, getMyProfs, getComments, getProfs]);
+        await dispatch(fetchPostEnd());
+      }
     };
     fetchLoader();
   }, [dispatch]);

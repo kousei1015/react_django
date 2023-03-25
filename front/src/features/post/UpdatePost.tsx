@@ -16,7 +16,6 @@ import {
   fetchPostEnd,
   fetchAsyncGetDetail,
 } from "./postSlice";
-import { ID } from "../types";
 import {
   PostForm,
   PostFormWrapper,
@@ -44,7 +43,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const UpdatePost: React.FC = () => {
   const classes = useStyles();
-  const { id } = useParams<ID>();
+  const { id } = useParams();
+  const idAsNumber = id ? parseInt(id, 10) : NaN;
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
   const [placeName, setPlaceName] = useState("");
@@ -58,7 +58,7 @@ const UpdatePost: React.FC = () => {
     e.preventDefault();
     setTagInput(e.target.value);
   };
-  
+
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
@@ -68,7 +68,11 @@ const UpdatePost: React.FC = () => {
 
   useEffect(() => {
     const fetchLoader = async () => {
-      await dispatch(fetchAsyncGetDetail(id as string));
+      if (isNaN(idAsNumber)) {
+        throw new Error("idが数値ではありません。");
+      } else {
+        await dispatch(fetchAsyncGetDetail(idAsNumber));
+      }
     };
     fetchLoader();
   }, []);
@@ -105,7 +109,7 @@ const UpdatePost: React.FC = () => {
   const editPost = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     const postUploadData = {
-      id: id,
+      id: idAsNumber,
       placeName: placeName,
       description: description,
       img: image,

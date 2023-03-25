@@ -12,7 +12,7 @@ export type PROPS_AUTHEN = {
 }
 
 export type PROPS_NEWPROFILE = {
-  id: string;
+  id: number;
   nickName: string;
   img: File | null;
 }
@@ -32,7 +32,7 @@ export type PROPS_NEWPOST = {
 }
 
 export type DETAIL_CONTENT = {
-  id: string | undefined;
+  id: number;
   placeName: string;
   description: string;
   accessStars: number;
@@ -47,20 +47,20 @@ export type CustomFormData = FormData & {
 
 /*Post.tsx*/
 export type PROPS_POST = {
-  postId: string;
-  loginId: string;
-  userPost: string;
+  postId: number;
+  loginId: number;
+  userPost: number;
   placeName: string;
   description: string;
   imageUrl: string;
   accessStars: number;
   congestionDegree: number;
-  tags: { id: string; name: string }[];
+  tags: { id: number; name: string }[];
 }
 
 /*Navbar.tsx */
 export type PROPS_PROFILE = {
-  id: string;
+  id: number;
   nickName: string;
   img: string;
 }
@@ -68,11 +68,7 @@ export type PROPS_PROFILE = {
 /*PostDetail.tsx */
 export type PROPS_COMMENT = {
   text: string;
-  post: string;
-}
-
-export type ID = {
-  id: string;
+  post: number;
 }
 
 export type TAG ={

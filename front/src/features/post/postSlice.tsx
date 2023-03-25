@@ -46,7 +46,7 @@ export const fetchAsyncGetCongestionSort = createAsyncThunk(
 
 export const fetchAsyncGetDetail = createAsyncThunk(
   "post/getDetail",
-  async (id: string) => {
+  async (id: number) => {
     const res = await axios.get(
       `${apiUrl}api/post/${id}`
     );
@@ -56,7 +56,7 @@ export const fetchAsyncGetDetail = createAsyncThunk(
 
 export const fetchAsyncDelete = createAsyncThunk(
   "post/delete",
-  async (id: string) => {
+  async (id: number) => {
     try {
       await axios.delete(`${apiUrl}api/post/${id}`, {
         headers: {
@@ -115,9 +115,9 @@ export const fetchAsyncEditPost = createAsyncThunk(
   async (postDetail: DETAIL_CONTENT) => {
     try {
       const postUploadData = new FormData() as CustomFormData;
-      postUploadData.append("placeName", postDetail.placeName as string);
-      postUploadData.append("description", postDetail.description as string);
-      postUploadData.append("accessStars", postDetail.accessStars as number);
+      postUploadData.append("placeName", postDetail.placeName);
+      postUploadData.append("description", postDetail.description);
+      postUploadData.append("accessStars", postDetail.accessStars);
       postUploadData.append(
         "congestionDegree",
         postDetail.congestionDegree as number
@@ -183,7 +183,7 @@ export const fetchAsyncPostComment = createAsyncThunk(
 
 export const fetchAsyncDeleteComment = createAsyncThunk(
   "comment/delete",
-  async (id: string) => {
+  async (id: number) => {
     try {
       await axios.delete(`${apiUrl}api/comment/${id}/`, {
         headers: {
@@ -209,16 +209,16 @@ export const postSlice = createSlice({
     posts: {
       total_pages: 0,
       results: [{
-        id: "0",
+        id: 0,
         placeName: "",
         description: "",
-        userPost: "0",
+        userPost: 0,
         accessStars: 0,
         congestionDegree: 0,
         img: "",
         tags: [
           {
-            id: "0",
+            id: 0,
             name: "",
           },
         ],
@@ -227,14 +227,14 @@ export const postSlice = createSlice({
   },
     comments: [
       {
-        id: "0",
+        id: 0,
         text: "",
-        userComment: "0",
-        post: "0",
+        userComment: 0,
+        post: 0,
       },
     ],
     postDetail: {
-      id: "0",
+      id: 0,
       placeName: "",
       description: "",
       accessStars: 0,
@@ -245,9 +245,9 @@ export const postSlice = createSlice({
         },
       ],
       userPost: {
-        id: "0",
+        id: 0,
         profile: {
-          userProfile: "0",
+          userProfile: 0,
           nickName: "",
           img: "",
         },
