@@ -16,6 +16,7 @@ import {
   fetchPostEnd,
   fetchAsyncPostComment,
   fetchAsyncGetComments,
+  fetchAsyncDeleteComment,
 } from "./postSlice";
 import {
   selectProfile,
@@ -222,6 +223,18 @@ const PostDetail: React.FC = () => {
                       </CommentNickName>
                       {comment.text}
                     </p>
+                    {myProfile.userProfile === comment.userComment ? (
+                      <Button
+                        color="secondary"
+                        onClick={async () => {
+                          await dispatch(fetchAsyncDeleteComment(comment.id));
+                        }}
+                      >
+                        コメント削除
+                      </Button>
+                    ) : (
+                      <></>
+                    )}
                   </Comment>
                 ))}
               </Comments>

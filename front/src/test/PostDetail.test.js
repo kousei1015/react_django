@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, cleanup, waitFor } from "@testing-library/react";
+import { render, screen, cleanup, waitFor, queryByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
@@ -117,6 +117,16 @@ const handlers = [
       return res(ctx.status(401));
     }
   }),
+  rest.delete("http://localhost:8000/api/comment/2", (req, res, ctx) => {
+    const Authorization = req.headers.get("Authorization");
+    if (Authorization == `JWT dummyToken`) {
+      return res(
+        ctx.status(204),
+      );
+    } else {
+      return res(ctx.status(401));
+    }
+  }),
 ];
 
 const server = setupServer(...handlers);
@@ -228,7 +238,46 @@ describe("UpdatePost Component Test", () => {
     await user.click(screen.getByText("Post"));
     expect(await screen.findByText("second comment")).toBeInTheDocument();
   });
-  it("5: Should render PostDetailComponent elements successfully when unauthorized user", async () => {
+  it("5: Should only show delete button to comment author", async () => {
+    localStorage.setItem("localJWT", token);
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/post/1"]}>
+          <Routes>
+            <Route path="/post/:id" element={<PostDetail />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(screen.queryByText("Loading")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("first comment")).toBeInTheDocument();
+    expect(screen.queryByText("コメント削除")).not.toBeInTheDocument();
+  });
+  it("6: Should allow comment author to delete their comment", async () => {
+    localStorage.setItem("localJWT", token);
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/post/1"]}>
+          <Routes>
+            <Route path="/post/:id" element={<PostDetail />} />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(screen.queryByText("Loading")).not.toBeInTheDocument();
+    });
+    const commentInputValue = screen.getByPlaceholderText("add a comment");
+    await user.type(commentInputValue, "second comment");
+    await user.click(screen.getByText("Post"));
+    expect(await screen.findByText("second comment")).toBeInTheDocument();
+    expect(screen.queryByText("コメント削除")).toBeInTheDocument();
+    await user.click(screen.queryByText("コメント削除"));
+    await waitFor(() => expect(screen.queryByText("second comment")).not.toBeInTheDocument());
+  });
+  it("7: Should render PostDetailComponent elements successfully when unauthorized user", async () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={["/post/1"]}>
@@ -252,7 +301,7 @@ describe("UpdatePost Component Test", () => {
     expect(screen.queryByText("Edit")).toBeNull();
     expect(screen.queryByText("Delete")).toBeNull();
   });
-  it("6: Should not add comment successfully when unauthorized user", async () => {
+  it("8: Should not add comment successfully when unauthorized user", async () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={["/post/1"]}>

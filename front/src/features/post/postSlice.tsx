@@ -181,6 +181,26 @@ export const fetchAsyncPostComment = createAsyncThunk(
   }
 );
 
+export const fetchAsyncDeleteComment = createAsyncThunk(
+  "comment/delete",
+  async (id: string) => {
+    try {
+      await axios.delete(`${apiUrl}api/comment/${id}/`, {
+        headers: {
+          Authorization: `JWT ${localStorage.localJWT}`,
+        },
+      });
+      return id;
+    }
+    catch(error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        localStorage.removeItem("localJWT");
+      }
+      throw error;
+    }
+  }
+);
+
 export const postSlice = createSlice({
   name: "post",
   initialState: {
@@ -323,6 +343,14 @@ export const postSlice = createSlice({
         comments: [...state.comments, action.payload],
       };
     });
+
+    //コメント削除機能
+    builder.addCase(fetchAsyncDeleteComment.fulfilled, (state, action) => {
+      return {
+        ...state,
+        comments: state.comments.filter((comment) => comment.id !== action.meta.arg)
+      }
+    })
   },
 });
 
