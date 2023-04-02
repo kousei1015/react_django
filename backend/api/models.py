@@ -4,6 +4,9 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from storages.backends.s3boto3 import S3Boto3Storage
+
+s3 = S3Boto3Storage(custom_domain=settings.AWS_S3_CUSTOM_DOMAIN)
 
 def upload_avatar_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -51,7 +54,7 @@ class Profile(models.Model):
         on_delete=models.CASCADE
     )
     created_on = models.DateTimeField(auto_now_add=True)
-    img = models.ImageField(blank=True, null=True, upload_to=upload_avatar_path)
+    img = models.ImageField(blank=True, null=True, storage=s3, upload_to=upload_avatar_path)
 
     def __str__(self):
         return self.nickName
