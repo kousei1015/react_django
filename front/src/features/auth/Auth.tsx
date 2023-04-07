@@ -1,13 +1,14 @@
 import React from "react";
 import { AppDispatch } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
-import { Wrapper, Title, DotWrapper, Dot, Error, Text } from "./AuthStyles";
+import { Wrapper, Title, Error, Text } from "./AuthStyles";
+import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 import Modal from "react-modal";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { TextField, Button } from "@material-ui/core";
 
-import { fetchAsyncGetPosts, fetchAsyncGetComments } from "../post/postSlice";
+import { fetchAsyncGetPosts } from "../post/postSlice";
 
 import {
   selectIsLoadingAuth,
@@ -23,7 +24,6 @@ import {
   fetchAsyncRegister,
   fetchAsyncGetMyProf,
   fetchAsyncGetProfs,
-  fetchAsyncCreateProf,
 } from "./authSlice";
 
 const modalStyles = {
@@ -54,8 +54,8 @@ const Auth: React.FC = () => {
     <>
       <Modal
         isOpen={openSignUp}
-        onRequestClose={async () => {
-          await dispatch(resetOpenSignUp());
+        onRequestClose={() => {
+          dispatch(resetOpenSignUp());
         }}
         style={modalStyles}
       >
@@ -63,19 +63,19 @@ const Auth: React.FC = () => {
           initialErrors={{ email: "Eメールが必要です" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
-            await dispatch(fetchCredStart());
+            dispatch(fetchCredStart());
             const resultReg = await dispatch(fetchAsyncRegister(values));
-
             if (fetchAsyncRegister.fulfilled.match(resultReg)) {
               await dispatch(fetchAsyncLogin(values));
-              
-              const getProfs = dispatch(fetchAsyncGetProfs());
-              const getPosts = dispatch(fetchAsyncGetPosts());
-              const getMyProf = dispatch(fetchAsyncGetMyProf());
-              await Promise.all([getProfs, getPosts, getMyProf]);
+
+              await Promise.all([
+                dispatch(fetchAsyncGetProfs()),
+                dispatch(fetchAsyncGetPosts()),
+                dispatch(fetchAsyncGetMyProf()),
+              ]);
             }
-            await dispatch(fetchCredEnd());
-            await dispatch(resetOpenSignUp());
+            dispatch(fetchCredEnd());
+            dispatch(resetOpenSignUp());
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()
@@ -114,12 +114,7 @@ const Auth: React.FC = () => {
                   </Button>
 
                   {isLoadingAuth && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
+                    <LoadingScreen
                     >
                       <h1>Loading</h1>
                       <DotWrapper>
@@ -127,7 +122,7 @@ const Auth: React.FC = () => {
                         <Dot delay=".3s" />
                         <Dot delay=".5s" />
                       </DotWrapper>
-                    </div>
+                    </LoadingScreen>
                   )}
 
                   <br />
@@ -191,7 +186,7 @@ const Auth: React.FC = () => {
       <Modal
         isOpen={openSignIn}
         onRequestClose={async () => {
-          await dispatch(resetOpenSignIn());
+          dispatch(resetOpenSignIn());
         }}
         style={modalStyles}
       >
@@ -199,18 +194,19 @@ const Auth: React.FC = () => {
           initialErrors={{ email: "Eメールを入力して下さい" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={async (values) => {
-            await dispatch(fetchCredStart());
+            dispatch(fetchCredStart());
             await dispatch(fetchAsyncLogin(values));
             const result = await dispatch(fetchAsyncLogin(values));
             if (fetchAsyncLogin.fulfilled.match(result)) {
-              const getProfs = dispatch(fetchAsyncGetProfs());
-              const getPosts = dispatch(fetchAsyncGetPosts());
-              const getMyProf = dispatch(fetchAsyncGetMyProf());
-              await Promise.all([getProfs, getPosts, getMyProf]);
+              await Promise.all([
+                dispatch(fetchAsyncGetProfs()),
+                dispatch(fetchAsyncGetPosts()),
+                dispatch(fetchAsyncGetMyProf()),
+              ]);
             }
 
-            await dispatch(fetchCredEnd());
-            await dispatch(resetOpenSignIn());
+            dispatch(fetchCredEnd());
+            dispatch(resetOpenSignIn());
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()

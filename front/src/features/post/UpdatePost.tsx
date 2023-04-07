@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/store";
 import { Button, TextField, IconButton } from "@material-ui/core";
 import { MdAddAPhoto } from "react-icons/md";
+import { selectIsLoadingPost } from "./postSlice";
 
 import {
   selectPostDetail,
@@ -17,15 +18,16 @@ import {
   fetchAsyncGetDetail,
 } from "./postSlice";
 import {
-  PostForm,
-  PostFormWrapper,
-  PostTitle,
+  Form,
+  FormWrapper,
+  Title,
   TagUl,
   TagList,
   TagInput,
   TagAddButton,
   RemoveTagIcon,
 } from "./NewUpdatePostStyles";
+import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +60,8 @@ const UpdatePost: React.FC = () => {
     e.preventDefault();
     setTagInput(e.target.value);
   };
+
+  const postsLoading = useSelector(selectIsLoadingPost);
 
   const [message, setMessage] = useState("");
 
@@ -103,8 +107,8 @@ const UpdatePost: React.FC = () => {
   };
 
   const removeTag = (index: number) => {
-    setTags(tags.filter((el, i) => i !== index))
-  }
+    setTags(tags.filter((el, i) => i !== index));
+  };
 
   const editPost = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -131,99 +135,114 @@ const UpdatePost: React.FC = () => {
   };
 
   return (
-    <PostFormWrapper>
-      <PostForm>
-        <PostTitle data-testid="title">Update Page</PostTitle>
-        <br />
-        <Typography component="h6" color="error">
-          {message}
-        </Typography>
+    <>
+      {postsLoading ? (
+        <LoadingScreen>
+          <h1>Loading</h1>
+          <DotWrapper>
+            <Dot delay="0s" />
+            <Dot delay=".3s" />
+            <Dot delay=".5s" />
+          </DotWrapper>
+        </LoadingScreen>
+      ) : (
+        <FormWrapper>
+          <Form>
+            <Title data-testid="title">Update Page</Title>
+            <br />
+            <Typography component="h6" color="error">
+              {message}
+            </Typography>
 
-        <br />
-        <TextField
-          fullWidth
-          value={placeName}
-          multiline={true}
-          onChange={(e) => setPlaceName(e.target.value)}
-          className={classes.textField}
-          maxRows={2}
-          helperText={`${placeName.length}/30`}
-          placeholder="お気に入りの場所の名前を入力してください※入力必須 30文字まで"
-        />
+            <br />
+            <TextField
+              fullWidth
+              value={placeName}
+              multiline={true}
+              onChange={(e) => setPlaceName(e.target.value)}
+              className={classes.textField}
+              maxRows={2}
+              helperText={`${placeName.length}/30`}
+              placeholder="お気に入りの場所の名前を入力してください※入力必須 30文字まで"
+            />
 
-        <TextField
-          fullWidth
-          value={description}
-          maxRows={2}
-          multiline={true}
-          onChange={(e) => setDescription(e.target.value)}
-          className={classes.textField}
-          helperText={`${description.length}/200`}
-          placeholder="その場所の説明を入力してください※入力必須 200文字まで"
-        />
+            <TextField
+              fullWidth
+              value={description}
+              maxRows={2}
+              multiline={true}
+              onChange={(e) => setDescription(e.target.value)}
+              className={classes.textField}
+              helperText={`${description.length}/200`}
+              placeholder="その場所の説明を入力してください※入力必須 200文字まで"
+            />
 
-        <Typography className={classes.typo} component="h6">
-          アクセス※入力必須
-        </Typography>
-        <Rating
-          data-testid="access"
-          name="simple-controlled"
-          value={accessStars}
-          onChange={(e, newValue) => {
-            setAccessStars(newValue as number);
-          }}
-        />
+            <Typography className={classes.typo} component="h6">
+              アクセス※入力必須
+            </Typography>
+            <Rating
+              data-testid="access"
+              name="simple-controlled"
+              value={accessStars}
+              onChange={(e, newValue) => {
+                setAccessStars(newValue as number);
+              }}
+            />
 
-        <Typography className={classes.typo} component="h6">
-          混雑度※入力必須
-        </Typography>
-        <Rating
-          data-testid="congestion"
-          name="simple-controlled"
-          value={congestionDegree}
-          onChange={(e, newValue) => {
-            setCongestionDegree(newValue as number);
-          }}
-        />
-        <Typography component="h6" className={classes.typo}>
-          名所の画像※任意
-        </Typography>
-        <input
-          type="file"
-          id="imageInput"
-          hidden={true}
-          onChange={(e) => setImage(e.target.files![0])}
-        />
-        <br />
-        <IconButton onClick={handlerEditPicture}>
-          <MdAddAPhoto />
-        </IconButton>
-        <br />
+            <Typography className={classes.typo} component="h6">
+              混雑度※入力必須
+            </Typography>
+            <Rating
+              data-testid="congestion"
+              name="simple-controlled"
+              value={congestionDegree}
+              onChange={(e, newValue) => {
+                setCongestionDegree(newValue as number);
+              }}
+            />
+            <Typography component="h6" className={classes.typo}>
+              名所の画像※任意
+            </Typography>
+            <input
+              type="file"
+              id="imageInput"
+              hidden={true}
+              onChange={(e) => setImage(e.target.files![0])}
+            />
+            <br />
+            <IconButton onClick={handlerEditPicture}>
+              <MdAddAPhoto />
+            </IconButton>
+            <br />
 
-        <TagInput
-          type="text"
-          value={tagInput}
-          onChange={(e) => handleChange(e)}
-          className="inputText"
-        />
-        <TagAddButton onClick={addTag}>追加</TagAddButton>
-        <br />
+            <TagInput
+              type="text"
+              value={tagInput}
+              onChange={(e) => handleChange(e)}
+              className="inputText"
+            />
+            <TagAddButton onClick={addTag}>追加</TagAddButton>
+            <br />
 
-        <TagUl>
-          {tags.map((tag, index) => (
-            <TagList key={index}>
-              <span>{tag.name}</span>
-              <RemoveTagIcon onClick={() => removeTag(index)}>&times;</RemoveTagIcon>
-            </TagList>
-          ))}
-        </TagUl>
+            <TagUl>
+              {tags.map((tag, index) => (
+                <TagList key={index}>
+                  <span>{tag.name}</span>
+                  <RemoveTagIcon onClick={() => removeTag(index)}>
+                    &times;
+                  </RemoveTagIcon>
+                </TagList>
+              ))}
+            </TagUl>
 
-        <br />
-        <Button data-testid="btn-update" onClick={editPost}>
-          Edit
-        </Button>
-      </PostForm>
-    </PostFormWrapper>
+            <br />
+            <Button data-testid="btn-update" onClick={editPost}>
+              Edit
+            </Button>
+          </Form>
+        </FormWrapper>
+      )}
+    </>
   );
 };
 

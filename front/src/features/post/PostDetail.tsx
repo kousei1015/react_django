@@ -24,14 +24,10 @@ import {
   fetchAsyncGetProfs,
 } from "../auth/authSlice";
 import {
-  LoadingScreen,
-  DotWrapper,
-  Dot,
   Wrapper,
   Content,
   Header,
   UserName,
-  ImageWrapper,
   Image,
   StarWrapper,
   Text,
@@ -47,6 +43,7 @@ import {
   TagUl,
   TagList,
 } from "./PostDetailStyles";
+import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 import {
   fetchAsyncGetDetail,
   selectPostDetail,
@@ -100,15 +97,16 @@ const PostDetail: React.FC = () => {
   useEffect(() => {
     const fetchLoader = async () => {
       if (isNaN(idAsNumber)) {
-        throw new Error('idが数値ではありません。');
+        throw new Error("idが数値ではありません。");
       } else {
-        await dispatch(fetchPostStart());
-        const getPostDetail = dispatch(fetchAsyncGetDetail(idAsNumber));
-        const getMyProfs = dispatch(fetchAsyncGetMyProf());
-        const getComments = dispatch(fetchAsyncGetComments());
-        const getProfs = dispatch(fetchAsyncGetProfs());
-        await Promise.all([getPostDetail, getMyProfs, getComments, getProfs]);
-        await dispatch(fetchPostEnd());
+        dispatch(fetchPostStart());
+        await Promise.all([
+          dispatch(fetchAsyncGetDetail(idAsNumber)),
+          dispatch(fetchAsyncGetMyProf()),
+          dispatch(fetchAsyncGetComments()),
+          dispatch(fetchAsyncGetProfs()),
+        ]);
+        dispatch(fetchPostEnd());
       }
     };
     fetchLoader();
@@ -139,9 +137,9 @@ const PostDetail: React.FC = () => {
                 <UserName>{postDetail.userPost.profile.nickName}</UserName>
               </Header>
 
-              <ImageWrapper>
+              <div>
                 <Image src={postDetail.img} />
-              </ImageWrapper>
+              </div>
               <Place data-testid="place-name">
                 名所:{postDetail.placeName}
               </Place>
@@ -191,14 +189,10 @@ const PostDetail: React.FC = () => {
                       }
                     }}
                   >
-                    <DeleteIcon fontSize="small" /> &nbsp; Delete
+                    <DeleteIcon fontSize="small" data-testid="delete" /> 削除
                   </Button>
-                  <Button
-                    data-testid="edit"
-                    size="small"
-                    onClick={pushEditPage}
-                  >
-                    <EditIcon fontSize="small" /> Edit
+                  <Button size="small" onClick={pushEditPage}>
+                    <EditIcon fontSize="small" data-testid="edit" /> 編集
                   </Button>
                 </ButtonFlex>
               ) : (

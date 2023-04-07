@@ -178,9 +178,9 @@ describe("UpdatePost Component Test", () => {
     expect(screen.getByTestId("place-name")).toBeTruthy();
     expect(screen.getByTestId("description")).toBeTruthy();
     expect(screen.getByTestId("tag-name")).toBeTruthy();
-    expect(screen.getByText("Post")).toBeTruthy();
-    expect(screen.getByText("Edit")).toBeTruthy();
-    expect(screen.getByText("Delete")).toBeTruthy();
+    expect(screen.getByTestId("post")).toBeTruthy();
+    expect(screen.getByTestId("edit")).toBeTruthy();
+    expect(screen.getByTestId("delete")).toBeTruthy();
   });
   it("2: Should route to PostDetail Component successfully when edit button click", async () => {
     localStorage.setItem("localJWT", token);
@@ -196,9 +196,9 @@ describe("UpdatePost Component Test", () => {
     await waitFor(() => {
       expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     });
-    await user.click(screen.getByText("Edit"));
-    expect(await mockedNavigator).toBeCalledWith("update");
-    expect(await mockedNavigator).toBeCalledTimes(1);
+    await user.click(screen.getByText("編集"));
+    expect(mockedNavigator).toBeCalledWith("update");
+    expect(mockedNavigator).toBeCalledTimes(1);
   });
   it("3: Should delete post successfully and route to Core component when delete button click", async () => {
     localStorage.setItem("localJWT", token);
@@ -214,7 +214,7 @@ describe("UpdatePost Component Test", () => {
     await waitFor(() => {
       expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     });
-    await user.click(screen.getByText("Delete"));
+    await user.click(screen.getByText("削除"));
     expect(await screen.findByText("削除成功")).toBeInTheDocument();
     expect(mockedNavigator).toBeCalledWith("/");
     expect(mockedNavigator).toBeCalledTimes(1);

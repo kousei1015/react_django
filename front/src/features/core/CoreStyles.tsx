@@ -1,36 +1,10 @@
-import styled, { keyframes } from "styled-components";
-
-export const animation = keyframes`
-  0% { margin-bottom: 0; }
-  50% { margin-bottom: 10px }
-  100% { margin-bottom: 0 }
-`;
-
-export const DotWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-`;
-
-export const Dot = styled.span<{delay: string}>`
-  background-color: #4b4a4a;
-  border-radius: 50%;
-  width: 8px;
-  height: 8px;
-  margin: 0 7px;
-  animation: ${animation} 1.2s linear infinite;
-  animation-delay: ${props => props.delay};
-`;
-
-export const Wrapper = styled.div`
-  margin: 0 auto;
-  max-width: 1280px;
-`;
+import styled from "styled-components";
 
 export const CoreTitle = styled.h1`
   font-weight: bold;
   text-align: center;
-  font-size: 34px;
-  padding: 10px;
+  font-size: 1.5rem;
+  padding: 0.7rem;
   margin: 0;
   color: #4b4a4a
 `;
@@ -41,13 +15,13 @@ export const CoreSelectMenu = styled.select`
   display: flex;
   margin: 0 auto;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 20px;
+  padding: 0.7rem;
+  border-radius: 1.25rem;
 `;
 
 export const CoreContainer = styled.div`
-  padding: 20px;
-  margin-bottom: 70px;
+  padding: 1.25rem;
+  margin-bottom: 4.35rem;
 `;
 
 export const PaginateNav = styled.nav`
@@ -56,8 +30,8 @@ export const PaginateNav = styled.nav`
 `;
 
 export const PaginateButton = styled.button<{active: boolean}>`
-  width: 50px;
-  height: 50px;
+  width: 3rem;
+  height: 3rem;
   border: none;
   border-radius: 50%;
   padding: 1rem;

@@ -1,31 +1,4 @@
-import styled, { keyframes } from "styled-components";
-
-export const animation = keyframes`
-  0% { margin-bottom: 0; }
-  50% { margin-bottom: 10px }
-  100% { margin-bottom: 0 }
-`;
-
-export const LoadingScreen = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const DotWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-`;
-
-export const Dot = styled.span<{delay: string}>`
-  background-color: #4b4a4a;
-  border-radius: 50%;
-  width: 8px;
-  height: 8px;
-  margin: 0 7px;
-  animation: ${animation} 1.2s linear infinite;
-  animation-delay: ${(props) => props.delay};
-`;
+import styled from "styled-components";
 
 export const Wrapper = styled.div`
   margin: 0 auto;
@@ -34,25 +7,21 @@ export const Wrapper = styled.div`
 
 export const Content = styled.div`
   background-color: #fff;
-  border-radius: 20px;
+  border-radius: 1.25rem;
   border: 1px solid lightgray;
   max-width: 90%;
-  margin: 22px auto 10px;
+  margin: 1.4rem auto 0.6rem;
 `;
 
 export const Header = styled.div`
   align-items: center;
   display: flex;
-  padding: 15px;
+  padding: 1rem;
 `;
 
 export const UserName = styled.div`
-  margin-left: 10px;
+  margin-left: 0.6rem;
   font-size: 1.5rem;
-`;
-
-export const ImageWrapper = styled.div`
-  width: 100%;
 `;
 
 export const Image = styled.img`
@@ -69,12 +38,12 @@ export const StarWrapper = styled.div`
 `;
 
 export const Text = styled.p`
-  margin: 8px;
+  margin: 0.5rem;
   font-size: 1.2rem;
 `;
 
 export const Place = styled.div`
-  margin: 30px 50px;
+  margin: 1.9rem 3rem;
   text-align: center;
   font-size: 1.2rem;
   letter-spacing: 1.2px;
@@ -84,7 +53,7 @@ export const Place = styled.div`
 `;
 
 export const Comments = styled.div`
-  padding: 20px;
+  padding: 1.25rem;
 `;
 
 export const Comment = styled.div`
@@ -100,14 +69,14 @@ export const CommentNickName = styled.strong`
 
 export const CommentBox = styled.form`
   display: flex;
-  margin: 15px 0;
+  margin: 1rem 0;
 `;
 
 export const Input = styled.input`
   border: none;
   border-top: 1px solid lightgray;
   flex: 1;
-  padding: 10px;
+  padding: 0.6rem;
 `;
 export const CustomButton = styled.button`
   flex: 0;
@@ -134,7 +103,7 @@ export const TagList = styled.li`
   background-color: #2196f3;
   color: #fff;
   padding: 3px 10px;
-  border-radius: 16px;
+  border-radius: 1rem;
 `;
 
 export const UnAuthorizedMessage = styled.h3`

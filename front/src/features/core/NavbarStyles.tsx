@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const NavWrapper = styled.div`
-  margin-top: 12px;
-  border-radius: 18px;
-  padding: 20px;
+  margin-top: 0.75rem;
+  border-radius: 1rem;
+  padding: 1.25rem;
   object-fit: contain;
   display: flex;
   z-index: 1;
@@ -33,7 +33,7 @@ export const NavButton = styled.button`
   justify-content: center;
   background-color: transparent;
   padding-top: 3px;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-family: 'M PLUS Rounded 1c';
   border: none;
   outline: none;

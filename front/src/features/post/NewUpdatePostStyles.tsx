@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const PostForm = styled.form`
+export const Form = styled.form`
   position: absolute;
   width: 100%;
   top: 50%;
@@ -9,21 +9,21 @@ export const PostForm = styled.form`
   background: #fff;
 `;
 
-export const PostFormWrapper = styled.div`
+export const FormWrapper = styled.div`
   max-width: 780px;
   height: 100vh;
   margin: auto;
   position: relative;
 `;
 
-export const PostTitle = styled.h1`
+export const Title = styled.h1`
   font-weight: normal;
   text-align: center;
-  font-size: 34px;
-  padding: 10px;
+  font-size: 2rem;
+  padding: 0.6rem;
   margin: 0;
   @media screen and (max-width: 520px) {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 `;
 
@@ -38,7 +38,7 @@ export const TagList = styled.li`
   background-color: #2196f3;
   color: #fff;
   padding: 3px 10px;
-  border-radius: 16px;
+  border-radius: 1rem;
 `;
 
 export const RemoveTagIcon = styled.span`

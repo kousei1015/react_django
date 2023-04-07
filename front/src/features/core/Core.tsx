@@ -11,7 +11,7 @@ import {
   PaginateNav,
   PaginateButton,
 } from "./CoreStyles";
-import { useNavigate } from "react-router";
+import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
 import { Grid } from "@material-ui/core";
@@ -28,27 +28,37 @@ import {
   fetchAsyncGetPosts,
   fetchAsyncGetAccessSort,
   fetchAsyncGetCongestionSort,
+  selectIsLoadingPost,
+  fetchPostStart,
+  fetchPostEnd,
 } from "../post/postSlice";
 
 const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
+  const postsLoading = useSelector(selectIsLoadingPost);
   const [orderType, setOrderType] = useState("");
   const [page, setPage] = useState(1);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLoader = async () => {
       if (localStorage.localJWT) {
         dispatch(resetOpenSignIn());
-        const result = await dispatch(fetchAsyncGetMyProf());
-        const getPosts = dispatch(fetchAsyncGetPosts());
-        const getProfs = dispatch(fetchAsyncGetProfs());
-        await Promise.all([result, getPosts, getProfs]);
+        dispatch(fetchPostStart());
+        await Promise.all([
+          dispatch(fetchAsyncGetMyProf()),
+          dispatch(fetchAsyncGetPosts()),
+          dispatch(fetchAsyncGetProfs()),
+        ]);
+        dispatch(fetchPostEnd());
       } else {
-        await dispatch(fetchAsyncGetPosts());
-        await dispatch(fetchAsyncGetProfs());
+        dispatch(fetchPostStart());
+        await Promise.all([
+          dispatch(fetchAsyncGetPosts()),
+          dispatch(fetchAsyncGetProfs()),
+        ]);
+        dispatch(fetchPostEnd());
       }
     };
     fetchLoader();
@@ -93,20 +103,29 @@ const Core: React.FC = () => {
         img={myProfile.img}
       />
 
-      {
+      <CoreTitle>Map Collection</CoreTitle>
+      {postsLoading ? (
+        <LoadingScreen>
+          <h1>Loading</h1>
+          <DotWrapper>
+            <Dot delay="0s" />
+            <Dot delay=".3s" />
+            <Dot delay=".5s" />
+          </DotWrapper>
+        </LoadingScreen>
+      ) : (
         <>
-          <CoreTitle>Map Collection</CoreTitle>
           <CoreSelectMenu
-              onChange={(e) => {
-                const selectedOrderType: string = e.target.value;
-                setOrderType(selectedOrderType);
-              }}
-              defaultValue=""
-            >
-              <option value="">新規投稿順</option>
-              <option value="access">アクセスがよい順</option>
-              <option value="congestion">混雑が少ない順</option>
-            </CoreSelectMenu>
+            onChange={(e) => {
+              const selectedOrderType: string = e.target.value;
+              setOrderType(selectedOrderType);
+            }}
+            defaultValue=""
+          >
+            <option value="">新規投稿順</option>
+            <option value="access">アクセスがよい順</option>
+            <option value="congestion">混雑が少ない順</option>
+          </CoreSelectMenu>
 
           <CoreContainer>
             <div>
@@ -141,7 +160,7 @@ const Core: React.FC = () => {
             </PaginateNav>
           </CoreContainer>
         </>
-      }
+      )}
     </>
   );
 };
