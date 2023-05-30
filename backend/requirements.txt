@@ -9,3 +9,5 @@ django-mysql==3.9
 django-cors-headers==3.4.0
 Pillow
 django-environ
+boto3
+django-storages
