@@ -25,12 +25,14 @@ import {
 
 import {
   selectPosts,
+  selectPage,
+  selectIsLoadingPost,
   fetchAsyncGetPosts,
   fetchAsyncGetAccessSort,
   fetchAsyncGetCongestionSort,
-  selectIsLoadingPost,
   fetchPostStart,
   fetchPostEnd,
+  setClickedPage,
 } from "../post/postSlice";
 
 const Core: React.FC = () => {
@@ -39,7 +41,7 @@ const Core: React.FC = () => {
   const posts = useSelector(selectPosts);
   const postsLoading = useSelector(selectIsLoadingPost);
   const [orderType, setOrderType] = useState("");
-  const [page, setPage] = useState(1);
+  const page = useSelector(selectPage);
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -86,7 +88,7 @@ const Core: React.FC = () => {
 
   const handleClick = (pg: string | number) => {
     if (typeof pg === "number") {
-      return setPage(pg);
+      dispatch(setClickedPage(pg))
     } else return;
   };
 
