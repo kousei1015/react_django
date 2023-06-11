@@ -206,6 +206,7 @@ export const postSlice = createSlice({
   initialState: {
     isLoadingPost: false,
     openNewPost: false,
+    page: 1,
     posts: {
       total_pages: 0,
       results: [{
@@ -267,6 +268,9 @@ export const postSlice = createSlice({
     },
     resetOpenNewPost(state) {
       state.openNewPost = false;
+    },
+    setClickedPage(state, action) {
+      state.page = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -359,12 +363,14 @@ export const {
   fetchPostEnd,
   setOpenNewPost,
   resetOpenNewPost,
+  setClickedPage,
 } = postSlice.actions;
 
 export const selectIsLoadingPost = (state: RootState) =>
   state.post.isLoadingPost;
 export const selectOpenNewPost = (state: RootState) => state.post.openNewPost;
 export const selectPostDetail = (state: RootState) => state.post.postDetail;
+export const selectPage = (state: RootState) => state.post.page;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectComments = (state: RootState) => state.post.comments;
 
