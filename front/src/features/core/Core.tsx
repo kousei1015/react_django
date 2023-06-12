@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import usePagination from "./usePagination";
 import Auth from "../auth/Auth";
 import Navbar from "./Navbar";
@@ -82,9 +82,10 @@ const Core: React.FC = () => {
     dispatch(action(page));
   }, [dispatch, orderType, page]);
 
-  const pagesArray = Array(posts.total_pages)
-    .fill(0)
-    .map((_, index) => index + 1);
+  const pagesArray = useMemo(() => {
+    return Array(posts.total_pages).fill(0).map((_, index) => index + 1);
+  }, [posts.total_pages]);
+
 
   const handleClick = (pg: string | number) => {
     if (typeof pg === "number") {
