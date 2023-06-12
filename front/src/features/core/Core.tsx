@@ -50,14 +50,14 @@ const Core: React.FC = () => {
         dispatch(fetchPostStart());
         await Promise.all([
           dispatch(fetchAsyncGetMyProf()),
-          dispatch(fetchAsyncGetPosts()),
+          dispatch(fetchAsyncGetPosts(page)),
           dispatch(fetchAsyncGetProfs()),
         ]);
         dispatch(fetchPostEnd());
       } else {
         dispatch(fetchPostStart());
         await Promise.all([
-          dispatch(fetchAsyncGetPosts()),
+          dispatch(fetchAsyncGetPosts(page)),
           dispatch(fetchAsyncGetProfs()),
         ]);
         dispatch(fetchPostEnd());
