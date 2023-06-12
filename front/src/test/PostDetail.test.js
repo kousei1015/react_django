@@ -1,5 +1,8 @@
 import React from "react";
-import { render, screen, cleanup, waitFor, queryByText } from "@testing-library/react";
+import { PostDetailData } from "../postData";
+import { myProfileData, profileData } from "../profileData";
+import { commentData, newCommentData } from "../commentData";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
@@ -22,24 +25,7 @@ const handlers = [
   rest.get("http://localhost:8000/api/post/1", (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json({
-        id: 1,
-        placeName: "国営昭和記念公園",
-        description: "四季折々の花がみられる",
-        accessStars: 5,
-        congestionDegree: 4,
-        img: null,
-        tags: [{name: "tag"}],
-        userPost: {
-          id: 2,
-          profile: {
-            id: 2,
-            userProfile: 2,
-            nickName: "myNickName",
-            img: null,
-          },
-        },
-      })
+      ctx.json(PostDetailData)
     );
   }),
   rest.delete("http://localhost:8000/api/post/1", (req, res, ctx) => {
@@ -53,15 +39,7 @@ const handlers = [
     if (Authorization == `JWT dummyToken`) {
       return res(
         ctx.status(200),
-        ctx.json([
-          {
-            id: 2,
-            nickName: "myNickName",
-            userProfile: 2,
-            created_on: "2022-08-21T23:56:56.934652+09:00",
-            img: null,
-          },
-        ])
+        ctx.json(myProfileData)
       );
     } else {
       return res(ctx.status(401));
@@ -70,35 +48,13 @@ const handlers = [
   rest.get("http://localhost:8000/api/profile", (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json([
-        {
-          id: 2,
-          userProfile: 2,
-          nickName: "myNickName",
-          created_on: "2022-09-11T10:12:08.292635+09:00",
-          img: null,
-        },
-        {
-          id: 3,
-          userProfile: 3,
-          nickName: "other user",
-          created_on: "2022-09-11T10:12:08.292635+09:00",
-          img: null,
-        },
-      ])
+      ctx.json(profileData)
     );
   }),
   rest.get("http://localhost:8000/api/comment/", (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json([
-        {
-          id: 1,
-          text: "first comment",
-          userComment: 1,
-          post: 1,
-        },
-      ])
+      ctx.json(commentData)
     );
   }),
   rest.post("http://localhost:8000/api/comment/", (req, res, ctx) => {
@@ -106,12 +62,7 @@ const handlers = [
     if (Authorization == `JWT dummyToken`) {
       return res(
         ctx.status(201),
-        ctx.json({
-          id: 2,
-          text: "second comment",
-          userComment: 2,
-          post: 1,
-        })
+        ctx.json(newCommentData)
       );
     } else {
       return res(ctx.status(401));

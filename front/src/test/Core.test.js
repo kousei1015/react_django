@@ -1,4 +1,6 @@
 import React from "react";
+import { postData, postData2 } from "../postData";
+import { profileData, updateProfileData, myProfileData } from "../profileData";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
@@ -29,17 +31,7 @@ const handlers = [
   rest.get("http://localhost:8000/api/myprofile/", (req, res, ctx) => {
     const Authorization = req.headers.get("Authorization");
     if (Authorization == `JWT dummyToken`) {
-      return res(
-        ctx.status(200),
-        ctx.json([
-          {
-            id: 2,
-            nickName: "myNickName",
-            userProfile: 2,
-            img: null,
-          },
-        ])
-      );
+      return res(ctx.status(200), ctx.json(myProfileData));
     } else {
       return res(ctx.status(401));
     }
@@ -49,61 +41,20 @@ const handlers = [
     if (!Authorization) {
       return res(ctx.status(401));
     } else if (Authorization == `JWT dummyToken`) {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          id: 1,
-          nickName: "test user update",
-          userPost: 1,
-          img: null,
-        })
-      );
+      return res(ctx.status(200), ctx.json(updateProfileData));
     }
   }),
   rest.get("http://localhost:8000/api/post/", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        total_pages: 1,
-        results: [
-          {
-            id: 1,
-            placeName: "東京タワー",
-            description:
-              "夜にはライトアップされ、ロマンチックな雰囲気を醸し出します。東京の街を感じることができる、必見のスポットです。",
-            userPost: 1,
-            accessStars: 3,
-            congestionDegree: 3,
-            img: "http://localhost:8000/media/posts/2test.jpg",
-            tags: [
-              {
-                id: 1,
-                name: "絶景スポット",
-              },
-            ],
-          },
-        ],
-      })
-    );
+    const { searchParams } = new URL(req.url);
+    const page = searchParams.get("page");
+    if (page === "1") {
+      return res(ctx.status(200), ctx.json(postData));
+    } else if (page === "2") {
+      return res(ctx.status(200), ctx.json(postData2));
+    }
   }),
   rest.get("http://localhost:8000/api/profile/", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          id: 1,
-          nickName: "other user",
-          userProfile: 1,
-          img: null,
-        },
-        {
-          id: 2,
-          nickName: "myNickName",
-          userProfile: "2",
-          img: null,
-        },
-      ])
-    );
+    return res(ctx.status(200), ctx.json(profileData));
   }),
   rest.post("http://localhost:8000/api/profile/", (req, res, ctx) => {
     return res(
@@ -178,10 +129,10 @@ describe("Core Component Test", () => {
     expect(screen.getByText("ログアウト")).toBeInTheDocument();
     expect(screen.getByText("新規投稿")).toBeInTheDocument();
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
-    expect(screen.getByText("myNickName")).toBeInTheDocument();
-    expect(screen.getByText("other user")).toBeInTheDocument();
-    expect(screen.getByText("絶景スポット")).toBeInTheDocument();
-    expect(screen.getByText("詳細")).toBeInTheDocument();
+    expect(screen.getByTestId("myNickName").textContent).toBe("myNickName");
+    expect(screen.getAllByText("other user").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("絶景スポット").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("詳細")).toHaveLength(12);
   });
   it("2: Should regsiter all elements when login successfully", async () => {
     render(
@@ -213,10 +164,10 @@ describe("Core Component Test", () => {
     expect(screen.getByText("ログアウト")).toBeInTheDocument();
     expect(screen.getByText("新規投稿")).toBeInTheDocument();
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
-    expect(screen.getByText("myNickName")).toBeInTheDocument();
-    expect(screen.getByText("other user")).toBeInTheDocument();
-    expect(screen.getByText("絶景スポット")).toBeInTheDocument();
-    expect(screen.getByText("詳細")).toBeInTheDocument();
+    expect(screen.getByTestId("myNickName").textContent).toBe("myNickName");
+    expect(screen.getAllByText("other user").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("絶景スポット").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("詳細")).toHaveLength(12);
   });
   it("3: Should render detail page", async () => {
     localStorage.setItem("localJWT", token.access);
@@ -247,7 +198,9 @@ describe("Core Component Test", () => {
     await user.type(inputValue, "test user update");
     await user.click(screen.getByText("Update"));
     await user.click(screen.getByTestId("edit-modal"));
-    expect(screen.getByText("test user update")).toBeInTheDocument();
+    expect(screen.getByTestId("myNickName").textContent).toBe(
+      "myNickName update"
+    );
   });
   it("5: Should render all the elements when unauthorized user", async () => {
     render(
@@ -265,7 +218,8 @@ describe("Core Component Test", () => {
     await user.click(screen.getByTestId("access_no_login"));
     expect(screen.getByText("ログイン")).toBeInTheDocument();
     expect(screen.getByText("新規登録")).toBeInTheDocument();
-    expect(await screen.findByText("詳細")).toBeInTheDocument();
+    expect(await screen.findByText("東京タワー")).toBeInTheDocument();
+    expect(screen.getAllByText("詳細")).toHaveLength(12);
   });
   it("6: Should render detail pagewhen unauthorized user", async () => {
     render(
@@ -276,9 +230,8 @@ describe("Core Component Test", () => {
       </Provider>
     );
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
-    expect(screen.getByText("詳細")).toBeInTheDocument();
-    await user.click(screen.getByText("詳細"));
-    expect(mockedNavigator).toBeCalledWith("/post/1");
+    await user.click(screen.getByTestId("detail-1"));
+    await expect(mockedNavigator).toBeCalledWith("/post/1");
     expect(mockedNavigator).toBeCalledTimes(1);
   });
 });

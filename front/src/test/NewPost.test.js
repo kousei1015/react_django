@@ -1,4 +1,5 @@
 import React from "react";
+import { NewPostData } from "../postData";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
@@ -24,17 +25,7 @@ const handlers = [
     if (Authorization == `JWT dummyToken`) {
       return res(
         ctx.status(200),
-        ctx.json({
-          id: 7,
-          userPost: 1,
-          placeName: "国営昭和記念公園",
-          description:
-            "四季折々の花がみられるのに加えて、夏には非常に広いプールも楽しめる",
-          accessStars: 5,
-          congestionDegree: 4,
-          img: null,
-          tags: [{ name: "test" }],
-        })
+        ctx.json(NewPostData)
       );
     } else {
       return res(ctx.status(401));

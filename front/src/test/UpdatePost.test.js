@@ -1,4 +1,5 @@
 import React from "react";
+import { PostDetailData, updatePostData } from "../postData";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
@@ -22,26 +23,7 @@ const handlers = [
   rest.get("http://localhost:8000/api/post/:id", (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json({
-        id: 1,
-        placeName: "国営昭和記念公園",
-        description: "四季折々の花がみられる",
-        accessStars: 5,
-        congestionDegree: 4,
-        img: null,
-        tags: [{
-          name: "花"
-        }],
-        userPost: {
-          id: 2,
-          profile: {
-            id: 2,
-            userProfile: 2,
-            nickName: "User",
-            img: null,
-          },
-        },
-      })
+      ctx.json(PostDetailData)
     );
   }),
   rest.put("http://localhost:8000/api/post/:id", (req, res, ctx) => {
@@ -49,16 +31,7 @@ const handlers = [
     if (Authorization == `JWT dummyToken`) {
     return res(
       ctx.status(201),
-      ctx.json({
-        id: 1,
-        userPost: 1,
-        placeName: "国営昭和記念公園 update",
-        description:
-          "四季折々の花がみられるのに加えて、夏には非常に広いプールも楽しめる",
-        accessStars: 5,
-        congestionDegree: 4,
-        img: null,
-      })
+      ctx.json(updatePostData)
     );
     }
     else {

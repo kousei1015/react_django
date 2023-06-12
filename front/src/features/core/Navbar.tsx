@@ -17,6 +17,8 @@ import { useNavigate } from "react-router";
 import { PROPS_PROFILE } from "../types";
 
 const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   function pushHome() {
@@ -27,7 +29,8 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
       {localStorage.getItem("localJWT") ? (
         <>
           {/* for test */}
-          <span style={{ display: "none" }}>{nickName}</span>
+          {isProduction ? null : <span style={{display: "none"}} data-testid="myNickName">{nickName}</span> }
+
           
           <NavButton
             data-testid="btn-logout"
