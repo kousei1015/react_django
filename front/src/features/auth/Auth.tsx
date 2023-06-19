@@ -70,7 +70,7 @@ const Auth: React.FC = () => {
 
               await Promise.all([
                 dispatch(fetchAsyncGetProfs()),
-                dispatch(fetchAsyncGetPosts()),
+                dispatch(fetchAsyncGetPosts(1)),
                 dispatch(fetchAsyncGetMyProf()),
               ]);
             }
@@ -200,7 +200,7 @@ const Auth: React.FC = () => {
             if (fetchAsyncLogin.fulfilled.match(result)) {
               await Promise.all([
                 dispatch(fetchAsyncGetProfs()),
-                dispatch(fetchAsyncGetPosts()),
+                dispatch(fetchAsyncGetPosts(1)),
                 dispatch(fetchAsyncGetMyProf()),
               ]);
             }

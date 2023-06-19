@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import usePagination from "./usePagination";
 import Auth from "../auth/Auth";
 import Navbar from "./Navbar";
@@ -27,12 +27,14 @@ import {
   selectPosts,
   selectPage,
   selectIsLoadingPost,
+  selectOrderType,
   fetchAsyncGetPosts,
   fetchAsyncGetAccessSort,
   fetchAsyncGetCongestionSort,
   fetchPostStart,
   fetchPostEnd,
   setClickedPage,
+  setOrderType,
 } from "../post/postSlice";
 
 const Core: React.FC = () => {
@@ -40,8 +42,9 @@ const Core: React.FC = () => {
   const myProfile = useSelector(selectProfile);
   const posts = useSelector(selectPosts);
   const postsLoading = useSelector(selectIsLoadingPost);
-  const [orderType, setOrderType] = useState("");
+  const orderType = useSelector(selectOrderType);
   const page = useSelector(selectPage);
+  const isMounted = useRef(false);
 
   useEffect(() => {
     const fetchLoader = async () => {
@@ -50,51 +53,74 @@ const Core: React.FC = () => {
         dispatch(fetchPostStart());
         await Promise.all([
           dispatch(fetchAsyncGetMyProf()),
-          dispatch(fetchAsyncGetPosts(page)),
           dispatch(fetchAsyncGetProfs()),
         ]);
         dispatch(fetchPostEnd());
       } else {
         dispatch(fetchPostStart());
-        await Promise.all([
-          dispatch(fetchAsyncGetPosts(page)),
-          dispatch(fetchAsyncGetProfs()),
-        ]);
+        await dispatch(fetchAsyncGetProfs());
         dispatch(fetchPostEnd());
       }
     };
     fetchLoader();
   }, [dispatch]);
-
-  useEffect(() => {
-    let action;
-    switch (orderType) {
-      case "access":
-        action = fetchAsyncGetAccessSort;
-        break;
-      case "congestion":
-        action = fetchAsyncGetCongestionSort;
-        break;
-      default:
-        action = fetchAsyncGetPosts;
-        break;
-    }
-    dispatch(action(page));
-  }, [dispatch, orderType, page]);
+  
+  const getPostsByOrderType = useMemo(() => {
+    return () => {
+      switch (orderType) {
+        case "access":
+          return fetchAsyncGetAccessSort;
+        case "congestion":
+          return fetchAsyncGetCongestionSort;
+        default:
+          return fetchAsyncGetPosts;
+        }
+      };
+    }, [orderType]);
+    
+    useEffect(() => {
+      // orderTypeが変わって、かつpageステートが1出ない時は、pageの値を1にする。
+      // 次に、pageの値が変わったことで下の、pageを依存配列としているuseEffectの処理が走る。
+      // バックエンドからソートされたデータを取得できる。
+      if (isMounted.current && page !== 1) {
+        dispatch(setClickedPage(1));
+      }
+      // pageが1の時、ordetTypeが変わってもpageを依存配列としているuseEffectの処理が走らない、つまりバックエンドからソートされたデータを取ってこない。
+      // よってpageが1の状態で、かつorderTypeが変わった場合は下のように書いてバックエンドからデータを取ってくる。
+      else if (isMounted.current && page === 1) {
+        const postsData = getPostsByOrderType();
+        const fetchData = dispatch(postsData(1));
+        return () => {
+          fetchData.abort();
+        }
+      }
+      else {
+        isMounted.current = true;
+      }
+    }, [dispatch, orderType]);
+    
+    useEffect(() => {
+      const postsData = getPostsByOrderType()
+      const fetchData = dispatch(postsData(page));
+      return () => {
+      fetchData.abort();
+    };
+  }, [dispatch, page]);
 
   const pagesArray = useMemo(() => {
-    return Array(posts.total_pages).fill(0).map((_, index) => index + 1);
+    return Array(posts.total_pages)
+      .fill(0)
+      .map((_, index) => index + 1);
   }, [posts.total_pages]);
-
 
   const handleClick = (pg: string | number) => {
     if (typeof pg === "number") {
-      dispatch(setClickedPage(pg))
-    } else return;
+      dispatch(setClickedPage(pg));
+    };
   };
 
   const { pagesFunc } = usePagination(pagesArray, page);
-  const result = pagesFunc();
+  const pagination = pagesFunc();
 
   return (
     <>
@@ -121,9 +147,9 @@ const Core: React.FC = () => {
           <CoreSelectMenu
             onChange={(e) => {
               const selectedOrderType: string = e.target.value;
-              setOrderType(selectedOrderType);
+              dispatch(setOrderType(selectedOrderType));
             }}
-            defaultValue=""
+            defaultValue={orderType}
           >
             <option value="">新規投稿順</option>
             <option value="access">アクセスがよい順</option>
@@ -151,7 +177,7 @@ const Core: React.FC = () => {
               </Grid>
             </div>
             <PaginateNav>
-              {result?.map((pg) => (
+              {pagination?.map((pg) => (
                 <PaginateButton
                   onClick={() => handleClick(pg)}
                   key={pg}

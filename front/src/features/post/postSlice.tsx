@@ -15,9 +15,15 @@ const apiUrl =
 
 export const fetchAsyncGetPosts = createAsyncThunk(
   "post/get",
-  async (params: number = 1) => {
+  async (params: number = 1, { signal }) => {
+    const source = axios.CancelToken.source()
+    signal.addEventListener('abort', () => {
+      source.cancel()
+    })
     const res = await axios.get(
-      `${apiUrl}api/post/?page=${params}`
+      `${apiUrl}api/post/?page=${params}`, {
+        cancelToken: source.token,
+      }
     );
     return res.data;
   }
@@ -25,9 +31,15 @@ export const fetchAsyncGetPosts = createAsyncThunk(
 
 export const fetchAsyncGetAccessSort = createAsyncThunk(
   "post/access/sort",
-  async (params: number = 1) => {
+  async (params: number = 1, { signal }) => {
+    const source = axios.CancelToken.source()
+    signal.addEventListener('abort', () => {
+      source.cancel()
+    })
     const res = await axios.get(
-      `${apiUrl}api/post/access/?page=${params}`
+      `${apiUrl}api/post/access/?page=${params}`, {
+        cancelToken: source.token,
+      }
     );
     return res.data;
   }
@@ -35,9 +47,15 @@ export const fetchAsyncGetAccessSort = createAsyncThunk(
 
 export const fetchAsyncGetCongestionSort = createAsyncThunk(
   "post/congestion/get",
-  async (params: number = 1) => {
+  async (params: number = 1, { signal }) => {
+    const source = axios.CancelToken.source()
+    signal.addEventListener('abort', () => {
+      source.cancel()
+    })
     const res = await axios.get(
-      `${apiUrl}api/post/congestion/?page=${params}`
+      `${apiUrl}api/post/congestion/?page=${params}`, {
+        cancelToken: source.token,
+      }
     );
     return res.data;
   }
@@ -207,6 +225,7 @@ export const postSlice = createSlice({
     isLoadingPost: false,
     openNewPost: false,
     page: 1,
+    orderType: "",
     posts: {
       total_pages: 0,
       results: [{
@@ -272,6 +291,9 @@ export const postSlice = createSlice({
     setClickedPage(state, action) {
       state.page = action.payload
     },
+    setOrderType(state, action){
+      state.orderType = action.payload;
+    }
   },
   extraReducers: (builder) => {
     //投稿一覧取
@@ -364,6 +386,7 @@ export const {
   setOpenNewPost,
   resetOpenNewPost,
   setClickedPage,
+  setOrderType,
 } = postSlice.actions;
 
 export const selectIsLoadingPost = (state: RootState) =>
@@ -371,6 +394,7 @@ export const selectIsLoadingPost = (state: RootState) =>
 export const selectOpenNewPost = (state: RootState) => state.post.openNewPost;
 export const selectPostDetail = (state: RootState) => state.post.postDetail;
 export const selectPage = (state: RootState) => state.post.page;
+export const selectOrderType = (state: RootState) => state.post.orderType;
 export const selectPosts = (state: RootState) => state.post.posts;
 export const selectComments = (state: RootState) => state.post.comments;
 
