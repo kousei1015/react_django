@@ -9,11 +9,13 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
         read_only_fields = ['id']
 
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Profile
+        model = Profile
         fields = ['id','userProfile', 'nickName', 'created_on','img']
         extra_kwargs = {'userProfile': {'read_only': True}}
+
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False, read_only=True)
@@ -45,55 +47,43 @@ class PostSerializer(serializers.ModelSerializer):
             )
             post.tags.add(tag_obj)
 
-    def create(self, validated_data):
 
+    def create(self, validated_data):
         tags = validated_data.pop('tags', [])
         post = Post.objects.create(**validated_data)
         self._get_or_create_tags(tags, post)
-        
-        
-
         return post
 
-    def update(self, instance, validated_data):
 
+    def update(self, instance, validated_data):
         tags = validated_data.pop('tags', None)
-        #タグが存在する場合
         if tags is not None:
             instance.tags.clear()
             self._get_or_create_tags(tags, instance)
-
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
         instance.save()
         return instance
 
+
 class PostDetailSerializer(PostSerializer):
-    userPost = UserSerializer(many=False, read_only=True)
+    nickName = serializers.CharField(source='userPost.profile.nickName', read_only=True)
+    profileImage = serializers.ImageField(source='userPost.profile.img', read_only=True)
 
     class Meta(PostSerializer.Meta):
-        fields = PostSerializer.Meta.fields
-
-#class PostDetailSerializer(serializers.ModelSerializer):
-#    userPost = UserSerializer(many=False, read_only=True)
-#    class Meta:
-#        model = Post
-#        fields = ('id', 'placeName', 'description', 'accessStars', 'congestionDegree', 'img', 'userPost', 'tags')
-        
+        fields = PostSerializer.Meta.fields + ('nickName', 'profileImage',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    nickName = serializers.CharField(source='userComment.profile.nickName', read_only=True)
+    profileImage = serializers.ImageField(source='userComment.profile.img', read_only=True)
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'userComment','post')
+        fields = ('id', 'text', 'userComment','post', 'nickName', 'profileImage')
         extra_kwargs = {'userComment': {'read_only': True}}
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name')
-
-
-
-

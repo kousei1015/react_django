@@ -28,7 +28,7 @@ class CreateUserView(generics.ListCreateAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = (AllowAny,)
 
-    
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -75,8 +75,8 @@ class PostDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = serializers.PostDetailSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, custompermissions.PostOwnerPermission,)
-    
-  
+
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -92,11 +92,3 @@ class TagViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(userTag=self.request.user)
-
-    
-
-    
-
-
-
-       

@@ -4,6 +4,8 @@ export const commentData = [
     text: "first comment",
     userComment: 1,
     post: 1,
+    nickName: "other user",
+    profileImage: "",
   },
 ]
 
