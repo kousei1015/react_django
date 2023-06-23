@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { selectProfiles } from "../auth/authSlice";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../app/store";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -21,7 +20,6 @@ import {
 import {
   selectProfile,
   fetchAsyncGetMyProf,
-  fetchAsyncGetProfs,
 } from "../auth/authSlice";
 import {
   Wrapper,
@@ -71,7 +69,6 @@ const PostDetail: React.FC = () => {
   const classes = useStyles();
   const dispatch: AppDispatch = useDispatch();
   const postDetail = useSelector(selectPostDetail);
-  const profiles = useSelector(selectProfiles);
   const myProfile = useSelector(selectProfile);
   const comments = useSelector(selectComments);
   const postsLoading = useSelector(selectIsLoadingPost);
@@ -104,7 +101,6 @@ const PostDetail: React.FC = () => {
           dispatch(fetchAsyncGetDetail(idAsNumber)),
           dispatch(fetchAsyncGetMyProf()),
           dispatch(fetchAsyncGetComments()),
-          dispatch(fetchAsyncGetProfs()),
         ]);
         dispatch(fetchPostEnd());
       }
@@ -133,8 +129,8 @@ const PostDetail: React.FC = () => {
           <Wrapper>
             <Content>
               <Header>
-                <Avatar src={postDetail.userPost.profile.img} />
-                <UserName>{postDetail.userPost.profile.nickName}</UserName>
+                <Avatar src={postDetail.profileImage} />
+                <UserName>{postDetail.nickName}</UserName>
               </Header>
 
               <div>
@@ -174,7 +170,7 @@ const PostDetail: React.FC = () => {
                 {message}
               </Typography>
 
-              {postDetail.userPost.id === myProfile.userProfile ? (
+              {postDetail.userPost === myProfile.userProfile ? (
                 <ButtonFlex>
                   <Button
                     size="small"
@@ -203,21 +199,13 @@ const PostDetail: React.FC = () => {
                 {commentsOnPost.map((comment) => (
                   <Comment key={comment.id}>
                     <Avatar
-                      src={
-                        profiles.find(
-                          (prof) => prof.userProfile === comment.userComment
-                        )?.img
-                      }
+                      src={comment.profileImage}
                       className={classes.small}
                     />
 
                     <p>
                       <CommentNickName>
-                        {
-                          profiles.find(
-                            (prof) => prof.userProfile === comment.userComment
-                          )?.nickName
-                        }
+                        {comment.nickName}
                       </CommentNickName>
                       {comment.text}
                     </p>

@@ -207,15 +207,9 @@ export const PostDetailData = {
   congestionDegree: 4,
   img: null,
   tags: [{name: "花"}],
-  userPost: {
-    id: 2,
-    profile: {
-      id: 2,
-      userProfile: 2,
-      nickName: "myNickName",
-      img: null,
-    },
-  },
+  userPost: 2,
+  nickName: "myNickName",
+  profileImage: null
 }
 
 export const updatePostData = {

@@ -45,12 +45,6 @@ const handlers = [
       return res(ctx.status(401));
     }
   }),
-  rest.get("http://localhost:8000/api/profile", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json(profileData)
-    );
-  }),
   rest.get("http://localhost:8000/api/comment/", (req, res, ctx) => {
     return res(
       ctx.status(200),

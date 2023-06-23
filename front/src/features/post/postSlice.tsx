@@ -251,6 +251,8 @@ export const postSlice = createSlice({
         text: "",
         userComment: 0,
         post: 0,
+        nickName: "",
+        profileImage: "",
       },
     ],
     postDetail: {
@@ -259,20 +261,15 @@ export const postSlice = createSlice({
       description: "",
       accessStars: 0,
       congestionDegree: 0,
+      img: "",
       tags: [
         {
           name: "",
         },
       ],
-      userPost: {
-        id: 0,
-        profile: {
-          userProfile: 0,
-          nickName: "",
-          img: "",
-        },
-      },
-      img: "",
+      userPost: 0,
+      nickName: "",
+      profileImage: "",
     },
   },
   reducers: {
