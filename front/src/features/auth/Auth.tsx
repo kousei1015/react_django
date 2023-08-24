@@ -2,11 +2,18 @@ import React from "react";
 import { AppDispatch } from "../../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Wrapper, Title, Error, Text } from "./AuthStyles";
-import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
+import { Input } from "../../commonStyles/InputStyles";
+import { Button } from "../../commonStyles/ButtonStyles";
+import {
+  LoadingScreen,
+  DotWrapper,
+  Dot,
+} from "../../commonStyles/LoadingStyles";
 import Modal from "react-modal";
-import { Formik } from "formik";
-import * as Yup from "yup";
-import { TextField, Button } from "@material-ui/core";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { PROPS_AUTHEN } from "../types";
 
 import { fetchAsyncGetPosts } from "../post/postSlice";
 
@@ -42,6 +49,11 @@ const modalStyles = {
   },
 };
 
+const validationSchema = z.object({
+  email: z.string().nonempty("Eメールが必要です").email("Eメールの形式が間違ってます"),
+  password: z.string().nonempty("パスワードは必須です").min(4, "パスワードは6文字以上入力してください")
+})
+
 const Auth: React.FC = () => {
   Modal.setAppElement("#root");
 
@@ -49,6 +61,51 @@ const Auth: React.FC = () => {
   const openSignUp = useSelector(selectOpenSignUp);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
   const dispatch: AppDispatch = useDispatch();
+
+  const {
+    register, //フォームから入力された値のstate管理、バリデーション処理が可能
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<PROPS_AUTHEN>({
+    mode: "onChange",
+    shouldUnregister: false,
+    resolver: zodResolver(validationSchema),
+  });
+
+  const loginSubmit = async (data: PROPS_AUTHEN) => {
+    dispatch(fetchCredStart());
+
+    const resultReg = await dispatch(fetchAsyncRegister(data));
+    if (fetchAsyncRegister.fulfilled.match(resultReg)) {
+      await dispatch(fetchAsyncLogin(data));
+
+      await Promise.all([
+        dispatch(fetchAsyncGetProfs()),
+        dispatch(fetchAsyncGetPosts(1)),
+        dispatch(fetchAsyncGetMyProf()),
+      ]);
+    }
+    dispatch(fetchCredEnd());
+    dispatch(resetOpenSignUp());
+  };
+
+  const registerSubmit = async (data: PROPS_AUTHEN) => {
+    dispatch(fetchCredStart());
+
+    const result = await dispatch(fetchAsyncLogin(data));
+    if (fetchAsyncLogin.fulfilled.match(result)) {
+      await Promise.all([
+        dispatch(fetchAsyncGetProfs()),
+        dispatch(fetchAsyncGetPosts(1)),
+        dispatch(fetchAsyncGetMyProf()),
+      ]);
+    }
+
+    dispatch(fetchCredEnd());
+    dispatch(resetOpenSignIn());
+  };
+
+
 
   return (
     <>
@@ -59,128 +116,73 @@ const Auth: React.FC = () => {
         }}
         style={modalStyles}
       >
-        <Formik
-          initialErrors={{ email: "Eメールが必要です" }}
-          initialValues={{ email: "", password: "" }}
-          onSubmit={async (values) => {
-            dispatch(fetchCredStart());
-            const resultReg = await dispatch(fetchAsyncRegister(values));
-            if (fetchAsyncRegister.fulfilled.match(resultReg)) {
-              await dispatch(fetchAsyncLogin(values));
+        <form onSubmit={handleSubmit(loginSubmit)}>
+          <Wrapper>
+            <Title>Map Collection</Title>
+            <br />
 
-              await Promise.all([
-                dispatch(fetchAsyncGetProfs()),
-                dispatch(fetchAsyncGetPosts(1)),
-                dispatch(fetchAsyncGetMyProf()),
-              ]);
-            }
-            dispatch(fetchCredEnd());
-            dispatch(resetOpenSignUp());
-          }}
-          validationSchema={Yup.object().shape({
-            email: Yup.string()
-              .email("Eメールの形式が間違ってます")
-              .required("Eメールが必要です"),
-            password: Yup.string().required("password is must").min(4),
-          })}
-        >
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            values,
-            errors,
-            touched,
-            isValid,
-          }) => (
-            <div>
-              <form onSubmit={handleSubmit}>
-                <Wrapper>
-                  <Title>Map Collection</Title>
-                  <br />
+            <Text>
+              ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
+            </Text>
+            <Button
+              onClick={async () => {
+                await dispatch(resetOpenSignIn());
+                await dispatch(resetOpenSignUp());
+              }}
+            >
+              Skip
+            </Button>
 
-                  <Text>
-                    ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
-                  </Text>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={async () => {
-                      await dispatch(resetOpenSignIn());
-                      await dispatch(resetOpenSignUp());
-                    }}
-                  >
-                    Skip
-                  </Button>
+            {isLoadingAuth && (
+              <LoadingScreen>
+                <h1>Loading</h1>
+                <DotWrapper>
+                  <Dot delay="0s" />
+                  <Dot delay=".3s" />
+                  <Dot delay=".5s" />
+                </DotWrapper>
+              </LoadingScreen>
+            )}
 
-                  {isLoadingAuth && (
-                    <LoadingScreen
-                    >
-                      <h1>Loading</h1>
-                      <DotWrapper>
-                        <Dot delay="0s" />
-                        <Dot delay=".3s" />
-                        <Dot delay=".5s" />
-                      </DotWrapper>
-                    </LoadingScreen>
-                  )}
+            <br />
 
-                  <br />
+            <Input
+              placeholder="Emailを入力してください"
+              id="email"
+              type="text"
+              {...register("email")}
+            />
+            <br />
+            {errors.email && <Error>{errors.email.message}</Error>}
 
-                  <TextField
-                    placeholder="Emailを入力してください"
-                    id="email"
-                    label="email"
-                    name="email"
-                    type="input"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.email}
-                  />
-                  <br />
-                  {touched.email && errors.email ? (
-                    <Error>{errors.email}</Error>
-                  ) : null}
+            <Input
+              placeholder="パスワードを入力してください"
+              id="password"
+              type="text"
+              {...register("password")}
+            />
+            {errors.password && <Error>{errors.password.message}</Error>}
+            <br />
+            <br />
 
-                  <TextField
-                    placeholder="パスワードを入力してください"
-                    id="password"
-                    label="password"
-                    name="password"
-                    type="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                  />
-                  {touched.password && errors.password ? (
-                    <Error>{errors.password}</Error>
-                  ) : null}
-                  <br />
-                  <br />
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={!isValid}
-                    type="submit"
-                    data-testid="submit-button"
-                  >
-                    Register
-                  </Button>
-                  <br />
-                  <Text
-                    onClick={async () => {
-                      await dispatch(setOpenSignIn());
-                      await dispatch(resetOpenSignUp());
-                    }}
-                  >
-                    ログインはこちら
-                  </Text>
-                </Wrapper>
-              </form>
-            </div>
-          )}
-        </Formik>
+            <Button
+              disabled={!isValid}
+              type="submit"
+              data-testid="submit-button"
+            >
+              Register
+            </Button>
+            <br />
+            <Text
+              onClick={async () => {
+                await dispatch(setOpenSignIn());
+                await dispatch(resetOpenSignUp());
+              }}
+            >
+              ログインはこちら
+            </Text>
+          </Wrapper>
+        </form>
       </Modal>
 
       <Modal
@@ -190,133 +192,82 @@ const Auth: React.FC = () => {
         }}
         style={modalStyles}
       >
-        <Formik
-          initialErrors={{ email: "Eメールを入力して下さい" }}
-          initialValues={{ email: "", password: "" }}
-          onSubmit={async (values) => {
-            dispatch(fetchCredStart());
-            await dispatch(fetchAsyncLogin(values));
-            const result = await dispatch(fetchAsyncLogin(values));
-            if (fetchAsyncLogin.fulfilled.match(result)) {
-              await Promise.all([
-                dispatch(fetchAsyncGetProfs()),
-                dispatch(fetchAsyncGetPosts(1)),
-                dispatch(fetchAsyncGetMyProf()),
-              ]);
-            }
+        <form onSubmit={handleSubmit(registerSubmit)}>
+          <Wrapper>
+            <Title>Map Collection</Title>
+            <br />
 
-            dispatch(fetchCredEnd());
-            dispatch(resetOpenSignIn());
-          }}
-          validationSchema={Yup.object().shape({
-            email: Yup.string()
-              .email("email format is wrong")
-              .required("email is must"),
-            password: Yup.string().required("password is must").min(4),
-          })}
-        >
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            values,
-            errors,
-            touched,
-            isValid,
-          }) => (
-            <div>
-              <form onSubmit={handleSubmit}>
-                <Wrapper>
-                  <Title>Map Collection</Title>
-                  <br />
-                  <Text>
-                    ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
-                  </Text>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    data-testid="access_no_login"
-                    onClick={async () => {
-                      await dispatch(resetOpenSignIn());
-                      await dispatch(resetOpenSignUp());
-                    }}
-                  >
-                    Skip
-                  </Button>
-                  {isLoadingAuth && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <h1>Loading</h1>
-                      <DotWrapper>
-                        <Dot delay="0s" />
-                        <Dot delay=".3s" />
-                        <Dot delay=".5s" />
-                      </DotWrapper>
-                    </div>
-                  )}
+            <Text>
+              ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です
+            </Text>
+            <Button
+              data-testid="access_no_login"
+              onClick={async () => {
+                await dispatch(resetOpenSignIn());
+                await dispatch(resetOpenSignUp());
+              }}
+            >
+              Skip
+            </Button>
+            {isLoadingAuth && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <h1>Loading</h1>
+                <DotWrapper>
+                  <Dot delay="0s" />
+                  <Dot delay=".3s" />
+                  <Dot delay=".5s" />
+                </DotWrapper>
+              </div>
+            )}
 
-                  <br />
+            <br />
 
-                  <TextField
-                    placeholder="Emailを入力してください"
-                    id="email"
-                    label="email"
-                    name="email"
-                    type="input"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.email}
-                  />
+            <Input
+              placeholder="Emailを入力してください"
+              id="email"
+              data-testid="email"
+              type="text"
+              {...register("email")}
+            />
+            {errors.email && <Error>{errors.email.message}</Error>}
+            <br />
 
-                  {touched.email && errors.email ? (
-                    <Error>{errors.email}</Error>
-                  ) : null}
-                  <br />
+            <Input
+              placeholder="パスワードを入力してください"
+              id="password"
+              data-testid="password"
+              type="text"
+              {...register("password")}
+            />
+            {errors.password && <Error>{errors.password.message}</Error>}
+            <br />
+            <br />
 
-                  <TextField
-                    placeholder="パスワードを入力してください"
-                    id="password"
-                    label="password"
-                    name="password"
-                    type="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                  />
-                  {touched.password && errors.password ? (
-                    <Error>{errors.password}</Error>
-                  ) : null}
-                  <br />
-                  <br />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={!isValid}
-                    type="submit"
-                    data-testid="submit-button"
-                  >
-                    Login
-                  </Button>
-                  <br />
-                  <br />
-                  <Text
-                    onClick={async () => {
-                      await dispatch(resetOpenSignIn());
-                      await dispatch(setOpenSignUp());
-                    }}
-                  >
-                    新規登録はこちら
-                  </Text>
-                </Wrapper>
-              </form>
-            </div>
-          )}
-        </Formik>
+            <Button
+              disabled={!isValid}
+              type="submit"
+              data-testid="submit-button"
+            >
+              Login
+            </Button>
+            <br />
+            <br />
+            <Text
+              onClick={async () => {
+                await dispatch(resetOpenSignIn());
+                await dispatch(setOpenSignUp());
+              }}
+            >
+              新規登録はこちら
+            </Text>
+          </Wrapper>
+        </form>
       </Modal>
     </>
   );

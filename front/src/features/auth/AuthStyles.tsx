@@ -8,7 +8,6 @@ export const Wrapper = styled.div`
 export const Title = styled.h1`
   font-weight: bold;
   text-align: center;
-  color: #4b4a4a;
 `;
 
 export const Error = styled.div`
@@ -18,9 +17,7 @@ export const Error = styled.div`
 `;
 
 export const Text = styled.span`
-  color: #000;
   text-align: center;
-  cursor: pointer;
-  font-weight: lighter;
+  font-weight: normal;
   padding-bottom: 0.8rem;
 `;
