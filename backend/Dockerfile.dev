@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.8-slim
 ENV PYTHONBUFFERED 1
 RUN apt-get update
 RUN apt-get install python3-dev default-libmysqlclient-dev gcc  -y

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
     'api.apps.ApiConfig',
     'corsheaders',
@@ -77,8 +78,7 @@ MIDDLEWARE = [
 ]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    "http://localhost",
-    "https://mapcollection.tk",
+    "https://front.mapcollection.work",
     "http://mapcollection.tk"
 ]
 
