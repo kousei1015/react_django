@@ -1,4 +1,5 @@
 import React from "react";
+import NoProfileImg from "./../../images/NoProfileImg.webp";
 import {
   Wrapper,
   Content,
@@ -7,73 +8,71 @@ import {
   Image,
   Star,
   UserName,
-  DetailButton,
   TagUl,
   TagList,
 } from "./PostStyles";
-import { Avatar, Button } from "@material-ui/core";
-import Rating from "@mui/material/Rating";
-import { useSelector } from "react-redux";
+import { Button } from "../../commonStyles/ButtonStyles";
+import { Avatar } from "../../commonStyles/AvatarStyles";
 import { useNavigate } from "react-router-dom";
-import { selectProfiles } from "../auth/authSlice";
 import { PROPS_POST } from "../types";
+import Stars from "../Stars";
 
 /* eslint-disable import/first */
 
 const Post: React.FC<PROPS_POST> = ({
-  postId,
+  id,
   userPost,
   placeName,
   accessStars,
   congestionDegree,
-  imageUrl,
+  img,
   tags,
+  profiles,
 }) => {
-  const profiles = useSelector(selectProfiles);
+
   const prof = profiles.filter((prof) => {
     return prof.userProfile === userPost;
   });
 
   const navigate = useNavigate();
   function pushDetailPage() {
-    navigate(`/post/${postId}`);
+    navigate(`/post/${id}`);
   }
   if (placeName) {
     return (
       <Wrapper>
         <Content>
           <Header>
-            <Avatar src={prof[0]?.img} />
+            {prof[0]?.img ? (
+              <Avatar src={prof[0]?.img} alt="投稿者の画像" />
+            ) : (
+              <Avatar src={NoProfileImg} alt="投稿者の画像" />
+            )}
             <UserName>{prof[0]?.nickName}</UserName>
           </Header>
-          <Image src={imageUrl} alt="" />
+          <Image src={img} />
 
           <PlaceName>{placeName}</PlaceName>
           <Star>
             <PlaceName>アクセス度</PlaceName>
-            <Rating name="read-only" value={accessStars} readOnly />
+            <Stars value={accessStars} readOnly={true} />
           </Star>
           <Star>
             <PlaceName>　混雑度　</PlaceName>
-            <Rating name="read-only" value={congestionDegree} readOnly />
+            <Stars value={congestionDegree} readOnly={true} />
           </Star>
 
           <TagUl>
             {tags.map((tag) => (
-              <TagList
-                key={tag.id}
-              >
+              <TagList key={tag.id}>
                 <span>{tag.name}</span>
               </TagList>
             ))}
           </TagUl>
 
-          <DetailButton
-            onClick={pushDetailPage}
-            data-testid={`detail-${postId}`}
-          >
+          <Button onClick={pushDetailPage} data-testid={`detail-${id}`}>
             詳細
-          </DetailButton>
+          </Button>
         </Content>
       </Wrapper>
     );

@@ -32,12 +32,12 @@ export const Image = styled.img`
 `;
 
 export const StarWrapper = styled.div`
-  align-items: center;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
 `;
 
 export const Text = styled.p`
+  text-align: center;
   margin: 0.5rem;
   font-size: 1.2rem;
 `;

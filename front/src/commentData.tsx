@@ -15,3 +15,20 @@ export const newCommentData = {
   userComment: 2,
   post: 1,
 }
+
+export const addedCommentData = [
+  {
+    id: 1,
+    text: "first comment",
+    userComment: 1,
+    post: 1,
+    nickName: "other user",
+    profileImage: "",
+  },
+  {
+    id: 2,
+    text: "second comment",
+    userComment: 2,
+    post: 1,
+  }
+]

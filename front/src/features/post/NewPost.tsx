@@ -1,21 +1,12 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import { AppDispatch } from "../../app/store";
-import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
 import { File } from "../types";
-import {
-  fetchPostStart,
-  fetchPostEnd,
-  fetchAsyncNewPost,
-  selectIsLoadingPost,
-} from "./postSlice";
-import { Button, TextField, IconButton } from "@material-ui/core";
+import { Button } from "../../commonStyles/ButtonStyles";
 import { MdAddAPhoto } from "react-icons/md";
 import {
   Form,
   FormWrapper,
+  TextField,
+  Text,
   Title,
   TagUl,
   TagList,
@@ -23,29 +14,13 @@ import {
   TagInput,
   TagAddButton,
 } from "./NewUpdatePostStyles";
-import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 import { useNavigate } from "react-router-dom";
-import { TAG } from "../types";
+import { Tag } from "../types";
 import imageCompression from "browser-image-compression";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      height: "50px",
-      padding: "15px",
-      marginBottom: "35px",
-    },
-    typo: {
-      marginTop: "25px",
-      color: "#346751",
-    },
-  })
-);
+import { useAddPost } from "../query/queryHooks";
+import Stars from "../Stars";
 
 const NewPost: React.FC = () => {
-  const classes = useStyles();
-  const dispatch: AppDispatch = useDispatch();
-
   const [image, setImage] = useState<File | null>(null);
   const option = {
     maxSizeMB: 5,
@@ -54,14 +29,14 @@ const NewPost: React.FC = () => {
 
   const [placeName, setPlaceName] = useState("");
   const [description, setDescription] = useState("");
-  const [accessStars, setAccessStars] = useState<number | null>(0);
-  const [congestionDegree, setCongestionDegree] = useState<number | null>(0);
+  const [accessStars, setAccessStars] = useState(0);
+  const [congestionDegree, setCongestionDegree] = useState(0);
+
+  const addPostMutation = useAddPost();
 
   // for tags
-  const [tags, setTags] = useState<TAG[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [tagInput, setTagInput] = useState("");
-
-  const postsLoading = useSelector(selectIsLoadingPost);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -85,7 +60,7 @@ const NewPost: React.FC = () => {
   };
 
   //useState for error message
-  const [message, setMessage] = React.useState("");
+  const [message, setMessage] = useState("");
 
   const handlerEditPicture = () => {
     const fileInput = document.getElementById("imageInput");
@@ -101,179 +76,105 @@ const NewPost: React.FC = () => {
       placeName: placeName,
       description: description,
       img: image,
-      accessStars: accessStars,
-      congestionDegree: congestionDegree,
+      accessStars: accessStars.toString(),
+      congestionDegree: congestionDegree.toString(),
       tags: tags,
     };
-    dispatch(fetchPostStart());
-    const result = await dispatch(fetchAsyncNewPost(packet));
-    if (fetchAsyncNewPost.fulfilled.match(result)) {
+    try {
+      await addPostMutation.mutateAsync(packet);
       setMessage("投稿成功");
       setPlaceName("");
       setDescription("");
       setImage(null);
       pushHome();
-    } else if (fetchAsyncNewPost.rejected.match(result)) {
+    } catch (error) {
       setMessage(
         "エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください"
       );
     }
-    dispatch(fetchPostEnd());
   };
 
-  //for test easily
-  function accessLabelText(value: any) {
-    let text = "accessStar";
-    if (value === 1) {
-      text = "1 accessStar";
-    } else if (value > 1) {
-      text = value + "accessStars";
-    }
-    return text;
-  }
-  //for test easily
-  function congestionLabelText(value: any) {
-    let text = "congestionStar";
-    if (value === 1) {
-      text = "1 congestionStar";
-    } else if (value > 1) {
-      text = value + "congestionStars";
-    }
-    return text;
-  }
   return (
     <>
-      {postsLoading ? (
-        <LoadingScreen>
-          <h1>Loading</h1>
-          <DotWrapper>
-            <Dot delay="0s" />
-            <Dot delay=".3s" />
-            <Dot delay=".5s" />
-          </DotWrapper>
-        </LoadingScreen>
-      ) : (
-        <FormWrapper>
-          <Form>
-            <Title data-testid="title">Create Page</Title>
-            <br />
-            <Typography component="h6" color="red">
-              {message}
-            </Typography>
-            <br />
-            <TextField
-              placeholder="お気に入りの場所の名前を入力してください※入力必須 30文字まで"
-              fullWidth
-              multiline={true}
-              onChange={(e) => setPlaceName(e.target.value)}
-              maxRows={2}
-              helperText={`${placeName.length}/30`}
-              className={classes.textField}
-            />
+      <FormWrapper>
+        <Form>
+          <Title data-testid="title">Create Page</Title>
+          <Text>{message}</Text>
+          <br />
+          <TextField
+            placeholder="お気に入りの場所の名前を入力してください※入力必須 30文字まで"
+            onChange={(e) => setPlaceName(e.target.value)}
+          />
 
-            <TextField
-              placeholder="その場所の説明を入力してください※入力必須 200文字まで"
-              fullWidth
-              multiline={true}
-              required={true}
-              maxRows={2}
-              onChange={(e) => setDescription(e.target.value)}
-              helperText={`${description.length}/200`}
-              className={classes.textField}
-            />
+          <TextField
+            placeholder="その場所の説明を入力してください※入力必須 200文字まで"
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-            <Typography
-              color="textSecondary"
-              component="h6"
-              className={classes.typo}
-            >
-              アクセス※入力必須
-            </Typography>
-            <Rating
-              data-testid="access"
-              name="simple-controlled"
-              value={accessStars}
-              getLabelText={accessLabelText}
-              onChange={(e, newValue) => {
-                setAccessStars(newValue);
-              }}
-            />
+          <Text>アクセス※入力必須</Text>
 
-            <Typography
-              color="textSecondary"
-              component="h6"
-              className={classes.typo}
-            >
-              混雑度※入力必須
-            </Typography>
-            <Rating
-              data-testid="congestion"
-              name="simple-controlled"
-              value={congestionDegree}
-              getLabelText={congestionLabelText}
-              onChange={(event, newValue) => {
-                setCongestionDegree(newValue);
-              }}
-            />
-            <Typography
-              color="textSecondary"
-              component="h6"
-              className={classes.typo}
-            >
-              名所の画像※任意
-            </Typography>
-            <input
-              type="file"
-              id="imageInput"
-              hidden={true}
-              onChange={async (e: any) => {
-                if (!e.target.files[0]) {
-                  return;
-                }
-                const img = e.target.files[0];
-                try {
-                  const comporessFile = await imageCompression(img, option);
-                  setImage(comporessFile);
-                } catch (error) {
-                  console.log(error);
-                }
-              }}
-            />
-            <IconButton onClick={handlerEditPicture}>
-              <MdAddAPhoto />
-            </IconButton>
-            <br />
+          <div data-testid="access">
+            <Stars value={accessStars} setValue={setAccessStars} readOnly={false} whichStar="access" />
+          </div>
 
-            <TagInput
-              type="text"
-              value={tagInput}
-              onChange={(e) => handleChange(e)}
-              className="inputText"
-            />
-            <TagAddButton onClick={addTag}>追加</TagAddButton>
-            <br />
+          <Text>混雑度※入力必須</Text>
 
-            <TagUl>
-              {tags?.map((tag, index) =>
-                tag.name ? (
-                  <TagList key={index}>
-                    <span>{tag.name}</span>
-                    <RemoveTagIcon onClick={() => removeTag(index)}>
-                      &times;
-                    </RemoveTagIcon>
-                  </TagList>
-                ) : (
-                  <></>
-                )
-              )}
-            </TagUl>
-            <br />
-            <Button data-testid="btn-post" onClick={newPost}>
-              Post
-            </Button>
-          </Form>
-        </FormWrapper>
-      )}
+          <div data-testid="congestion">
+            <Stars value={congestionDegree} setValue={setCongestionDegree} readOnly={false} whichStar="congestion" />
+          </div>
+
+          <Text>名所の画像※任意</Text>
+          <input
+            type="file"
+            id="imageInput"
+            hidden={true}
+            onChange={async (e: any) => {
+              if (!e.target.files[0]) {
+                return;
+              }
+              const img = e.target.files[0];
+              try {
+                const comporessFile = await imageCompression(img, option);
+                setImage(comporessFile);
+              } catch (error) {
+                console.log(error);
+              }
+            }}
+          />
+
+          <MdAddAPhoto onClick={handlerEditPicture} />
+
+          <br />
+
+          <TagInput
+            type="text"
+            value={tagInput}
+            onChange={(e) => handleChange(e)}
+            className="inputText"
+          />
+          <TagAddButton onClick={addTag}>追加</TagAddButton>
+          <br />
+
+          <TagUl>
+            {tags?.map((tag, index) =>
+              tag.name ? (
+                <TagList key={index}>
+                  <span>{tag.name}</span>
+                  <RemoveTagIcon onClick={() => removeTag(index)}>
+                    &times;
+                  </RemoveTagIcon>
+                </TagList>
+              ) : (
+                <></>
+              )
+            )}
+          </TagUl>
+          <br />
+          <Button data-testid="btn-post" onClick={newPost}>
+            Post
+          </Button>
+        </Form>
+      </FormWrapper>
     </>
   );
 };

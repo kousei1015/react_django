@@ -1,76 +1,103 @@
-/*to upload image file*/
+// to upload image file
 export type File = Blob & {
   readonly lastModified: number;
   readonly name: string;
+};
+
+// for Stars.tsx Component
+export type PROPS_STARS = {
+  value: number;
+  setValue?: React.Dispatch<React.SetStateAction<number>>;
+  readOnly: boolean;
+  whichStar?: "access" | "congestion";
 }
 
+// For reuse of type below
+export type PostBase = {
+  id: number;
+  placeName: string;
+  description: string;
+  userPost: number;
+  accessStars: number;
+  congestionDegree: number;
+  img: string;
+  tags: Tag[];
+};
 
-/*authSlice.ts*/
-export type PROPS_AUTHEN = {
+export type Tag = {
+  id?: number;
+  name: string;
+};
+
+/* api.ts, Auth.ts*/
+export type AuthData = {
   email: string;
   password: string;
-}
+};
 
-export type PROPS_NEWPROFILE = {
+// api.ts
+export type Posts = {
+  total_pages: number;
+  results: [PostBase];
+};
+
+export type AddPost = {
+  id?: number;
+  accessStars: string;
+  congestionDegree: string;
+  placeName: string;
+  description: string;
+  img: File | null;
+  tags: Tag[];
+};
+
+export type Profile = {
+  id: number;
+  nickName: string;
+  userProfile: number;
+  created_on: string;
+  img: string;
+}[];
+
+export type Post = PostBase & {
+  nickName: string;
+  profileImage: string;
+};
+
+export type AddProfile = {
   id: number;
   nickName: string;
   img: File | null;
-}
+};
 
-export type PROPS_NICKNAME = {
-  nickName: string;
-}
+export type Jwt = {
+  access: string;
+  refresh: string;
+};
 
-/*postSlice.ts*/
-export type PROPS_NEWPOST = {
-  accessStars: number | null;
-  congestionDegree: number | null;
-  placeName: string;
-  description: string;
-  img: File | null;
-  tags:{name: string}[];
-}
-
-export type DETAIL_CONTENT = {
+export type Comments = {
   id: number;
-  placeName: string;
-  description: string;
-  accessStars: number;
-  congestionDegree: number;
-  img: File | null;
-  tags: {name: string}[];
-}
+  text: string;
+  userComment: number;
+  post: number;
+  nickName: string;
+  profileImage: string;
+}[];
 
-export type CustomFormData = FormData & {
-  append(name: string, value: string | Blob | number, fileName?: string): void;
-}
+export type AddComment = {
+  text: string;
+  post: number;
+};
 
-/*Post.tsx*/
-export type PROPS_POST = {
-  postId: number;
-  loginId: number;
-  userPost: number;
-  placeName: string;
-  description: string;
-  imageUrl: string;
-  accessStars: number;
-  congestionDegree: number;
-  tags: { id: number; name: string }[];
-}
+// Post.tsx
+export type PROPS_POST = PostBase & {
+  tags: Tag[];
+  profiles: Profile;
+};
 
 /*Navbar.tsx */
 export type PROPS_PROFILE = {
-  id: number;
-  nickName: string;
-  img: string;
-}
-
-/*PostDetail.tsx */
-export type PROPS_COMMENT = {
-  text: string;
-  post: number;
-}
-
-export type TAG ={
-  name: string;
-}
+  id?: number;
+  nickName?: string;
+  img?: string | null;
+};

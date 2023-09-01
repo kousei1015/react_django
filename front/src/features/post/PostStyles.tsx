@@ -10,6 +10,7 @@ export const Content = styled.div`
   background-color: #fff;
   border-radius: 28px;
   box-shadow: 3px 5px 10px #4b4a4a;
+  padding-bottom: 1rem;
 `;
 
 export const Header = styled.div`
@@ -62,22 +63,4 @@ export const TagList = styled.li`
   color: #fff;
   padding: 3px 12px;
   border-radius: 16px;
-`;
-
-export const DetailButton = styled.button`
-  background-color: #2196f3;
-  border: 1px solid #2196f3;
-  border-radius: 16px;
-  color: #fff;
-  padding: 8px 24px;
-  cursor: pointer;
-  transition: 0.3s all ease-in-out;
-  margin: 0 0 1.5rem;
-  @media (max-width: 520px) {
-    font-size: 1.15rem;
-  }
-  &:hover {
-    background-color: #346751;
-    border: 1px solid #346751;
-  }
 `;

@@ -18,7 +18,7 @@ export const postData = {
     {
       id: 2,
       placeName: "京都祇園",
-      userPost: 2,
+      userPost: 1,
       accessStars: 4,
       congestionDegree: 2,
       img: "http://localhost:8000/media/posts/3test.jpg",

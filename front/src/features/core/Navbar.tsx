@@ -1,11 +1,10 @@
 import React, { memo } from "react";
 import { NavWrapper, NavButton } from "./NavbarStyles";
-import { Avatar } from "@material-ui/core";
+import { Avatar } from "../../commonStyles/AvatarStyles";
 import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
 import {
   resetOpenProfile,
-  editNickname,
   setOpenSignIn,
   setOpenProfile,
   resetOpenSignUp,
@@ -15,9 +14,10 @@ import {
 import { resetOpenNewPost } from "../post/postSlice";
 import { useNavigate } from "react-router";
 import { PROPS_PROFILE } from "../types";
+import NoProfileImg from "./../../images/NoProfileImg.webp";
 
-const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {
+  const isProduction = process.env.NODE_ENV === "production";
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,12 +26,15 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
   }
   return (
     <NavWrapper>
-      {localStorage.getItem("localJWT") ? (
+      {nickName ? (
         <>
           {/* for test */}
-          {isProduction ? null : <span style={{display: "none"}} data-testid="myNickName">{nickName}</span> }
+          {isProduction ? null : (
+            <span style={{ display: "none" }} data-testid="myNickName">
+              {nickName}
+            </span>
+          )}
 
-          
           <NavButton
             data-testid="btn-logout"
             onClick={() => {
@@ -44,7 +47,6 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
           <NavButton
             onClick={() => {
               localStorage.removeItem("localJWT");
-              dispatch(editNickname(""));
               dispatch(resetOpenProfile());
               dispatch(resetOpenNewPost());
               dispatch(setOpenSignIn());
@@ -59,7 +61,11 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({nickName, img}) => {
               dispatch(resetOpenNewPost());
             }}
           >
-            <Avatar alt="who?" src={img} />
+            {img ? (
+              <Avatar src={img} alt="プロフィール画像" />
+            ) : (
+              <Avatar src={NoProfileImg} alt="プロフィール画像" />
+            )}
           </NavButton>
         </>
       ) : (

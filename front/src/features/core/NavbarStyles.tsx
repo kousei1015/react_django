@@ -34,7 +34,7 @@ export const NavButton = styled.button`
   background-color: transparent;
   padding-top: 3px;
   font-size: 1.75rem;
-  font-family: 'M PLUS Rounded 1c';
+  font-family: "M PLUS Rounded 1c";
   border: none;
   outline: none;
   color: #4b4a4a;

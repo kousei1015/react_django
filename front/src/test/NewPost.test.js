@@ -1,17 +1,11 @@
-import React from "react";
 import { NewPostData } from "../postData";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/authSlice";
-import postReducer from "../features/post/postSlice";
 import NewPost from "../features/post/NewPost";
-import { MemoryRouter } from "react-router-dom";
-
-const token = "dummyToken";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useAddPost } from "../features/query/queryHooks";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -19,21 +13,27 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
+jest.mock("../features/query/queryHooks", () => ({
+  ...jest.requireActual("../features/query/queryHooks"),
+  useAddPost: jest.fn(),
+}));
+
 const handlers = [
   rest.post("http://localhost:8000/api/post/", (req, res, ctx) => {
-    const Authorization = req.headers.get("Authorization");
-    if (Authorization == `JWT dummyToken`) {
-      return res(
-        ctx.status(200),
-        ctx.json(NewPostData)
-      );
-    } else {
-      return res(ctx.status(401));
-    }
+    return res(ctx.status(200), ctx.json(NewPostData));
   }),
 ];
 
 const server = setupServer(...handlers);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      cacheTime: 0,
+    },
+  },
+});
 
 beforeAll(() => {
   server.listen();
@@ -48,26 +48,20 @@ afterAll(() => {
 
 const user = userEvent.setup();
 
+const renderNewPost = () => {
+  render(
+    <QueryClientProvider client={queryClient}>
+      <NewPost />
+    </QueryClientProvider>
+  );
+};
+
 describe("NewPost Component Test", () => {
-  let store;
-  beforeEach(() => {
-    localStorage.clear();
-    store = configureStore({
-      reducer: {
-        auth: authReducer,
-        post: postReducer,
-      },
-    });
-  });
   it("1: Should render NewPostComponent successfully", async () => {
-    localStorage.setItem("localJWT", token);
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <NewPost />
-        </MemoryRouter>
-      </Provider>
-    );
+    const mockMutateAsync = jest.fn();
+    useAddPost.mockReturnValue({ mutateAsync: mockMutateAsync });
+    renderNewPost();
+
     expect(screen.getByTestId("title")).toBeTruthy();
     expect(screen.getAllByRole("textbox")).toBeTruthy();
     expect(screen.getByTestId("access")).toBeTruthy();
@@ -75,14 +69,10 @@ describe("NewPost Component Test", () => {
     expect(screen.getByTestId("btn-post")).toBeTruthy();
   });
   it("2: Should post successfully", async () => {
-    localStorage.setItem("localJWT", token);
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <NewPost />
-        </MemoryRouter>
-      </Provider>
-    );
+    const mockMutateAsync = jest.fn();
+    useAddPost.mockReturnValue({ mutateAsync: mockMutateAsync });
+    renderNewPost();
+
     const placeNameInput = screen.getByPlaceholderText(
       "お気に入りの場所の名前を入力してください※入力必須 30文字まで"
     );
@@ -94,8 +84,8 @@ describe("NewPost Component Test", () => {
       descriptionInput,
       "四季折々の花がみられるのに加えて、夏には非常に広いプールも楽しめる"
     );
-    const accessStar = expect(screen.getByText("5accessStars"));
-    const congestionDegree = expect(screen.getByText("4congestionStars"));
+    const accessStar = screen.getByTestId("5accessStars");
+    const congestionDegree = screen.getByTestId("4congestionStars");
     await user.click(accessStar.parentElement);
     await user.click(congestionDegree.parentElement);
     await user.click(screen.getByText("Post"));
@@ -104,19 +94,13 @@ describe("NewPost Component Test", () => {
     expect(mockedNavigator).toBeCalledTimes(1);
   });
   it("3: Should not route CoreComponent when status 400", async () => {
-    localStorage.setItem("localJWT", token);
     server.use(
       rest.post("http://localhost:8000/api/post/", (req, res, ctx) => {
         return res(ctx.status(400));
       })
     );
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <NewPost />
-        </MemoryRouter>
-      </Provider>
-    );
+    renderNewPost();
+
     await user.click(screen.getByText("Post"));
     expect(
       await screen.findByText(
@@ -126,13 +110,8 @@ describe("NewPost Component Test", () => {
     expect(await mockedNavigator).toHaveBeenCalledTimes(0);
   });
   it("4: Should not create new post when unauthorized user", async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <NewPost />
-        </MemoryRouter>
-      </Provider>
-    );
+    renderNewPost();
+
     await user.click(screen.getByText("Post"));
     expect(
       await screen.findByText(

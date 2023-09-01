@@ -1,22 +1,14 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { EditTitle, EditForm } from "./EditProfileStyles";
-import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
+import { Button } from "../../commonStyles/ButtonStyles";
+import { Input } from "../../commonStyles/InputStyles";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch } from "../../app/store";
-import { File } from "../types";
-import {
-  editNickname,
-  selectProfile,
-  selectOpenProfile,
-  resetOpenProfile,
-  fetchCredStart,
-  fetchCredEnd,
-  fetchAsyncUpdateProf,
-  selectIsLoadingAuth,
-} from "../auth/authSlice";
-import { Button, TextField, IconButton } from "@material-ui/core";
+import { File, PROPS_PROFILE } from "../types";
+import { selectOpenProfile, resetOpenProfile } from "../auth/authSlice";
 import { MdAddAPhoto } from "react-icons/md";
+import { usePutProfileMutation } from "../query/queryHooks";
 
 const modalStyles = {
   overlay: {
@@ -32,19 +24,19 @@ const modalStyles = {
   },
 };
 
-const EditProfile: React.FC = () => {
+const EditProfile: React.FC<PROPS_PROFILE> = ({ id, nickName }) => {
+  const putProfileMutation = usePutProfileMutation();
   const dispatch: AppDispatch = useDispatch();
   const openProfile = useSelector(selectOpenProfile);
-  const profile = useSelector(selectProfile);
-  const profileUpdate = useSelector(selectIsLoadingAuth);
+  const [myNickName, setMyNickName] = useState("");
   const [image, setImage] = useState<File | null>(null);
 
   const updateProfile = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    const packet = { id: profile.id, nickName: profile.nickName, img: image };
-    dispatch(fetchCredStart());
-    await dispatch(fetchAsyncUpdateProf(packet));
-    dispatch(fetchCredEnd());
+    if (id && nickName) {
+      const packet = { id, nickName: myNickName, img: image };
+      await putProfileMutation.mutateAsync(packet);
+    }
     dispatch(resetOpenProfile());
   };
 
@@ -64,48 +56,31 @@ const EditProfile: React.FC = () => {
       >
         <EditForm>
           <EditTitle>Map Collection</EditTitle>
-          {profileUpdate ? (
-            <LoadingScreen>
-              <h1>Loading</h1>
-              <DotWrapper>
-                <Dot delay="0s" />
-                <Dot delay=".3s" />
-                <Dot delay=".5s" />
-              </DotWrapper>
-            </LoadingScreen>
-          ) : (
-            <>
-              <br />
-              <TextField
-                placeholder="nickname"
-                type="text"
-                value={profile?.nickName}
-                onChange={(e) => dispatch(editNickname(e.target.value))}
-              />
-              <br />
-              <input
-                type="file"
-                id="imageInput"
-                hidden={true}
-                onChange={(e) => setImage(e.target.files![0])}
-              />
-              <br />
-              <IconButton onClick={handlerEditPicture}>
-                <MdAddAPhoto />
-              </IconButton>
-              <br />
-              <br />
-              <Button
-                disabled={!profile?.nickName}
-                variant="contained"
-                color="primary"
-                type="submit"
-                onClick={updateProfile}
-              >
-                Update
-              </Button>
-            </>
-          )}
+          <>
+            <br />
+            <Input
+              placeholder="nickname"
+              type="text"
+              value={myNickName}
+              onChange={(e) => setMyNickName(e.target.value)}
+            />
+            <br />
+            <input
+              type="file"
+              id="imageInput"
+              hidden={true}
+              onChange={(e) => setImage(e.target.files![0])}
+            />
+            <br />
+
+            <MdAddAPhoto onClick={handlerEditPicture} />
+
+            <br />
+            <br />
+            <Button disabled={!nickName} type="submit" onClick={updateProfile}>
+              Update
+            </Button>
+          </>
         </EditForm>
       </Modal>
     </>

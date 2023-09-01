@@ -1,5 +1,12 @@
 import styled from "styled-components";
 
+export const FormWrapper = styled.div`
+  max-width: 780px;
+  height: 100vh;
+  margin: auto;
+  position: relative;
+`;
+
 export const Form = styled.form`
   position: absolute;
   width: 100%;
@@ -7,13 +14,21 @@ export const Form = styled.form`
   transform: translateY(-50%);
   text-align: center;
   background: #fff;
+  padding: 0.5rem;
 `;
 
-export const FormWrapper = styled.div`
-  max-width: 780px;
-  height: 100vh;
-  margin: auto;
-  position: relative;
+
+export const TextField = styled.textarea`
+    display: block;
+    width: 90%;
+    margin: 1rem auto;
+    border: 2px solid gray;
+    font-family: inherit;
+`;
+
+export const Text = styled.p`
+  font-weight: normal;
+  color: red;
 `;
 
 export const Title = styled.h1`

@@ -33,4 +33,10 @@ export const GlobalStyles = createGlobalStyle`
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
   }
+  button {
+    background: transparent;
+    cursor: pointer;
+    border: none;
+    padding: 0.3rem;
+  }
 `;

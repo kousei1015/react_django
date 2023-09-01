@@ -1,5 +1,24 @@
 import styled from "styled-components";
 
+export const Grid = styled.div`
+  width: calc(100% - 32px);
+  margin: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+export const GridChild = styled.div`
+  width: calc((100% / 3) - 24px);
+  margin: 12px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    margin: 0;
+  }
+`;
+
 export const CoreTitle = styled.h1`
   font-weight: bold;
   text-align: center;

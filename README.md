@@ -57,6 +57,18 @@ Map Collection
 ちなみに、Redux Toolkitの非同期処理を破棄する方法はこちらのページ(https://redux-toolkit.js.org/api/createAsyncThunk)
 に書いてありました。
 
+## このアプリはフロントエンドとバックエンド双方のライブラリのバージョンの更新とフロントエンド側のライブラリの一部変更が行われました。以下はフロントエンド側の変更したライブラリについて説明します
+1. FormikとyupをReact Hook Formとzodに置き換えた。
+理由として、FormikよりReact Hook Formの方がパフォーマンスがよりいいという記事が多かったため、そちらに乗り換えました。React Hook Formの方は非制御型コンポーネントで、再レンダリングが制御型コンポーネントであるFormikと比べて少ない傾向にあるそうです。
+また、npm trendsを見ると近年はReact Hook Formの方がインストール数がFormikを上回っており、それに伴って情報量も増えてきていると感じたためでもあります。
+yupからzodへの乗り換えに関しては、npm trendsから見るにzodの方がインストール数が多いこと、(もしかしたら、近年注目を集めているt3 stackにzodが含まれていることが多い？かもしれません)を考慮して、変更しました。
+
+2. React Queryのインストール
+元々、非同期処理に関する部分をRedux ToolkitのcreateAsyncThunkを使って行っていたのですが、その部分の処理をReact Queryへ移行することにしました(Redux Toolkit自体は使っていますが、あくまで状態管理だけに用途を集中しています)。個人的にはRedux Toolkitで状態管理と非同期処理の両方を記述するより、非同期処理はReact Query、状態管理はRedux Toolkitと別々に分けた方が可読性が上がると感じたからです。
+また、React Queryはデータをキャッシュしてくれる分、パフォーマンスがよりよくなるというのも大きいです。
+
+3. MaterialUIのアンインストール
+以前はところどころUIにCSSフレームワークのMaterialUIを使っていたのですが、それを止め全てstyled-componentsでUIを構築することにしました。理由として、そもそもこのアプリを開発し始めた当時の自分はあまりCSSが出来なかったため、採用していた面があります。しかし、現在ではそれほどCSSに苦手意識がなくなりました。長期的に運営すると想定して、MaterialUIのデザインを微調整することになった際、ある程度までは調整出来ますが、細部のカスタマイズに関しては難しい場合があるので、その点を考慮してMaterialUIを使わないという判断をすることにしました。
 
 # 機能一覧
 simplejwt djoserというライブラリを使ったjwt認証機能
@@ -86,11 +98,11 @@ Node.js 16
 
 React.js 18.1.0
 
-Python 3.7
+Python 3.8
 
-Django 3.0.7
+Django 3.2
 
-django-rest-framework 3.10
+django-rest-framework 3.12
 
 MySQL 5.7.38
 

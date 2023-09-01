@@ -1,26 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Avatar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { Avatar } from "../../commonStyles/AvatarStyles";
+import { Button } from "../../commonStyles/ButtonStyles";
+import NoProfileImg from "./../../images/NoProfileImg.webp";
 import { useParams, useNavigate } from "react-router-dom";
-import { AppDispatch } from "../../app/store";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import Rating from "@mui/material/Rating";
-
-import {
-  selectComments,
-  selectIsLoadingPost,
-  fetchPostStart,
-  fetchPostEnd,
-  fetchAsyncPostComment,
-  fetchAsyncGetComments,
-  fetchAsyncDeleteComment,
-} from "./postSlice";
-import {
-  selectProfile,
-  fetchAsyncGetMyProf,
-} from "../auth/authSlice";
+import { AiFillStar, AiFillEdit } from "react-icons/ai";
+import { BsFillEraserFill } from "react-icons/bs";
 import {
   Wrapper,
   Content,
@@ -41,216 +25,205 @@ import {
   TagUl,
   TagList,
 } from "./PostDetailStyles";
-import { LoadingScreen, DotWrapper, Dot } from "../../styles/LoadingStyles";
 import {
-  fetchAsyncGetDetail,
-  selectPostDetail,
-  fetchAsyncDelete,
-} from "./postSlice";
-import { Button, Typography } from "@material-ui/core";
-
-const useStyles = makeStyles((theme) => ({
-  small: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-    marginRight: theme.spacing(1),
-  },
-  card: {
-    width: "100%",
-  },
-  rate: {
-    alignItems: "center",
-  },
-}));
+  usePost,
+  useComments,
+  useMyProfile,
+  useAddComment,
+  useDeletePost,
+  useDeleteComment,
+} from "../query/queryHooks";
+import Loading from "../Loading";
 
 const PostDetail: React.FC = () => {
   const { id } = useParams();
-  const idAsNumber = id ? parseInt(id, 10) : NaN;
-  const classes = useStyles();
-  const dispatch: AppDispatch = useDispatch();
-  const postDetail = useSelector(selectPostDetail);
-  const myProfile = useSelector(selectProfile);
-  const comments = useSelector(selectComments);
-  const postsLoading = useSelector(selectIsLoadingPost);
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const commentsOnPost = comments.filter((com) => {
-    return com.post === postDetail.id;
+  const stars = [1, 2, 3, 4, 5];
+
+  const { data: postDetail, isLoading: postLoading } = usePost(Number(id));
+  const { data: comments, isLoading: commentLoading } = useComments();
+  const { data: myProfile } = useMyProfile();
+
+  const addCommentMutation = useAddComment();
+  const deletePostMutation = useDeletePost();
+  const deleteCommentMutation = useDeleteComment();
+
+  const commentsOnPost = comments?.filter((com) => {
+    return com.post === postDetail?.id;
   });
 
-  const postComment = async (e: React.MouseEvent<HTMLElement>) => {
+  const handleAddComment = async (
+    e: React.MouseEvent<HTMLElement>,
+    text: string,
+    id: number
+  ) => {
+    const packet = {
+      text,
+      post: id,
+    };
     e.preventDefault();
-    const packet = { text: text, post: postDetail.id };
-    await dispatch(fetchAsyncPostComment(packet));
+    if (postDetail?.id && text) {
+      await addCommentMutation.mutateAsync(packet);
+    }
     setText("");
   };
+
+  const handleDeletePost = (
+    id: number,
+    e: React.MouseEvent<HTMLElement>
+  ) => {
+    e.preventDefault();
+    deletePostMutation.mutate({ id });
+    setMessage("削除成功");
+    pushHome();
+  };
+
+  const handleDeleteComment = async (
+    id: number,
+    e: React.MouseEvent<HTMLElement>
+  ) => {
+    e.preventDefault();
+    await deleteCommentMutation.mutateAsync({ id });
+  };
+
+  if (postLoading || commentLoading) {
+    return <Loading />;
+  }
+
+  if (!postDetail) {
+    return null;
+  }
 
   function pushHome() {
     navigate("/");
   }
 
-  useEffect(() => {
-    const fetchLoader = async () => {
-      if (isNaN(idAsNumber)) {
-        throw new Error("idが数値ではありません。");
-      } else {
-        dispatch(fetchPostStart());
-        await Promise.all([
-          dispatch(fetchAsyncGetDetail(idAsNumber)),
-          dispatch(fetchAsyncGetMyProf()),
-          dispatch(fetchAsyncGetComments()),
-        ]);
-        dispatch(fetchPostEnd());
-      }
-    };
-    fetchLoader();
-  }, [dispatch]);
-
   function pushEditPage() {
     navigate(`update`);
   }
+
   return (
     <>
-      {postsLoading ? (
-        <LoadingScreen>
-          <h1>Loading</h1>
-          <DotWrapper>
-            <Dot delay="0s" />
-            <Dot delay=".3s" />
-            <Dot delay=".5s" />
-          </DotWrapper>
-        </LoadingScreen>
-      ) : (
-        <>
-          {/* for test to confirm render myprofile and postDetail data */}
-          <span style={{ display: "none" }}>{postDetail.placeName}</span>
-          <Wrapper>
-            <Content>
-              <Header>
-                <Avatar src={postDetail.profileImage} />
-                <UserName>{postDetail.nickName}</UserName>
-              </Header>
-
-              <div>
-                <Image src={postDetail.img} />
-              </div>
-              <Place data-testid="place-name">
-                名所:{postDetail.placeName}
-              </Place>
-              <Place data-testid="description">
-                説明:{postDetail.description}
-              </Place>
-              <StarWrapper>
-                <Text data-testid="access">アクセス度</Text>
-                <Rating
-                  name="read-only"
-                  value={postDetail.accessStars}
-                  readOnly
-                />
-                <br />
-                <Text data-testid="congestion">混雑度</Text>
-                <Rating
-                  name="read-only"
-                  value={postDetail.congestionDegree}
-                  readOnly
-                />
-              </StarWrapper>
-
-              <TagUl>
-                {postDetail.tags.map((tag, index) => (
-                  <TagList key={index}>
-                    <span data-testid="tag-name">{tag.name}</span>
-                  </TagList>
-                ))}
-              </TagUl>
-
-              <Typography component="h6" color="error">
-                {message}
-              </Typography>
-
-              {postDetail.userPost === myProfile.userProfile ? (
-                <ButtonFlex>
-                  <Button
-                    size="small"
-                    color="secondary"
-                    onClick={async () => {
-                      const result = await dispatch(
-                        fetchAsyncDelete(postDetail.id)
-                      );
-                      if (fetchAsyncDelete.fulfilled.match(result)) {
-                        pushHome();
-                        setMessage("削除成功");
-                      }
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" data-testid="delete" /> 削除
-                  </Button>
-                  <Button size="small" onClick={pushEditPage}>
-                    <EditIcon fontSize="small" data-testid="edit" /> 編集
-                  </Button>
-                </ButtonFlex>
-              ) : (
-                <></>
-              )}
-
-              <Comments>
-                {commentsOnPost.map((comment) => (
-                  <Comment key={comment.id}>
-                    <Avatar
-                      src={comment.profileImage}
-                      className={classes.small}
-                    />
-
-                    <p>
-                      <CommentNickName>
-                        {comment.nickName}
-                      </CommentNickName>
-                      {comment.text}
-                    </p>
-                    {myProfile.userProfile === comment.userComment ? (
-                      <Button
-                        color="secondary"
-                        onClick={async () => {
-                          await dispatch(fetchAsyncDeleteComment(comment.id));
-                        }}
-                      >
-                        コメント削除
-                      </Button>
-                    ) : (
-                      <></>
-                    )}
-                  </Comment>
-                ))}
-              </Comments>
-            </Content>
-
-            {localStorage.getItem("localJWT") ? (
-              <CommentBox>
-                <Input
-                  type="text"
-                  placeholder="add a comment"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                />
-                <CustomButton
-                  data-testid="post"
-                  disabled={!text.length || !localStorage.getItem("localJWT")}
-                  type="submit"
-                  onClick={postComment}
-                >
-                  Post
-                </CustomButton>
-              </CommentBox>
+      {/* for test to confirm render myprofile and postDetail data */}
+      <span style={{ display: "none" }}>{postDetail.placeName}</span>
+      <Wrapper>
+        <Content>
+          <Header>
+            {postDetail.profileImage ? (
+              <Avatar src={postDetail.profileImage} alt="プロフィール画像" />
             ) : (
-              <UnAuthorizedMessage>
-                コメントをするにはログインして下さい
-              </UnAuthorizedMessage>
+              <Avatar src={NoProfileImg} alt="プロフィール画像" />
             )}
-          </Wrapper>
-        </>
-      )}
+            <UserName>{postDetail.nickName}</UserName>
+          </Header>
+
+          <div>
+            <Image src={postDetail.img} />
+          </div>
+          <Place data-testid="place-name">名所:{postDetail.placeName}</Place>
+          <Place data-testid="description">説明:{postDetail.description}</Place>
+
+          <Text data-testid="access">アクセス度</Text>
+          <StarWrapper>
+            {stars.map((value) => {
+              return value <= postDetail.accessStars ? (
+                <AiFillStar key={value} size={25} fill="#FFCC66" />
+              ) : (
+                <AiFillStar key={value} size={25} />
+              );
+            })}
+          </StarWrapper>
+          <br />
+          <Text data-testid="congestion">混雑度</Text>
+          <StarWrapper>
+            {stars.map((value) => {
+              return value <= postDetail.congestionDegree ? (
+                <AiFillStar key={value} size={25} fill="#FFCC66" />
+              ) : (
+                <AiFillStar key={value} size={25} />
+              );
+            })}
+          </StarWrapper>
+
+          <TagUl>
+            {postDetail.tags.map((tag, index) => (
+              <TagList key={index}>
+                <span data-testid="tag-name">{tag.name}</span>
+              </TagList>
+            ))}
+          </TagUl>
+
+          <p>{message}</p>
+
+          {postDetail.userPost === myProfile?.userProfile ? (
+            <ButtonFlex>
+              <Button
+                isSmall={true}
+                onClick={(e) => handleDeletePost(postDetail.id, e)}
+              >
+                <BsFillEraserFill data-testid="delete" fill="white" /> 削除
+              </Button>
+              <Button isSmall={true} onClick={pushEditPage}>
+                <AiFillEdit data-testid="edit" fill="white" /> 編集
+              </Button>
+            </ButtonFlex>
+          ) : (
+            <></>
+          )}
+          <Comments>
+            {commentsOnPost?.map((comment) => (
+              <Comment key={comment.id}>
+                {comment.profileImage ? (
+                  <Avatar src={comment.profileImage} />
+                ) : (
+                  <Avatar src={NoProfileImg} />
+                )}
+
+                <p>
+                  <CommentNickName>{comment.nickName}</CommentNickName>
+                  {comment.text}
+                </p>
+                {myProfile?.userProfile === comment.userComment ? (
+                  <Button
+                    isSmall={true}
+                    onClick={(e) => handleDeleteComment(comment.id, e)}
+                  >
+                    コメント削除
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Comment>
+            ))}
+          </Comments>
+        </Content>
+
+        {myProfile?.nickName ? (
+          <CommentBox>
+            <Input
+              type="text"
+              placeholder="add a comment"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <CustomButton
+              data-testid="post"
+              disabled={!text.length || !myProfile}
+              type="submit"
+              onClick={(e) => handleAddComment(e, text, postDetail.id)}
+            >
+              Post
+            </CustomButton>
+          </CommentBox>
+        ) : (
+          <UnAuthorizedMessage>
+            コメントをするにはログインして下さい
+          </UnAuthorizedMessage>
+        )}
+      </Wrapper>
     </>
   );
 };
