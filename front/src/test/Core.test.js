@@ -1,22 +1,26 @@
 import React from "react";
-import { postData, postData2 } from "../postData";
-import { profileData, updateProfileData, myProfileData } from "../profileData";
+import { postData, postData2 } from "./testData/postData";
+import {
+  profileData,
+  updateProfileData,
+  myProfileData,
+} from "./testData/profileData";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import postReducer from "../features/post/postSlice";
-import authReducer from "../features/auth/authSlice";
-import Core from "../features/core/Core";
+import postReducer from "../redux/slices/post/postSlice";
+import authReducer from "../redux/slices/auth/authSlice";
+import Core from "../pages/Core";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   useLogin,
   useRegister,
   usePutProfileMutation,
-} from "../features/query/queryHooks";
+} from "../hooks/useQueryHooks";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -24,8 +28,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-jest.mock("../features/query/queryHooks", () => ({
-  ...jest.requireActual("../features/query/queryHooks"),
+jest.mock("../hooks/useQueryHooks", () => ({
+  ...jest.requireActual("../hooks/useQueryHooks"),
   useLogin: jest.fn(),
   useRegister: jest.fn(),
   usePutProfileMutation: jest.fn(),
@@ -85,7 +89,7 @@ const queryClient = new QueryClient({
 beforeAll(() => {
   server.listen();
 });
-afterEach(() => {;
+afterEach(() => {
   server.resetHandlers();
   cleanup();
 });
@@ -124,7 +128,7 @@ describe("Core Component Test", () => {
     document.body.appendChild(root);
     const mockMutateAsync = jest.fn();
     useLogin.mockReturnValue({ mutateAsync: mockMutateAsync });
-    renderCoreComponent(store)
+    renderCoreComponent(store);
     await waitFor(() =>
       screen.getByText(
         "ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です"
@@ -159,7 +163,7 @@ describe("Core Component Test", () => {
     const mockMutateAsync = jest.fn();
     useRegister.mockReturnValue({ mutateAsync: mockMutateAsync });
     useLogin.mockReturnValue({ mutateAsync: mockMutateAsync });
-    renderCoreComponent(store)
+    renderCoreComponent(store);
     expect(
       screen.getByText(
         "ログイン、新規登録をしなくても「Skip」ボタンを押せば、投稿を見ることは可能です"
@@ -191,7 +195,7 @@ describe("Core Component Test", () => {
     expect(screen.getAllByText("詳細")).toHaveLength(12);
   });
   it("3: Should route to detail page", async () => {
-    renderCoreComponent(store)
+    renderCoreComponent(store);
     expect(await screen.findByText("東京タワー")).toBeInTheDocument();
     await user.click(screen.getByTestId(`detail-1`));
     expect(mockedNavigator).toBeCalledWith("/post/1");
@@ -200,7 +204,7 @@ describe("Core Component Test", () => {
   it("4: Should put myprofile successfully", async () => {
     const mockMutateAsync = jest.fn();
     usePutProfileMutation.mockReturnValue({ mutateAsync: mockMutateAsync });
-    renderCoreComponent(store)
+    renderCoreComponent(store);
     expect(await screen.findByText("myNickName")).toBeInTheDocument();
     await user.click(screen.getByTestId("edit-modal"));
     const inputValue = screen.getByPlaceholderText("nickname");

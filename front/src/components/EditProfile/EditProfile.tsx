@@ -4,11 +4,14 @@ import { EditTitle, EditForm } from "./EditProfileStyles";
 import { Button } from "../../commonStyles/ButtonStyles";
 import { Input } from "../../commonStyles/InputStyles";
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch } from "../../app/store";
-import { File, PROPS_PROFILE } from "../types";
-import { selectOpenProfile, resetOpenProfile } from "../auth/authSlice";
+import { AppDispatch } from "../../redux/app/store";
+import { File, PROPS_PROFILE } from "../../types";
+import {
+  selectOpenProfile,
+  resetOpenProfile,
+} from "../../redux/slices/auth/authSlice";
 import { MdAddAPhoto } from "react-icons/md";
-import { usePutProfileMutation } from "../query/queryHooks";
+import { usePutProfileMutation } from "../../hooks/useQueryHooks";
 
 const modalStyles = {
   overlay: {

@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { NavWrapper, NavButton } from "./NavbarStyles";
 import { Avatar } from "../../commonStyles/AvatarStyles";
-import { AppDispatch } from "../../app/store";
+import { AppDispatch } from "../../redux/app/store";
 import { useDispatch } from "react-redux";
 import {
   resetOpenProfile,
@@ -10,10 +10,10 @@ import {
   resetOpenSignUp,
   resetOpenSignIn,
   setOpenSignUp,
-} from "../auth/authSlice";
-import { resetOpenNewPost } from "../post/postSlice";
+} from "../../redux/slices/auth/authSlice";
+import { resetOpenNewPost } from "../../redux/slices/post/postSlice";
 import { useNavigate } from "react-router";
-import { PROPS_PROFILE } from "../types";
+import { PROPS_PROFILE } from "../../types";
 import NoProfileImg from "./../../images/NoProfileImg.webp";
 
 const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {

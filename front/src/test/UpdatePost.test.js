@@ -1,12 +1,12 @@
-import { PostDetailData, updatePostData } from "../postData";
+import { PostDetailData, updatePostData } from "./testData/postData";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import UpdatePost from "../features/post/UpdatePost";
+import UpdatePost from "../pages/UpdatePost";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useUpdatePost } from "../features/query/queryHooks";
+import { useUpdatePost } from "../hooks/useQueryHooks";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -14,8 +14,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-jest.mock("../features/query/queryHooks", () => ({
-  ...jest.requireActual("../features/query/queryHooks"),
+jest.mock("../hooks/useQueryHooks", () => ({
+  ...jest.requireActual("../hooks/useQueryHooks"),
   useUpdatePost: jest.fn(),
 }));
 

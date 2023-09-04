@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { File } from "../types";
-import { Button } from "../../commonStyles/ButtonStyles";
+import { Button } from "../commonStyles/ButtonStyles";
 import { MdAddAPhoto } from "react-icons/md";
 import {
   Form,
@@ -17,8 +17,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Tag } from "../types";
 import imageCompression from "browser-image-compression";
-import { useAddPost } from "../query/queryHooks";
-import Stars from "../Stars";
+import { useAddPost } from "../hooks/useQueryHooks";
+import Stars from "../components/Stars/Stars";
 
 const NewPost: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -114,13 +114,23 @@ const NewPost: React.FC = () => {
           <Text>アクセス※入力必須</Text>
 
           <div data-testid="access">
-            <Stars value={accessStars} setValue={setAccessStars} readOnly={false} whichStar="access" />
+            <Stars
+              value={accessStars}
+              setValue={setAccessStars}
+              readOnly={false}
+              whichStar="access"
+            />
           </div>
 
           <Text>混雑度※入力必須</Text>
 
           <div data-testid="congestion">
-            <Stars value={congestionDegree} setValue={setCongestionDegree} readOnly={false} whichStar="congestion" />
+            <Stars
+              value={congestionDegree}
+              setValue={setCongestionDegree}
+              readOnly={false}
+              whichStar="congestion"
+            />
           </div>
 
           <Text>名所の画像※任意</Text>

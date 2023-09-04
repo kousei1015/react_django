@@ -1,18 +1,22 @@
-import { PostDetailData } from "../postData";
-import { myProfileData } from "../profileData";
-import { addedCommentData, commentData, newCommentData } from "../commentData";
+import { PostDetailData } from "./testData/postData";
+import { myProfileData } from "./testData/profileData";
+import {
+  addedCommentData,
+  commentData,
+  newCommentData,
+} from "./testData/commentData";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import PostDetail from "../features/post/PostDetail";
+import PostDetail from "../pages/PostDetail";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   useDeletePost,
   useAddComment,
   useDeleteComment,
-} from "../features/query/queryHooks";
+} from "../hooks/useQueryHooks";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -20,8 +24,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-jest.mock("../features/query/queryHooks", () => ({
-  ...jest.requireActual("../features/query/queryHooks"),
+jest.mock("../hooks/useQueryHooks", () => ({
+  ...jest.requireActual("../hooks/useQueryHooks"),
   useDeletePost: jest.fn(),
   useAddComment: jest.fn(),
   useDeleteComment: jest.fn(),

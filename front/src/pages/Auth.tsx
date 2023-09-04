@@ -1,9 +1,9 @@
 import React from "react";
-import { AppDispatch } from "../../app/store";
+import { AppDispatch } from "../redux/app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Wrapper, Title, Error, Text } from "./AuthStyles";
-import { Input } from "../../commonStyles/InputStyles";
-import { Button } from "../../commonStyles/ButtonStyles";
+import { Input } from "../commonStyles/InputStyles";
+import { Button } from "../commonStyles/ButtonStyles";
 import Modal from "react-modal";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,8 +16,8 @@ import {
   resetOpenSignIn,
   setOpenSignUp,
   resetOpenSignUp,
-} from "./authSlice";
-import { useLogin, useRegister } from "../query/queryHooks";
+} from "../redux/slices/auth/authSlice";
+import { useLogin, useRegister } from "../hooks/useQueryHooks";
 
 const modalStyles = {
   overlay: {

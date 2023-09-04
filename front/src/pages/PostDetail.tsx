@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Avatar } from "../../commonStyles/AvatarStyles";
-import { Button } from "../../commonStyles/ButtonStyles";
-import NoProfileImg from "./../../images/NoProfileImg.webp";
+import { Avatar } from "../commonStyles/AvatarStyles";
+import { Button } from "../commonStyles/ButtonStyles";
+import NoProfileImg from "../images/NoProfileImg.webp";
 import { useParams, useNavigate } from "react-router-dom";
 import { AiFillStar, AiFillEdit } from "react-icons/ai";
 import { BsFillEraserFill } from "react-icons/bs";
@@ -32,8 +32,8 @@ import {
   useAddComment,
   useDeletePost,
   useDeleteComment,
-} from "../query/queryHooks";
-import Loading from "../Loading";
+} from "../hooks/useQueryHooks";
+import Loading from "../components/Loading/Loading";
 
 const PostDetail: React.FC = () => {
   const { id } = useParams();
@@ -71,10 +71,7 @@ const PostDetail: React.FC = () => {
     setText("");
   };
 
-  const handleDeletePost = (
-    id: number,
-    e: React.MouseEvent<HTMLElement>
-  ) => {
+  const handleDeletePost = (id: number, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     deletePostMutation.mutate({ id });
     setMessage("削除成功");

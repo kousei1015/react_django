@@ -1,6 +1,6 @@
 import React from "react";
 import { AiFillStar } from "react-icons/ai";
-import { PROPS_STARS } from "./types";
+import { PROPS_STARS } from "../../types";
 
 const Stars = ({ value, setValue, readOnly, whichStar }: PROPS_STARS) => {
   const stars = [1, 2, 3, 4, 5];

@@ -1,11 +1,11 @@
-import { NewPostData } from "../postData";
+import { NewPostData } from "./testData/postData";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import NewPost from "../features/post/NewPost";
+import NewPost from "../pages/NewPost";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useAddPost } from "../features/query/queryHooks";
+import { useAddPost } from "../hooks/useQueryHooks";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -13,8 +13,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
-jest.mock("../features/query/queryHooks", () => ({
-  ...jest.requireActual("../features/query/queryHooks"),
+jest.mock("../hooks/useQueryHooks", () => ({
+  ...jest.requireActual("../hooks/useQueryHooks"),
   useAddPost: jest.fn(),
 }));
 

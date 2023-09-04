@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchPost,
   fetchComments,
@@ -17,7 +13,7 @@ import {
   addPost,
   updateProfile,
   updatePost,
-} from "./api";
+} from "../api/api";
 
 export const useProfiles = () => {
   return useQuery(["profiles"], fetchProfiles);
@@ -28,15 +24,16 @@ export const useMyProfile = () => {
 };
 
 export const usePosts = (id: number, orderType: string) => {
-  return useQuery(["posts", id, orderType], ({ signal }) => fetchPosts(id, orderType, signal));
+  return useQuery(["posts", id, orderType], ({ signal }) =>
+    fetchPosts(id, orderType, signal)
+  );
 };
-
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
   return useMutation(loginUser, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["myProfile"])
+      queryClient.invalidateQueries(["myProfile"]);
     },
   });
 };
@@ -76,7 +73,7 @@ export const useAddPost = () => {
 
 export const useUpdatePost = () => {
   return useMutation(updatePost);
-}
+};
 
 export const useDeletePost = () => {
   const queryClient = useQueryClient();

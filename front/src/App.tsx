@@ -2,10 +2,10 @@ import React from "react";
 import { GlobalStyles } from "./GlobalStyles";
 import { AppStyles } from "./AppStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Core from "./features/core/Core";
-import NewPost from "./features/post/NewPost";
-import UpdatePost from "./features/post/UpdatePost";
-import PostDetail from "./features/post/PostDetail";
+import Core from "./pages/Core";
+import NewPost from "./pages/NewPost";
+import UpdatePost from "./pages/UpdatePost";
+import PostDetail from "./pages/PostDetail";
 
 function App() {
   return (

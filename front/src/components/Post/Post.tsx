@@ -14,8 +14,8 @@ import {
 import { Button } from "../../commonStyles/ButtonStyles";
 import { Avatar } from "../../commonStyles/AvatarStyles";
 import { useNavigate } from "react-router-dom";
-import { PROPS_POST } from "../types";
-import Stars from "../Stars";
+import { PROPS_POST } from "../../types";
+import Stars from "../Stars/Stars";
 
 /* eslint-disable import/first */
 
@@ -29,7 +29,6 @@ const Post: React.FC<PROPS_POST> = ({
   tags,
   profiles,
 }) => {
-
   const prof = profiles.filter((prof) => {
     return prof.userProfile === userPost;
   });

@@ -3,15 +3,15 @@ import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/authSlice";
-import Auth from "../features/auth/Auth";
+import authReducer from "../redux/slices/auth/authSlice";
+import Auth from "../pages/Auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useRegister } from "../features/query/queryHooks";
+import { useRegister } from "../hooks/useQueryHooks";
 
 const user = userEvent.setup();
 
-jest.mock("../features/query/queryHooks", () => ({
-  ...jest.requireActual("../features/query/queryHooks"),
+jest.mock("../hooks/useQueryHooks", () => ({
+  ...jest.requireActual("../hooks/useQueryHooks"),
   useRegister: jest.fn(),
 }));
 

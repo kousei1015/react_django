@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
-import usePagination from "./usePagination";
-import Auth from "../auth/Auth";
-import Navbar from "./Navbar";
-import Post from "../post/Post";
-import EditProfile from "./EditProfile";
+import usePagination from "../hooks/usePagination";
+import Auth from "./Auth";
+import Navbar from "../components/Navbar/Navbar";
+import Post from "../components/Post/Post";
+import EditProfile from "../components/EditProfile/EditProfile";
 import {
   Grid,
   GridChild,
@@ -14,15 +14,15 @@ import {
   PaginateButton,
 } from "./CoreStyles";
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch } from "../../app/store";
+import { AppDispatch } from "../redux/app/store";
 import {
   selectPage,
   selectOrderType,
   setClickedPage,
   setOrderType,
-} from "../post/postSlice";
-import { usePosts, useMyProfile, useProfiles } from "../query/queryHooks";
-import Loading from "../Loading";
+} from "../redux/slices/post/postSlice";
+import { usePosts, useMyProfile, useProfiles } from "../hooks/useQueryHooks";
+import Loading from "../components/Loading/Loading";
 
 const Core: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -34,7 +34,9 @@ const Core: React.FC = () => {
   const { data: posts } = usePosts(page, orderType);
 
   const pagesArray = useMemo(() => {
-    return Array(posts?.total_pages).fill(0).map((_, index) => index + 1);
+    return Array(posts?.total_pages)
+      .fill(0)
+      .map((_, index) => index + 1);
   }, [posts?.total_pages]);
 
   const handleClick = (pg: string | number) => {

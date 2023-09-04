@@ -14,10 +14,10 @@ import {
   TagAddButton,
   RemoveTagIcon,
 } from "./NewUpdatePostStyles";
-import { Button } from "../../commonStyles/ButtonStyles";
-import { usePost, useUpdatePost } from "../query/queryHooks";
+import { Button } from "../commonStyles/ButtonStyles";
+import { usePost, useUpdatePost } from "../hooks/useQueryHooks";
 import { Tag } from "../types";
-import Stars from "../Stars";
+import Stars from "../components/Stars/Stars";
 
 const UpdatePost: React.FC = () => {
   const { id } = useParams();
@@ -117,12 +117,22 @@ const UpdatePost: React.FC = () => {
 
           <Text>アクセス※入力必須</Text>
           <div data-testid="access">
-            <Stars value={accessStars} setValue={setAccessStars} readOnly={false} whichStar="access" />
+            <Stars
+              value={accessStars}
+              setValue={setAccessStars}
+              readOnly={false}
+              whichStar="access"
+            />
           </div>
 
           <Text>混雑度※入力必須</Text>
           <div data-testid="congestion">
-            <Stars value={congestionDegree} setValue={setCongestionDegree} readOnly={false} whichStar="congestion" />
+            <Stars
+              value={congestionDegree}
+              setValue={setCongestionDegree}
+              readOnly={false}
+              whichStar="congestion"
+            />
           </div>
 
           <Text>名所の画像※任意</Text>
