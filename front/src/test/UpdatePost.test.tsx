@@ -6,24 +6,38 @@ import { setupServer } from "msw/node";
 import UpdatePost from "../pages/UpdatePost";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useUpdatePost } from "../hooks/useQueryHooks";
+import { vi } from "vitest";
 
-const mockedNavigator = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigator,
-}));
+const mockedNavigator = vi.fn();
+const mockMutateAsync = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as any;
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigator,
+    useParams: () => ({
+      id: 1
+    })
+  };
+});
 
-jest.mock("../hooks/useQueryHooks", () => ({
-  ...jest.requireActual("../hooks/useQueryHooks"),
-  useUpdatePost: jest.fn(),
-}));
+vi.mock('../hooks/useQueryHooks', async () => {
+  const actual = (await vi.importActual("../hooks/useQueryHooks")) as any;
+  return {
+    ...actual,
+    useUpdatePost: vi.fn().mockImplementation(() => {
+      return {
+        mutateAsync: mockMutateAsync
+      }
+    }),
+  }
+})
 
 const handlers = [
-  rest.get("http://localhost:8000/api/post/:id", (req, res, ctx) => {
+  rest.get("http://localhost:8000/api/post/:id", (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(PostDetailData));
   }),
-  rest.put("http://localhost:8000/api/post/:id", (req, res, ctx) => {
+  rest.put("http://localhost:8000/api/post/:id", (_, res, ctx) => {
     return res(ctx.status(201), ctx.json(updatePostData));
   }),
 ];
@@ -43,6 +57,8 @@ beforeAll(() => {
   server.listen();
 });
 afterEach(() => {
+  vi.clearAllMocks();
+  queryClient.clear();
   server.resetHandlers();
   cleanup();
 });
@@ -57,7 +73,7 @@ const renderUpdatePost = () => {
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={["/post/1/update"]}>
         <Routes>
-          <Route path="/post/:id/update" element={<UpdatePost />} />
+          <Route path="/post/1/update" element={<UpdatePost />} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>
@@ -79,33 +95,30 @@ describe("UpdatePost Component Test", () => {
     expect(screen.getByTestId("btn-update")).toBeTruthy();
   });
   it("2: Should update successfully", async () => {
-    const mockMutateAsync = jest.fn();
-    useUpdatePost.mockReturnValue({ mutateAsync: mockMutateAsync });
     renderUpdatePost();
-
+    
     await waitFor(() =>
       expect(screen.getByText("国営昭和記念公園")).toBeInTheDocument()
     );
     await user.click(screen.getByText("Edit"));
-    expect(mockMutateAsync).toHaveBeenCalledWith({
-      id: 1,
-      placeName: "国営昭和記念公園",
-      description: "四季折々の花がみられる",
-      img: null,
-      accessStars: "5",
-      congestionDegree: "4",
-      tags: [{ name: "花" }],
+    console.log(mockMutateAsync.getMockImplementation)
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalledWith({
+        id: 1,
+        placeName: "国営昭和記念公園",
+        description: "四季折々の花がみられる",
+        img: null,
+        accessStars: "5",
+        congestionDegree: "4",
+        tags: [{ name: "花" }],
+      });
     });
     expect(await screen.findByText("編集成功")).toBeInTheDocument();
     expect(mockedNavigator).toBeCalledWith("/");
     expect(mockedNavigator).toBeCalledTimes(1);
   });
-  it("3: Should not route CoreComponent when status 400", async () => {
-    server.use(
-      rest.put("http://localhost:8000/api/post/:id", (req, res, ctx) => {
-        return res(ctx.status(400));
-      })
-    );
+  it("3: Should not route CoreComponent when status is 400", async () => {
+    mockMutateAsync.mockRejectedValue({"error": 400})
     renderUpdatePost();
 
     expect(await screen.findByText("国営昭和記念公園")).toBeInTheDocument();

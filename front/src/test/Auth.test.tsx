@@ -1,19 +1,12 @@
-import React from "react";
-import { render, screen, cleanup, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../redux/slices/auth/authSlice";
-import Auth from "../pages/Auth";
+import authReducer from "../../src/redux/slices/auth/authSlice";
+import Auth from "../../src/pages/Auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useRegister } from "../hooks/useQueryHooks";
 
 const user = userEvent.setup();
-
-jest.mock("../hooks/useQueryHooks", () => ({
-  ...jest.requireActual("../hooks/useQueryHooks"),
-  useRegister: jest.fn(),
-}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +17,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export const renderAuthComponent = (store) => {
+export const renderAuthComponent = (store: any) => {
   render(
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
@@ -35,7 +28,7 @@ export const renderAuthComponent = (store) => {
 };
 
 describe("Auth Test", () => {
-  let store;
+  let store: any;
   beforeEach(() => {
     store = configureStore({
       reducer: {
@@ -77,9 +70,7 @@ describe("Auth Test", () => {
     );
     await user.type(screen.getByTestId("email"), "dummy@gmail.com");
     await user.type(screen.getByTestId("password"), "dddd");
-    const submitButton = screen.getByTestId("submit-button", {
-      name: /submit/i,
-    });
+    const submitButton = screen.getByTestId("submit-button");
     await waitFor(() => expect(submitButton).not.toBeDisabled());
   });
   it("3: Should disable attribute is removed with proper character format in register modal", async () => {
@@ -88,27 +79,21 @@ describe("Auth Test", () => {
     expect(await screen.findByText("Register"));
     await user.type(screen.getByTestId("email"), "dummy@gmail.com");
     await user.type(screen.getByTestId("password"), "dddd");
-    const submitButton = screen.getByTestId("submit-button", {
-      name: /submit/i,
-    });
+    const submitButton = screen.getByTestId("submit-button");
     await waitFor(() => expect(submitButton).not.toBeDisabled());
   });
   it("4: Should not submit with too short email", async () => {
     renderAuthComponent(store);
     await user.type(screen.getByTestId("email"), "a");
     await user.type(screen.getByTestId("password"), "aaaaa");
-    const submitButton = screen.getByTestId("submit-button", {
-      name: /submit/i,
-    });
+    const submitButton = screen.getByTestId("submit-button");
     expect(submitButton).toBeDisabled();
   });
   it("5: Should not submit with too short password", async () => {
     renderAuthComponent(store);
     await user.type(screen.getByTestId("email"), "dummy@gmail.com");
     await user.type(screen.getByTestId("password"), "a");
-    const submitButton = screen.getByTestId("submit-button", {
-      name: /submit/i,
-    });
+    const submitButton = screen.getByTestId("submit-button");
     expect(submitButton).toBeDisabled();
   });
 });

@@ -6,17 +6,29 @@ import { setupServer } from "msw/node";
 import NewPost from "../pages/NewPost";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useAddPost } from "../hooks/useQueryHooks";
+import { vi } from "vitest";
 
-const mockedNavigator = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigator,
-}));
+const mockedNavigator = vi.fn();
+const mockMutateAsync = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as any;
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigator,
+  };
+});
 
-jest.mock("../hooks/useQueryHooks", () => ({
-  ...jest.requireActual("../hooks/useQueryHooks"),
-  useAddPost: jest.fn(),
-}));
+vi.mock("../hooks/useQueryHooks", async () => {
+  const actual = (await vi.importActual("../hooks/useQueryHooks")) as any;
+  return {
+    ...actual,
+    useAddPost: vi.fn().mockImplementation(() => {
+      return {
+        mutateAsync: mockMutateAsync,
+      };
+    }),
+  };
+});
 
 const handlers = [
   rest.post("http://localhost:8000/api/post/", (req, res, ctx) => {
@@ -39,6 +51,8 @@ beforeAll(() => {
   server.listen();
 });
 afterEach(() => {
+  vi.clearAllMocks();
+  queryClient.clear();
   server.resetHandlers();
   cleanup();
 });
@@ -58,8 +72,6 @@ const renderNewPost = () => {
 
 describe("NewPost Component Test", () => {
   it("1: Should render NewPostComponent successfully", async () => {
-    const mockMutateAsync = jest.fn();
-    useAddPost.mockReturnValue({ mutateAsync: mockMutateAsync });
     renderNewPost();
 
     expect(screen.getByTestId("title")).toBeTruthy();
@@ -69,8 +81,6 @@ describe("NewPost Component Test", () => {
     expect(screen.getByTestId("btn-post")).toBeTruthy();
   });
   it("2: Should post successfully", async () => {
-    const mockMutateAsync = jest.fn();
-    useAddPost.mockReturnValue({ mutateAsync: mockMutateAsync });
     renderNewPost();
 
     const placeNameInput = screen.getByPlaceholderText(
@@ -86,28 +96,23 @@ describe("NewPost Component Test", () => {
     );
     const accessStar = screen.getByTestId("5accessStars");
     const congestionDegree = screen.getByTestId("4congestionStars");
-    await user.click(accessStar.parentElement);
-    await user.click(congestionDegree.parentElement);
+    await user.click(accessStar!.parentElement!);
+    await user.click(congestionDegree!.parentElement!);
     await user.click(screen.getByText("Post"));
     expect(await screen.findByText("投稿成功")).toBeInTheDocument();
     expect(mockedNavigator).toBeCalledWith("/");
     expect(mockedNavigator).toBeCalledTimes(1);
   });
   it("3: Should not route CoreComponent when status 400", async () => {
-    server.use(
-      rest.post("http://localhost:8000/api/post/", (req, res, ctx) => {
-        return res(ctx.status(400));
-      })
-    );
+    mockMutateAsync.mockRejectedValue({ "error": 400 });
     renderNewPost();
-
     await user.click(screen.getByText("Post"));
     expect(
       await screen.findByText(
         "エラ― 入力必須部分を記述していること、最大文字数が超えていないことをご確認ください"
       )
     ).toBeInTheDocument();
-    expect(await mockedNavigator).toHaveBeenCalledTimes(0);
+    expect(mockedNavigator).toBeCalledTimes(0);
   });
   it("4: Should not create new post when unauthorized user", async () => {
     renderNewPost();
