@@ -11,10 +11,9 @@ import {
   AddProfile,
 } from "../types";
 
-export const apiUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_API_URL
-    : process.env.REACT_APP_API_DEV_URL;
+export const apiUrl = import.meta.env.PROD
+  ? import.meta.env.VITE_API_URL
+  : import.meta.env.VITE_API_DEV_URL;
 
 export const loginUser = async (authen: AuthData) => {
   try {

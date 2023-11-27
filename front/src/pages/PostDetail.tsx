@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Avatar } from "../commonStyles/AvatarStyles";
 import { Button } from "../commonStyles/ButtonStyles";
-import NoProfileImg from "../images/NoProfileImg.webp";
+import NoProfileImg from "../assets/NoProfileImg.webp";
 import { useParams, useNavigate } from "react-router-dom";
 import { AiFillStar, AiFillEdit } from "react-icons/ai";
 import { BsFillEraserFill } from "react-icons/bs";

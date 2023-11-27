@@ -21,7 +21,11 @@ import {
   setClickedPage,
   setOrderType,
 } from "../redux/slices/post/postSlice";
-import { usePosts, useMyProfile, useProfiles } from "../hooks/useQueryHooks";
+import {
+  usePosts,
+  useMyProfile,
+  useProfiles,
+} from "../hooks/useQueryHooks";
 import Loading from "../components/Loading/Loading";
 
 const Core: React.FC = () => {

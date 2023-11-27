@@ -1,5 +1,5 @@
 import React from "react";
-import NoProfileImg from "./../../images/NoProfileImg.webp";
+import NoProfileImg from "../../assets/NoProfileImg.webp"
 import {
   Wrapper,
   Content,

@@ -14,7 +14,7 @@ import {
 import { resetOpenNewPost } from "../../redux/slices/post/postSlice";
 import { useNavigate } from "react-router";
 import { PROPS_PROFILE } from "../../types";
-import NoProfileImg from "./../../images/NoProfileImg.webp";
+import NoProfileImg from "../../assets/NoProfileImg.webp";
 
 const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {
   const isProduction = process.env.NODE_ENV === "production";
