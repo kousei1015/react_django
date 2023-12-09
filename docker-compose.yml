@@ -22,11 +22,11 @@ services:
       - backend
 
   db:
-    image: mysql:5.7.38
+    image: mysql:8.0.33
     restart: always
     environment:
       MYSQL_DATABASE: main
-      MYSQL_USER: root
+      MYSQL_USER: dbuser
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
     volumes: 
@@ -34,7 +34,7 @@ services:
       - './backend/mysql/etc/my.cnf:/etc/my.cnf'
     ports: 
       - 3306:3306
-    
+
   frontend:
     build:
       context: ./front
