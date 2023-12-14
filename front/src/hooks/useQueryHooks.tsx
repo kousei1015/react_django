@@ -24,9 +24,7 @@ export const useMyProfile = () => {
 };
 
 export const usePosts = (id: number, orderType: string) => {
-  return useQuery(["posts", id, orderType], ({ signal }) =>
-    fetchPosts(id, orderType, signal)
-  );
+  return useQuery(["posts"], ({ signal }) => fetchPosts(id, orderType, signal));
 };
 
 export const useLogin = () => {
@@ -34,6 +32,15 @@ export const useLogin = () => {
   return useMutation(loginUser, {
     onSuccess: () => {
       queryClient.invalidateQueries(["myProfile"]);
+    },
+  });
+};
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  return useMutation(fetchMyProfile, {
+    onError: () => {
+      queryClient.resetQueries(["myProfile"]);
     },
   });
 };
@@ -78,7 +85,7 @@ export const useUpdatePost = () => {
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
   return useMutation(({ id }: { id: number }) => deletePost(id), {
-    onSuccess: () => queryClient.invalidateQueries(["post"]),
+    onSuccess: () => queryClient.invalidateQueries(["posts"]),
   });
 };
 

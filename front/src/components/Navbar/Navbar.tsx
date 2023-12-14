@@ -15,6 +15,7 @@ import { resetOpenNewPost } from "../../redux/slices/post/postSlice";
 import { useNavigate } from "react-router";
 import { PROPS_PROFILE } from "../../types";
 import NoProfileImg from "../../assets/NoProfileImg.webp";
+import { useLogout } from "../../hooks/useQueryHooks";
 
 const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {
   const isProduction = process.env.NODE_ENV === "production";
@@ -24,6 +25,8 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {
   function pushHome() {
     navigate("/post/create");
   }
+
+  const logoutMutation = useLogout();
   return (
     <NavWrapper>
       {nickName ? (
@@ -45,11 +48,12 @@ const Navbar: React.FC<PROPS_PROFILE> = memo(({ nickName, img }) => {
             新規投稿
           </NavButton>
           <NavButton
-            onClick={() => {
+            onClick={async () => {
               localStorage.removeItem("localJWT");
               dispatch(resetOpenProfile());
               dispatch(resetOpenNewPost());
               dispatch(setOpenSignIn());
+              await logoutMutation.mutateAsync()
             }}
           >
             ログアウト
