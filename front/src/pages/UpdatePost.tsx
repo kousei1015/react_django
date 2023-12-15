@@ -70,7 +70,7 @@ const UpdatePost: React.FC = () => {
   };
 
   const removeTag = (index: number) => {
-    setTags(tags.filter((el, i) => i !== index));
+    setTags(tags.filter((_, i) => i !== index));
   };
 
   const editPost = async (e: React.MouseEvent<HTMLElement>) => {

@@ -5,7 +5,6 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 import NewPost from "../pages/NewPost";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useAddPost } from "../hooks/useQueryHooks";
 import { vi } from "vitest";
 
 const mockedNavigator = vi.fn();
@@ -31,7 +30,7 @@ vi.mock("../hooks/useQueryHooks", async () => {
 });
 
 const handlers = [
-  rest.post("http://localhost:8000/api/post/", (req, res, ctx) => {
+  rest.post("http://localhost:8000/api/post/", (_, res, ctx) => {
     return res(ctx.status(200), ctx.json(NewPostData));
   }),
 ];

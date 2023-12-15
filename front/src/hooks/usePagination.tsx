@@ -1,5 +1,3 @@
-import React from "react";
-
 const usePagination = (pagesArray: number[], page: number) => {
   const pagesFunc = () => {
     const leftDots = "....";
